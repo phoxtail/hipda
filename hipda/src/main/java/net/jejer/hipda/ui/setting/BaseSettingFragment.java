@@ -16,8 +16,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
-import com.thebluealliance.spectrum.SpectrumPreferenceCompat;
-
 import net.jejer.hipda.utils.ColorHelper;
 import net.jejer.hipda.utils.Utils;
 
@@ -136,12 +134,4 @@ public class BaseSettingFragment extends PreferenceFragmentCompat {
                 actionBar.setTitle(resId);
         }
     }
-
-    @Override
-    public void onDisplayPreferenceDialog(Preference preference) {
-        if (!SpectrumPreferenceCompat.onDisplayPreferenceDialog(preference, this)) {
-            super.onDisplayPreferenceDialog(preference);
-        }
-    }
-
 }

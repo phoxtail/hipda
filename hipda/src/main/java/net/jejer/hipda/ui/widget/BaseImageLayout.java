@@ -232,5 +232,4 @@ public abstract class BaseImageLayout extends RelativeLayout {
             onError();
         }
     }
-
 }
