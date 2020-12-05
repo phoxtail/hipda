@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
-import com.vanniktech.emoji.EmojiEditText;
+import net.jejer.hipda.emoji.EmojiEditText;
 
 import net.jejer.hipda.R;
 import net.jejer.hipda.async.PostSmsAsyncTask;

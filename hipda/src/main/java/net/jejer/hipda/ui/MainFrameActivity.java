@@ -52,7 +52,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
-import com.vanniktech.emoji.EmojiHandler;
+import net.jejer.hipda.emoji.EmojiHandler;
 
 import net.jejer.hipda.R;
 import net.jejer.hipda.async.LoginEvent;

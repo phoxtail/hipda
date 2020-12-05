@@ -38,8 +38,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
-import com.vanniktech.emoji.EmojiEditText;
-import com.vdurmont.emoji.EmojiParser;
+import net.jejer.hipda.emoji.EmojiEditText;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
@@ -703,11 +702,11 @@ public class PostFragment extends BaseFragment {
         }
 
         if (TextUtils.isEmpty(mEtContent.getText())) {
-            mEtContent.setText(EmojiParser.parseToUnicode(mPrePostInfo.getText()));
+            mEtContent.setText(mPrePostInfo.getText());
         }
 
         if (TextUtils.isEmpty(mEtSubject.getText()) && !TextUtils.isEmpty(mPrePostInfo.getSubject())) {
-            mEtSubject.setText(EmojiParser.parseToUnicode(mPrePostInfo.getSubject()));
+            mEtSubject.setText(mPrePostInfo.getSubject());
             mEtSubject.setVisibility(View.VISIBLE);
         }
 

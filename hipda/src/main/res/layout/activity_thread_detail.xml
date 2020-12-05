@@ -53,7 +53,7 @@
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/action_reply" />
 
-        <com.vanniktech.emoji.EmojiEditText
+        <net.jejer.hipda.emoji.EmojiEditText
             android:id="@+id/tv_reply_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -37,7 +37,7 @@
             android:layout_alignParentLeft="true"
             android:background="?attr/selectableItemBackground" />
 
-        <com.vanniktech.emoji.EmojiEditText
+        <net.jejer.hipda.emoji.EmojiEditText
             android:id="@+id/et_sms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

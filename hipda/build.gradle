@@ -76,13 +76,9 @@ dependencies {
     implementation 'com.mikepenz:fontawesome-typeface:5.0.13.0@aar'
 
     implementation 'com.daasuu:BubbleLayout:1.2.0'
-    implementation('com.vdurmont:emoji-java:5.1.1') {
-        exclude group: 'org.json', module: 'json'
-    }
 
     implementation(name: 'matisse-release-0.5.2-beta4', ext: 'aar')
 
     implementation(name: 'calligraphy-release-2.3.0', ext: 'aar')
     implementation(name: 'filepicker-release-1.1.1', ext: 'aar')
-    implementation project(':emoji')
 }

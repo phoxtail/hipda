@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.vanniktech.emoji.EmojiPopup;
+import net.jejer.hipda.emoji.EmojiPopup;
 
 import net.jejer.hipda.R;
 import net.jejer.hipda.bean.HiSettingsHelper;

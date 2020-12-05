@@ -3,8 +3,6 @@ package net.jejer.hipda.utils;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.vdurmont.emoji.EmojiParser;
-
 import net.jejer.hipda.bean.HiSettingsHelper;
 import net.jejer.hipda.bean.ThreadBean;
 import net.jejer.hipda.bean.ThreadListBean;
@@ -78,7 +76,7 @@ public class HiParserThreadList {
             }
             Element titleLink = titleES.first();
             String title = titleLink.text();
-            thread.setTitle(EmojiParser.parseToUnicode(title));
+            thread.setTitle(title);
 
             String linkStyle = titleLink.attr("style");
             if (!TextUtils.isEmpty(linkStyle)) {

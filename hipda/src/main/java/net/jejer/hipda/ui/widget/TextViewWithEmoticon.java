@@ -17,7 +17,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 
-import com.vanniktech.emoji.EmojiHandler;
+import net.jejer.hipda.emoji.EmojiHandler;
 
 import net.jejer.hipda.bean.DetailBean;
 import net.jejer.hipda.cache.SmallImages;

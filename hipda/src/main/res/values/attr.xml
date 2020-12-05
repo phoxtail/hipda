@@ -34,5 +34,9 @@
         <attr name="minValue" format="integer" />
         <attr name="currentValue" format="integer" />
     </declare-styleable>
+    <declare-styleable name="emoji">
+        <attr name="emojiSize" format="dimension" />
+        <attr name="emojiBackground" format="color" />
+    </declare-styleable>
 
 </resources>
