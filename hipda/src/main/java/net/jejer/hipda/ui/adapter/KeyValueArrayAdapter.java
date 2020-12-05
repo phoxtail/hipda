@@ -25,29 +25,11 @@ import java.util.List;
 
 /**
  * Key and Value Array Adapter
- *
- * @param <T>
  */
 public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyValue> {
 
-    /**
-     * Key and Value
-     */
-    public class KeyValue {
-        public String key;
-        public String value;
-
-        /**
-         * @param key
-         * @param value
-         */
-        public KeyValue(final String key, final String value) {
-            super();
-            this.key = key;
-            this.value = value;
-        }
-
-    }
+    private String[] entries;
+    private String[] entryValues;
 
     /**
      * @param context
@@ -162,9 +144,6 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
         }
     }
 
-    private String[] entries;
-    private String[] entryValues;
-
     /**
      * Set the specified Collection at the array.
      *
@@ -227,6 +206,25 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
      */
     public String getEntryValue(final int position) {
         return getKey(position);
+    }
+
+    /**
+     * Key and Value
+     */
+    public class KeyValue {
+        public String key;
+        public String value;
+
+        /**
+         * @param key
+         * @param value
+         */
+        public KeyValue(final String key, final String value) {
+            super();
+            this.key = key;
+            this.value = value;
+        }
+
     }
 
 }

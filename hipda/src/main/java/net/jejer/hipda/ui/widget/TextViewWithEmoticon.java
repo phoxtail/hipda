@@ -14,6 +14,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
+
 import com.vanniktech.emoji.EmojiHandler;
 
 import net.jejer.hipda.bean.DetailBean;
@@ -29,18 +32,35 @@ import net.jejer.hipda.utils.Logger;
 import net.jejer.hipda.utils.UIUtils;
 import net.jejer.hipda.utils.Utils;
 
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.content.ContextCompat;
-
 public class TextViewWithEmoticon extends AppCompatTextView {
+    private static final long MIN_CLICK_INTERVAL = 600;
+    private static int TRIM_LENGTH = 80;
     private Context mCtx;
     private BaseFragment mFragment;
-
-    private static int TRIM_LENGTH = 80;
-    private static final long MIN_CLICK_INTERVAL = 600;
-
     private boolean mTrim;
     private long mLastClickTime;
+    private Html.ImageGetter imageGetter = new Html.ImageGetter() {
+        public Drawable getDrawable(String src) {
+            Drawable icon = null;
+            src = Utils.nullToText(src);
+            if (SmallImages.contains(src)) {
+                icon = ContextCompat.getDrawable(mCtx, SmallImages.getDrawable(src));
+                icon.setBounds(0, 0, getLineHeight() / 2, getLineHeight() / 2);
+            } else {
+                int idx = src.indexOf(HiUtils.SmiliesPattern);
+                if (idx != -1 && src.indexOf(".", idx) != -1) {
+                    src = src.substring(src.indexOf(HiUtils.SmiliesPattern) + HiUtils.SmiliesPattern.length(), src.lastIndexOf(".")).replace("/", "_");
+                    int id = EmojiHandler.getDrawableResId(src);
+                    if (id != 0) {
+                        icon = ContextCompat.getDrawable(mCtx, id);
+                        if (icon != null)
+                            icon.setBounds(0, 0, getLineHeight(), getLineHeight());
+                    }
+                }
+            }
+            return icon;
+        }
+    };
 
     public TextViewWithEmoticon(Context context) {
         super(context);
@@ -74,29 +94,6 @@ public class TextViewWithEmoticon extends AppCompatTextView {
     public void setTrim(boolean trim) {
         mTrim = trim;
     }
-
-    private Html.ImageGetter imageGetter = new Html.ImageGetter() {
-        public Drawable getDrawable(String src) {
-            Drawable icon = null;
-            src = Utils.nullToText(src);
-            if (SmallImages.contains(src)) {
-                icon = ContextCompat.getDrawable(mCtx, SmallImages.getDrawable(src));
-                icon.setBounds(0, 0, getLineHeight() / 2, getLineHeight() / 2);
-            } else {
-                int idx = src.indexOf(HiUtils.SmiliesPattern);
-                if (idx != -1 && src.indexOf(".", idx) != -1) {
-                    src = src.substring(src.indexOf(HiUtils.SmiliesPattern) + HiUtils.SmiliesPattern.length(), src.lastIndexOf(".")).replace("/", "_");
-                    int id = EmojiHandler.getDrawableResId(src);
-                    if (id != 0) {
-                        icon = ContextCompat.getDrawable(mCtx, id);
-                        if (icon != null)
-                            icon.setBounds(0, 0, getLineHeight(), getLineHeight());
-                    }
-                }
-            }
-            return icon;
-        }
-    };
 
     private Spannable getTextWithImages(CharSequence text) {
         String t = text.toString().trim();
@@ -189,7 +186,7 @@ public class TextViewWithEmoticon extends AppCompatTextView {
                         fileName = b.toString().substring(b.getSpanStart(urls[0]), b.getSpanEnd(urls[0]));
                     }
                     if (TextUtils.isEmpty(fileName)) {
-                        //failsafe dirty way,  to get rid of ( xxx K ) file size string
+                        //fail safe dirty way,  to get rid of ( xxx K ) file size string
                         fileName = ((TextView) view).getText().toString();
                         if (fileName.contains(" ("))
                             fileName = fileName.substring(0, fileName.lastIndexOf(" (")).trim();
@@ -211,7 +208,7 @@ public class TextViewWithEmoticon extends AppCompatTextView {
     public boolean onTouchEvent(MotionEvent event) {
         boolean ret = false;
         CharSequence text = getText();
-        Spannable stext = Spannable.Factory.getInstance().newSpannable(text);
+        Spannable sText = Spannable.Factory.getInstance().newSpannable(text);
         int action = event.getAction();
 
         if (action == MotionEvent.ACTION_UP ||
@@ -229,7 +226,7 @@ public class TextViewWithEmoticon extends AppCompatTextView {
             int line = layout.getLineForVertical(y);
             int off = layout.getOffsetForHorizontal(line, x);
 
-            ClickableSpan[] link = stext.getSpans(off, off, ClickableSpan.class);
+            ClickableSpan[] link = sText.getSpans(off, off, ClickableSpan.class);
 
             if (link.length != 0) {
                 if (action == MotionEvent.ACTION_UP) {

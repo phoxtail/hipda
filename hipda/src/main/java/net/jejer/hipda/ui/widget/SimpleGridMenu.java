@@ -11,6 +11,10 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.IIcon;
 
@@ -20,10 +24,6 @@ import net.jejer.hipda.utils.Utils;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 
 /**
  * Created by GreenSkinMonster on 2017-06-24.
@@ -89,6 +89,23 @@ public class SimpleGridMenu {
             mDialog.dismiss();
     }
 
+    public void add(String actionKey, String actionName, AdapterView.OnItemClickListener listener) {
+        add(actionKey, actionName, listener, null, null);
+    }
+
+    public void add(String actionKey, String actionName, AdapterView.OnItemClickListener listener,
+                    IIcon icon, View.OnClickListener iconListener) {
+        MenuItem menuItem = new MenuItem();
+        menuItem.actionKey = actionKey;
+        menuItem.actionName = actionName;
+        menuItem.listener = listener;
+        menuItem.icon = icon;
+        menuItem.iconListener = iconListener;
+        mMenuItems.put(actionKey, menuItem);
+        if (!mActionKeys.contains(actionKey))
+            mActionKeys.add(actionKey);
+    }
+
     private class MenuActionAdapter extends ArrayAdapter<String> {
         MenuActionAdapter(Context context) {
             super(context, 0, mActionKeys);
@@ -132,23 +149,6 @@ public class SimpleGridMenu {
             }
             return view;
         }
-    }
-
-    public void add(String actionKey, String actionName, AdapterView.OnItemClickListener listener) {
-        add(actionKey, actionName, listener, null, null);
-    }
-
-    public void add(String actionKey, String actionName, AdapterView.OnItemClickListener listener,
-                    IIcon icon, View.OnClickListener iconListener) {
-        MenuItem menuItem = new MenuItem();
-        menuItem.actionKey = actionKey;
-        menuItem.actionName = actionName;
-        menuItem.listener = listener;
-        menuItem.icon = icon;
-        menuItem.iconListener = iconListener;
-        mMenuItems.put(actionKey, menuItem);
-        if (!mActionKeys.contains(actionKey))
-            mActionKeys.add(actionKey);
     }
 
     private class MenuItem {

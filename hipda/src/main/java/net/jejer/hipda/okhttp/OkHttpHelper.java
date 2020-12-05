@@ -5,9 +5,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 
 import com.bumptech.glide.Glide;
-import com.crashlytics.android.Crashlytics;
 
-import net.jejer.hipda.BuildConfig;
 import net.jejer.hipda.bean.HiSettingsHelper;
 import net.jejer.hipda.ui.HiApplication;
 import net.jejer.hipda.utils.Connectivity;
@@ -60,16 +58,22 @@ public class OkHttpHelper {
     public final static String CACHE_DIR_NAME = "okhttp";
 
     public static final String ERROR_CODE_PREFIX = "Unexpected code ";
-
-    private OkHttpClient mClient;
-    private PersistentCookieStore mCookiestore;
-    private CookieJar mCookieJar;
-
-    private Handler handler;
-
     private final static CacheControl PREFER_CACHE_CTL = new CacheControl.Builder()
             .maxStale(3 * 60, TimeUnit.SECONDS)
             .build();
+    private final ResultCallback DEFAULT_CALLBACK = new ResultCallback() {
+        @Override
+        public void onError(Request request, Exception e) {
+        }
+
+        @Override
+        public void onResponse(String response) {
+        }
+    };
+    private OkHttpClient mClient;
+    private PersistentCookieStore mCookiestore;
+    private CookieJar mCookieJar;
+    private Handler handler;
 
     private OkHttpHelper() {
         mCookiestore = new PersistentCookieStore(HiApplication.getAppContext(), HiUtils.CookieDomain);
@@ -108,10 +112,6 @@ public class OkHttpHelper {
         handler = new Handler(Looper.getMainLooper());
     }
 
-    public OkHttpClient getClient() {
-        return mClient;
-    }
-
     public static void setupTrustAllCerts(OkHttpClient.Builder builder) {
         try {
             X509TrustManager trustManager = new X509TrustManager() {
@@ -139,17 +139,54 @@ public class OkHttpHelper {
                 }
             });
         } catch (Exception e) {
-            if (!BuildConfig.DEBUG)
-                Crashlytics.logException(e);
+            e.printStackTrace();
         }
-    }
-
-    private static class SingletonHolder {
-        static final OkHttpHelper INSTANCE = new OkHttpHelper();
     }
 
     public static OkHttpHelper getInstance() {
         return SingletonHolder.INSTANCE;
+    }
+
+    public static String getResponseBody(Response response) throws IOException {
+        if (!response.isSuccessful()) {
+            throw new IOException(ERROR_CODE_PREFIX + response.code() + ", " + response.message());
+        }
+
+        String encoding = HiSettingsHelper.getInstance().getEncode();
+        String contextType = response.headers().get("Content-Type");
+        if (!TextUtils.isEmpty(contextType)) {
+            if (contextType.toUpperCase().contains("UTF")) {
+                encoding = "UTF-8";
+            } else if (contextType.toUpperCase().contains("GBK")) {
+                encoding = "GBK";
+            }
+        }
+        return new String(response.body().bytes(), encoding);
+    }
+
+    public static NetworkError getErrorMessage(Exception e) {
+        int errCode = 0;
+        String msg = e.getClass().getSimpleName();
+        if (HiApplication.getAppContext() != null
+                && !Connectivity.isConnected(HiApplication.getAppContext())) {
+            msg = "请检查网络连接";
+        } else if (e instanceof UnknownHostException) {
+            msg = "请检查网络连接.";
+        } else if (e instanceof SocketTimeoutException) {
+            msg = "请求超时";
+        } else if (e instanceof IOException) {
+            String emsg = e.getMessage();
+            if (emsg != null && emsg.contains(ERROR_CODE_PREFIX)) {
+                errCode = Utils.parseInt(Utils.getMiddleString(emsg, ERROR_CODE_PREFIX, ",").trim());
+                if (errCode > 0)
+                    msg = "错误代码 (" + errCode + ")";
+            }
+        }
+        return new NetworkError(errCode, msg, e.getClass().getName() + "\n" + e.getMessage());
+    }
+
+    public OkHttpClient getClient() {
+        return mClient;
     }
 
     private Request buildGetRequest(String url, Object tag, CacheControl cacheControl) {
@@ -282,24 +319,6 @@ public class OkHttpHelper {
         });
     }
 
-
-    public static String getResponseBody(Response response) throws IOException {
-        if (!response.isSuccessful()) {
-            throw new IOException(ERROR_CODE_PREFIX + response.code() + ", " + response.message());
-        }
-
-        String encoding = HiSettingsHelper.getInstance().getEncode();
-        String contextType = response.headers().get("Content-Type");
-        if (!TextUtils.isEmpty(contextType)) {
-            if (contextType.toUpperCase().contains("UTF")) {
-                encoding = "UTF-8";
-            } else if (contextType.toUpperCase().contains("GBK")) {
-                encoding = "GBK";
-            }
-        }
-        return new String(response.body().bytes(), encoding);
-    }
-
     private void handleFailureCallback(final Request request, final Exception e, final ResultCallback callback) {
         handler.post(new Runnable() {
             @Override
@@ -317,45 +336,6 @@ public class OkHttpHelper {
                 callback.onResponse(response);
             }
         });
-    }
-
-    public interface ResultCallback {
-
-        void onError(Request request, Exception e);
-
-        void onResponse(String response);
-
-    }
-
-    private final ResultCallback DEFAULT_CALLBACK = new ResultCallback() {
-        @Override
-        public void onError(Request request, Exception e) {
-        }
-
-        @Override
-        public void onResponse(String response) {
-        }
-    };
-
-    public static NetworkError getErrorMessage(Exception e) {
-        int errCode = 0;
-        String msg = e.getClass().getSimpleName();
-        if (HiApplication.getAppContext() != null
-                && !Connectivity.isConnected(HiApplication.getAppContext())) {
-            msg = "请检查网络连接";
-        } else if (e instanceof UnknownHostException) {
-            msg = "请检查网络连接.";
-        } else if (e instanceof SocketTimeoutException) {
-            msg = "请求超时";
-        } else if (e instanceof IOException) {
-            String emsg = e.getMessage();
-            if (emsg != null && emsg.contains(ERROR_CODE_PREFIX)) {
-                errCode = Utils.parseInt(Utils.getMiddleString(emsg, ERROR_CODE_PREFIX, ",").trim());
-                if (errCode > 0)
-                    msg = "错误代码 (" + errCode + ")";
-            }
-        }
-        return new NetworkError(errCode, msg, e.getClass().getName() + "\n" + e.getMessage());
     }
 
     public void clearCookies() {
@@ -401,6 +381,18 @@ public class OkHttpHelper {
         for (Call call : mClient.dispatcher().runningCalls()) {
             if (tag.equals(call.request().tag())) call.cancel();
         }
+    }
+
+    public interface ResultCallback {
+
+        void onError(Request request, Exception e);
+
+        void onResponse(String response);
+
+    }
+
+    private static class SingletonHolder {
+        static final OkHttpHelper INSTANCE = new OkHttpHelper();
     }
 
 }

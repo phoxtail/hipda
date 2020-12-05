@@ -3,10 +3,10 @@ package net.jejer.hipda.ui.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by GreenSkinMonster on 2016-11-08.
@@ -16,11 +16,9 @@ public abstract class BaseRvAdapter<V> extends RecyclerView.Adapter {
 
     private static final int TYPE_HEADER = -1;
     private static final int TYPE_FOOTER = -2;
-
+    protected RecyclerItemClickListener mListener;
     private View mHeaderView;
     private View mFooterView;
-    protected RecyclerItemClickListener mListener;
-
     private List<V> mDatas = new ArrayList<>();
 
     public abstract RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup parent, int viewType);
@@ -32,13 +30,13 @@ public abstract class BaseRvAdapter<V> extends RecyclerView.Adapter {
         return mDatas.size() + (hasHeader() ? 1 : 0) + (hasFooter() ? 1 : 0);
     }
 
+    public List<V> getDatas() {
+        return mDatas;
+    }
+
     public void setDatas(List<V> datas) {
         mDatas = datas;
         notifyDataSetChanged();
-    }
-
-    public List<V> getDatas() {
-        return mDatas;
     }
 
     public V getItem(int position) {

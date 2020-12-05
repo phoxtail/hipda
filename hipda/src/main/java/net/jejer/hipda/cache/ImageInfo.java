@@ -10,19 +10,15 @@ import net.jejer.hipda.utils.Utils;
  */
 public class ImageInfo {
 
-    private final static int MAX_WIDTH = Math.min(getMaxBitmapWidth(), (int) (Utils.getScreenWidth() * 0.8));
-    private final static int MAX_HEIGHT = Utils.getScreenHeight();
-
-    private final static int MAX_VIEW_WIDTH = Utils.getScreenWidth()
-            - 2 * (int) HiApplication.getAppContext().getResources().getDimension(R.dimen.thread_detail_padding);
-    private final static int MAX_VIEW_HEIGHT = (int) (Utils.getScreenHeight() * 1.2);
-
-
     public static final int IDLE = 0;
     public static final int IN_PROGRESS = 1;
     public static final int FAIL = 2;
     public static final int SUCCESS = 3;
-
+    private final static int MAX_WIDTH = Math.min(getMaxBitmapWidth(), (int) (Utils.getScreenWidth() * 0.8));
+    private final static int MAX_HEIGHT = Utils.getScreenHeight();
+    private final static int MAX_VIEW_WIDTH = Utils.getScreenWidth()
+            - 2 * (int) HiApplication.getAppContext().getResources().getDimension(R.dimen.thread_detail_padding);
+    private final static int MAX_VIEW_HEIGHT = (int) (Utils.getScreenHeight() * 1.2);
     private String mUrl;
     private int mWidth;
     private int mHeight;
@@ -38,44 +34,54 @@ public class ImageInfo {
         mUrl = url;
     }
 
-    public void setFileSize(long fileSize) {
-        mFileSize = fileSize;
-    }
-
-    public void setHeight(int height) {
-        mHeight = height;
-    }
-
-    public void setMime(String mime) {
-        mMime = mime;
-    }
-
-    public void setPath(String path) {
-        mPath = path;
-    }
-
-    public void setWidth(int width) {
-        mWidth = width;
+    private static int getMaxBitmapWidth() {
+        long maxMemory = Runtime.getRuntime().maxMemory();
+        if (maxMemory <= 128 * 1024 * 1024) {
+            return 560;
+        } else if (maxMemory <= 256 * 1024 * 1024) {
+            return 720;
+        }
+        return 800;
     }
 
     public int getHeight() {
         return mHeight;
     }
 
+    public void setHeight(int height) {
+        mHeight = height;
+    }
+
     public int getWidth() {
         return mWidth;
+    }
+
+    public void setWidth(int width) {
+        mWidth = width;
     }
 
     public String getPath() {
         return mPath;
     }
 
+    public void setPath(String path) {
+        mPath = path;
+    }
+
     public String getMime() {
         return mMime;
     }
 
+    public void setMime(String mime) {
+        mMime = mime;
+    }
+
     public long getFileSize() {
         return mFileSize;
+    }
+
+    public void setFileSize(long fileSize) {
+        mFileSize = fileSize;
     }
 
     public boolean isSuccess() {
@@ -172,16 +178,6 @@ public class ImageInfo {
         if (scale < 0.1)
             scale = 0.1f;
         return scale;
-    }
-
-    private static int getMaxBitmapWidth() {
-        long maxMemory = Runtime.getRuntime().maxMemory();
-        if (maxMemory <= 128 * 1024 * 1024) {
-            return 560;
-        } else if (maxMemory <= 256 * 1024 * 1024) {
-            return 720;
-        }
-        return 800;
     }
 
 }

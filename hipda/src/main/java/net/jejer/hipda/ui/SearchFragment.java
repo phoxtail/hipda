@@ -28,6 +28,13 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -64,24 +71,16 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.widget.SearchView;
-import androidx.core.view.MenuItemCompat;
-import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 /**
  * Created by GreenSkinMonster on 2017-07-17.
  */
 
 public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private final int mType = SimpleListJob.TYPE_SEARCH;
     private static final String PREFERENCE_NAME = "saved_historty";
     private static final String PREFERENCE_KEY = "queries";
     private static final int MAX_HISTORY = 6;
-
+    private final int mType = SimpleListJob.TYPE_SEARCH;
     private XRecyclerView mRecyclerView;
     private SimpleListAdapter mSimpleListAdapter;
     private List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
@@ -444,6 +443,70 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
         mRecyclerView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0));
     }
 
+    private void showLastPage(SimpleListItemBean item) {
+        String postId = "";
+        int page = -1;
+        int floor = -1;
+        if (HiUtils.isValidId(item.getPid())) {
+            postId = item.getPid();
+        } else {
+            page = ThreadDetailFragment.LAST_PAGE;
+            floor = ThreadDetailFragment.LAST_FLOOR;
+        }
+        FragmentUtils.showThreadActivity(getActivity(), false, item.getTid(), item.getTitle(), page, floor, postId, -1);
+    }
+
+    private void saveQueries() {
+        Gson gson = new Gson();
+        String v = gson.toJson(mQueries, new TypeToken<List<SearchBean>>() {
+        }.getType());
+        mPreferences.edit().putString(PREFERENCE_KEY, v).apply();
+    }
+
+    private void loadQueries() {
+        String v = mPreferences.getString(PREFERENCE_KEY, "");
+        try {
+            Gson gson = new Gson();
+            mQueries = gson.fromJson(v, new TypeToken<List<SearchBean>>() {
+            }.getType());
+        } catch (Exception e) {
+            Logger.e(e);
+        }
+        if (mQueries == null)
+            mQueries = new ArrayList<>();
+    }
+
+    private String[] getForumIds() {
+        List<Integer> forums = HiSettingsHelper.getInstance().getForums();
+        String[] forumIds = new String[forums.size() + 1];
+        forumIds[0] = "all";
+        int i = 1;
+        for (Integer id : forums) {
+            forumIds[i++] = String.valueOf(id);
+        }
+        return forumIds;
+    }
+
+    private String[] getForumNames() {
+        List<Integer> forums = HiSettingsHelper.getInstance().getForums();
+        String[] forumNames = new String[forums.size() + 1];
+        forumNames[0] = "全部版块";
+        int i = 1;
+        for (Integer id : forums) {
+            forumNames[i++] = HiUtils.getForumNameByFid(id);
+        }
+        return forumNames;
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(SimpleListEvent event) {
+        if (!mSessionId.equals(event.mSessionId))
+            return;
+        EventBus.getDefault().removeStickyEvent(event);
+        mEventCallback.process(event);
+    }
+
     private class OnScrollListener extends RecyclerView.OnScrollListener {
         int visibleItemCount, totalItemCount;
 
@@ -532,61 +595,6 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
         @Override
         public void onDoubleTap(View view, int position) {
         }
-    }
-
-    private void showLastPage(SimpleListItemBean item) {
-        String postId = "";
-        int page = -1;
-        int floor = -1;
-        if (HiUtils.isValidId(item.getPid())) {
-            postId = item.getPid();
-        } else {
-            page = ThreadDetailFragment.LAST_PAGE;
-            floor = ThreadDetailFragment.LAST_FLOOR;
-        }
-        FragmentUtils.showThreadActivity(getActivity(), false, item.getTid(), item.getTitle(), page, floor, postId, -1);
-    }
-
-    private void saveQueries() {
-        Gson gson = new Gson();
-        String v = gson.toJson(mQueries, new TypeToken<List<SearchBean>>() {
-        }.getType());
-        mPreferences.edit().putString(PREFERENCE_KEY, v).apply();
-    }
-
-    private void loadQueries() {
-        String v = mPreferences.getString(PREFERENCE_KEY, "");
-        try {
-            Gson gson = new Gson();
-            mQueries = gson.fromJson(v, new TypeToken<List<SearchBean>>() {
-            }.getType());
-        } catch (Exception e) {
-            Logger.e(e);
-        }
-        if (mQueries == null)
-            mQueries = new ArrayList<>();
-    }
-
-    private String[] getForumIds() {
-        List<Integer> forums = HiSettingsHelper.getInstance().getForums();
-        String[] forumIds = new String[forums.size() + 1];
-        forumIds[0] = "all";
-        int i = 1;
-        for (Integer id : forums) {
-            forumIds[i++] = String.valueOf(id);
-        }
-        return forumIds;
-    }
-
-    private String[] getForumNames() {
-        List<Integer> forums = HiSettingsHelper.getInstance().getForums();
-        String[] forumNames = new String[forums.size() + 1];
-        forumNames[0] = "全部版块";
-        int i = 1;
-        for (Integer id : forums) {
-            forumNames[i++] = HiUtils.getForumNameByFid(id);
-        }
-        return forumNames;
     }
 
     private class SimpleListEventCallback extends EventCallback<SimpleListEvent> {
@@ -701,15 +709,6 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
                 ib_remove = (ImageButton) itemView.findViewById(R.id.ib_remove);
             }
         }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onEvent(SimpleListEvent event) {
-        if (!mSessionId.equals(event.mSessionId))
-            return;
-        EventBus.getDefault().removeStickyEvent(event);
-        mEventCallback.process(event);
     }
 
 }

@@ -25,6 +25,122 @@ public class DetailBean {
         mContents = new Contents();
     }
 
+    public String getAuthor() {
+        return mAuthor;
+    }
+
+    public boolean setAuthor(String mAuthor) {
+        this.mAuthor = mAuthor;
+
+        return !HiSettingsHelper.getInstance().isInBlacklist(mAuthor);
+    }
+
+    public String getUid() {
+        return mUid;
+    }
+
+    public void setUid(String mUid) {
+        this.mUid = mUid;
+    }
+
+    public String getPostId() {
+        return mPostId;
+    }
+
+    public void setPostId(String mPostId) {
+        this.mPostId = mPostId;
+    }
+
+    public String getTimePost() {
+        return mTimePost;
+    }
+
+    public void setTimePost(String mTimePost) {
+        this.mTimePost = mTimePost.substring(4);
+    }
+
+    public int getFloor() {
+        return mFloor;
+    }
+
+    public void setFloor(int floor) {
+        mFloor = floor;
+    }
+
+    public String getPostStatus() {
+        return mPostStatus;
+    }
+
+    public void setPostStatus(String mPostStatus) {
+        this.mPostStatus = mPostStatus;
+    }
+
+    public Contents getContents() {
+        return mContents;
+    }
+
+    public void setContents(Contents contents) {
+        this.mContents = contents;
+    }
+
+    public Collection<ContentImg> getImages() {
+        return mImages;
+    }
+
+    public String getAvatarUrl() {
+        return mAvatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        if (avatarUrl.contains("noavatar")) {
+            this.mAvatarUrl = "";
+        } else {
+            this.mAvatarUrl = avatarUrl;
+        }
+    }
+
+    public int getPage() {
+        return mPage;
+    }
+
+    public void setPage(int page) {
+        mPage = page;
+    }
+
+    public boolean isWarned() {
+        return mWarned;
+    }
+
+    public void setWarned(boolean warned) {
+        mWarned = warned;
+    }
+
+    public boolean isSelectMode() {
+        return mSelectMode;
+    }
+
+    public void setSelectMode(boolean selectMode) {
+        mSelectMode = selectMode;
+    }
+
+    public boolean isHighlightMode() {
+        return mHighlightMode;
+    }
+
+    public void setHighlightMode(boolean highlightMode) {
+        mHighlightMode = highlightMode;
+    }
+
+    private String unEscapeHtml(String str) {
+        str = str.replaceAll("&nbsp;", " ");
+        str = str.replaceAll("&quot;", "\"");
+        str = str.replaceAll("&amp;", "&");
+        str = str.replaceAll("&lt;", "<");
+        str = str.replaceAll("&gt;", ">");
+
+        return str;
+    }
+
     public class Contents {
         private ArrayList<ContentAbs> list;
         private int lastTextIdx;
@@ -166,121 +282,5 @@ public class DetailBean {
             }
             return sb.toString();
         }
-    }
-
-    public String getAuthor() {
-        return mAuthor;
-    }
-
-    public boolean setAuthor(String mAuthor) {
-        this.mAuthor = mAuthor;
-
-        return !HiSettingsHelper.getInstance().isInBlacklist(mAuthor);
-    }
-
-    public String getUid() {
-        return mUid;
-    }
-
-    public void setUid(String mUid) {
-        this.mUid = mUid;
-    }
-
-    public String getPostId() {
-        return mPostId;
-    }
-
-    public void setPostId(String mPostId) {
-        this.mPostId = mPostId;
-    }
-
-    public String getTimePost() {
-        return mTimePost;
-    }
-
-    public void setTimePost(String mTimePost) {
-        this.mTimePost = mTimePost.substring(4);
-    }
-
-    public int getFloor() {
-        return mFloor;
-    }
-
-    public void setFloor(int floor) {
-        mFloor = floor;
-    }
-
-    public String getPostStatus() {
-        return mPostStatus;
-    }
-
-    public void setPostStatus(String mPostStatus) {
-        this.mPostStatus = mPostStatus;
-    }
-
-    public Contents getContents() {
-        return mContents;
-    }
-
-    public void setContents(Contents contents) {
-        this.mContents = contents;
-    }
-
-    public Collection<ContentImg> getImages() {
-        return mImages;
-    }
-
-    public String getAvatarUrl() {
-        return mAvatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        if (avatarUrl.contains("noavatar")) {
-            this.mAvatarUrl = "";
-        } else {
-            this.mAvatarUrl = avatarUrl;
-        }
-    }
-
-    public int getPage() {
-        return mPage;
-    }
-
-    public void setPage(int page) {
-        mPage = page;
-    }
-
-    public boolean isWarned() {
-        return mWarned;
-    }
-
-    public void setWarned(boolean warned) {
-        mWarned = warned;
-    }
-
-    public boolean isSelectMode() {
-        return mSelectMode;
-    }
-
-    public void setSelectMode(boolean selectMode) {
-        mSelectMode = selectMode;
-    }
-
-    public boolean isHighlightMode() {
-        return mHighlightMode;
-    }
-
-    public void setHighlightMode(boolean highlightMode) {
-        mHighlightMode = highlightMode;
-    }
-
-    private String unEscapeHtml(String str) {
-        str = str.replaceAll("&nbsp;", " ");
-        str = str.replaceAll("&quot;", "\"");
-        str = str.replaceAll("&amp;", "&");
-        str = str.replaceAll("&lt;", "<");
-        str = str.replaceAll("&gt;", ">");
-
-        return str;
     }
 }

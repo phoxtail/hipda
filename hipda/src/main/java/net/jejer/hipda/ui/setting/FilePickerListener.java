@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import androidx.preference.Preference;
+
 import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -12,8 +14,6 @@ import com.github.angads25.filepicker.view.FilePickerDialog;
 import net.jejer.hipda.bean.HiSettingsHelper;
 
 import java.io.File;
-
-import androidx.preference.Preference;
 
 /**
  * Created by GreenSkinMonster on 2017-06-03.

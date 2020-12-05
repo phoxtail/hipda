@@ -1,10 +1,8 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="ThemeLightBase" parent="MaterialDrawerTheme.Light">
-    </style>
+    <style name="ThemeLightBase" parent="MaterialDrawerTheme.Light"></style>
 
-    <style name="ThemeDarkBase" parent="MaterialDrawerTheme">
-    </style>
+    <style name="ThemeDarkBase" parent="MaterialDrawerTheme"></style>
 
     <style name="ThemeLight" parent="ThemeLightBase">
 

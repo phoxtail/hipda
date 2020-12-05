@@ -4,6 +4,11 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -12,11 +17,6 @@ import net.jejer.hipda.bean.HiSettingsHelper;
 import net.jejer.hipda.ui.widget.FABHideOnScrollBehavior;
 import net.jejer.hipda.ui.widget.OnSingleClickListener;
 import net.jejer.hipda.utils.UIUtils;
-
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 /**
  * Created by GreenSkinMonster on 2017-06-14.

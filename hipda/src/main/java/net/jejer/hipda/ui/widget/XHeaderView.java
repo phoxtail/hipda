@@ -8,11 +8,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import net.jejer.hipda.R;
 import net.jejer.hipda.utils.ColorHelper;
 import net.jejer.hipda.utils.Utils;
-
-import androidx.core.content.ContextCompat;
 
 /**
  * Created by GreenSkinMonster on 2016-11-08.
@@ -46,6 +46,10 @@ public class XHeaderView extends RelativeLayout {
         mTitle = (TextView) findViewById(R.id.header_text);
     }
 
+    protected int getState() {
+        return mState;
+    }
+
     protected void setState(int state) {
         mState = state;
         switch (state) {
@@ -72,8 +76,9 @@ public class XHeaderView extends RelativeLayout {
         }
     }
 
-    protected int getState() {
-        return mState;
+    protected int getTopMargin() {
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mLayout.getLayoutParams();
+        return lp.topMargin;
     }
 
     protected void setTopMargin(int margin) {
@@ -81,11 +86,6 @@ public class XHeaderView extends RelativeLayout {
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mLayout.getLayoutParams();
         lp.topMargin = margin;
         mLayout.setLayoutParams(lp);
-    }
-
-    protected int getTopMargin() {
-        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mLayout.getLayoutParams();
-        return lp.topMargin;
     }
 
 }

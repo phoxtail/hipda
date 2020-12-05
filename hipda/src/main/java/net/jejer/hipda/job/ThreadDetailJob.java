@@ -46,7 +46,7 @@ public class ThreadDetailJob extends BaseJob {
 
         mEvent = new ThreadDetailEvent();
         mEvent.mSessionId = mSessionId;
-        mEvent.mFectchType = fetchType;
+        mEvent.mFetchType = fetchType;
         mEvent.mPage = page;
         mEvent.mLoadingPosition = loadingPosition;
     }

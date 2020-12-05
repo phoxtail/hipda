@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -54,8 +57,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import okhttp3.Request;
 
 public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPostListener {
@@ -298,6 +299,21 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
         mCountdownButton.setCountdown(PostSmsAsyncTask.getWaitTimeToSendSms());
     }
 
+    @Override
+    public void scrollToTop() {
+        if (mSmsAdapter != null && mSmsAdapter.getItemCount() > 0)
+            mRecyclerView.scrollToPosition(0);
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(SimpleListEvent event) {
+        if (!mSessionId.equals(event.mSessionId))
+            return;
+        EventBus.getDefault().removeStickyEvent(event);
+        mEventCallback.process(event);
+    }
+
     private class AvatarOnClickListener extends OnSingleClickListener {
         @Override
         public void onSingleClick(View view) {
@@ -357,12 +373,6 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
         }
     }
 
-    @Override
-    public void scrollToTop() {
-        if (mSmsAdapter != null && mSmsAdapter.getItemCount() > 0)
-            mRecyclerView.scrollToPosition(0);
-    }
-
     private class SmsEventCallback extends EventCallback<SimpleListEvent> {
         @Override
         public void onSuccess(SimpleListEvent event) {
@@ -391,14 +401,5 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
             mSmsAdapter.notifyDataSetChanged();
             mLoadingView.setState(ContentLoadingView.NOT_LOGIN);
         }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onEvent(SimpleListEvent event) {
-        if (!mSessionId.equals(event.mSessionId))
-            return;
-        EventBus.getDefault().removeStickyEvent(event);
-        mEventCallback.process(event);
     }
 }

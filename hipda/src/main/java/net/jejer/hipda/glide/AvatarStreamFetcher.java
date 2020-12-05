@@ -1,5 +1,7 @@
 package net.jejer.hipda.glide;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.data.DataFetcher;
@@ -15,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import androidx.annotation.NonNull;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

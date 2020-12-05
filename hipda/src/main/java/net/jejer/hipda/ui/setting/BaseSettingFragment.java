@@ -6,14 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.thebluealliance.spectrum.SpectrumPreferenceCompat;
-
-import net.jejer.hipda.utils.ColorHelper;
-import net.jejer.hipda.utils.Utils;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,42 +16,19 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
+import com.thebluealliance.spectrum.SpectrumPreferenceCompat;
+
+import net.jejer.hipda.utils.ColorHelper;
+import net.jejer.hipda.utils.Utils;
+
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * base setting fragment
  * Created by GreenSkinMonster on 2015-09-11.
  */
 public class BaseSettingFragment extends PreferenceFragmentCompat {
-
-    @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        if (view != null)
-            view.setBackgroundColor(ColorHelper.getListBackgroundColor(getActivity()));
-        return view;
-    }
-
-    protected void setActionBarTitle(CharSequence title) {
-        if (getActivity() != null) {
-            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            String t = Utils.nullToText(title);
-            if (actionBar != null && !t.equals(actionBar.getTitle())) {
-                actionBar.setTitle(t);
-            }
-        }
-    }
-
-    void setActionBarTitle(@StringRes int resId) {
-        if (getActivity() != null) {
-            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            if (actionBar != null)
-                actionBar.setTitle(resId);
-        }
-    }
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
@@ -134,6 +103,37 @@ public class BaseSettingFragment extends PreferenceFragmentCompat {
                     PreferenceManager.getDefaultSharedPreferences(
                             preference.getContext()).getString(preference.getKey(),
                             ""));
+        }
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        if (view != null)
+            view.setBackgroundColor(ColorHelper.getListBackgroundColor(getActivity()));
+        return view;
+    }
+
+    protected void setActionBarTitle(CharSequence title) {
+        if (getActivity() != null) {
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            String t = Utils.nullToText(title);
+            if (actionBar != null && !t.equals(actionBar.getTitle())) {
+                actionBar.setTitle(t);
+            }
+        }
+    }
+
+    void setActionBarTitle(@StringRes int resId) {
+        if (getActivity() != null) {
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            if (actionBar != null)
+                actionBar.setTitle(resId);
         }
     }
 

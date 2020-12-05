@@ -7,6 +7,9 @@ import android.os.Handler;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import net.jejer.hipda.R;
 import net.jejer.hipda.bean.ContentImg;
 import net.jejer.hipda.ui.adapter.ImageViewerAdapter;
@@ -16,8 +19,6 @@ import net.jejer.hipda.utils.Utils;
 
 import java.util.ArrayList;
 
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**

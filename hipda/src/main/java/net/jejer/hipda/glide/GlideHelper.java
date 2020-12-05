@@ -9,6 +9,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
+import androidx.fragment.app.Fragment;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -31,19 +33,14 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.fragment.app.Fragment;
-
 public class GlideHelper {
-
-    private static File AVATAR_CACHE_DIR;
-
-    private static Drawable DEFAULT_USER_ICON;
-    public static File SYSTEM_AVATAR_FILE;
-    public static File DEFAULT_AVATAR_FILE;
 
     final static long AVATAR_CACHE_MILLS = 3 * 24 * 60 * 60 * 1000;
     final static long AVATAR_404_CACHE_MILLS = 24 * 60 * 60 * 1000;
-
+    public static File SYSTEM_AVATAR_FILE;
+    public static File DEFAULT_AVATAR_FILE;
+    private static File AVATAR_CACHE_DIR;
+    private static Drawable DEFAULT_USER_ICON;
     private static Map<String, String> AVATAR_CACHE_KEYS = new HashMap<>();
 
     public static void loadAvatar(BaseFragment fragment, ImageView view, String avatarUrl) {

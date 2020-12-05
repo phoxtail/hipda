@@ -3,12 +3,12 @@ package net.jejer.hipda.ui;
 import android.content.Intent;
 import android.os.Bundle;
 
-import net.jejer.hipda.BuildConfig;
-import net.jejer.hipda.service.NotiHelper;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import net.jejer.hipda.BuildConfig;
+import net.jejer.hipda.service.NotiHelper;
 
 /**
  * Created by GreenSkinMonster on 2017-06-22.

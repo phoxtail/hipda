@@ -64,12 +64,12 @@ public class JobMgr {
                 .build());
     }
 
-    private static class SingletonHolder {
-        static final JobMgr INSTANCE = new JobMgr();
-    }
-
     public static JobMgr getInstance() {
         return JobMgr.SingletonHolder.INSTANCE;
+    }
+
+    public static void addJob(BaseJob job) {
+        getInstance().addJobImpl(job);
     }
 
     private void addJobImpl(BaseJob job) {
@@ -80,7 +80,7 @@ public class JobMgr {
         }
     }
 
-    public static void addJob(BaseJob job) {
-        getInstance().addJobImpl(job);
+    private static class SingletonHolder {
+        static final JobMgr INSTANCE = new JobMgr();
     }
 }

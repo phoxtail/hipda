@@ -3,6 +3,8 @@ package net.jejer.hipda.job;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 
+import androidx.annotation.Nullable;
+
 import com.birbit.android.jobqueue.CancelReason;
 import com.birbit.android.jobqueue.Params;
 import com.bumptech.glide.Glide;
@@ -24,8 +26,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
-
-import androidx.annotation.Nullable;
 
 
 /**

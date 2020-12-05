@@ -21,6 +21,23 @@ public class OnSwipeTouchListener implements OnTouchListener {
         gestureDetector = new GestureDetector(ctx, new GestureListener());
     }
 
+    public void onSwipeRight() {
+    }
+
+    public void onSwipeLeft() {
+    }
+
+    public void onSwipeTop() {
+    }
+
+    public void onSwipeBottom() {
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return gestureDetector.onTouchEvent(event);
+    }
+
     private final class GestureListener extends SimpleOnGestureListener {
 
 
@@ -57,23 +74,6 @@ public class OnSwipeTouchListener implements OnTouchListener {
             }
             return result;
         }
-    }
-
-    public void onSwipeRight() {
-    }
-
-    public void onSwipeLeft() {
-    }
-
-    public void onSwipeTop() {
-    }
-
-    public void onSwipeBottom() {
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        return gestureDetector.onTouchEvent(event);
     }
 
 }

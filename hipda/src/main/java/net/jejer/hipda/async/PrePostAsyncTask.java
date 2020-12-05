@@ -237,12 +237,12 @@ public class PrePostAsyncTask extends AsyncTask<PostBean, Void, PrePostInfoBean>
             mListener.PrePostComplete(mMode, false, mMessage, null);
     }
 
-    public interface PrePostListener {
-        void PrePostComplete(int mode, boolean result, String message, PrePostInfoBean info);
-    }
-
     public String getMessage() {
         return mMessage;
+    }
+
+    public interface PrePostListener {
+        void PrePostComplete(int mode, boolean result, String message, PrePostInfoBean info);
     }
 
 }

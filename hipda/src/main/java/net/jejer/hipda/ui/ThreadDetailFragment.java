@@ -28,6 +28,11 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -66,7 +71,7 @@ import net.jejer.hipda.ui.widget.OnSingleClickListener;
 import net.jejer.hipda.ui.widget.SimpleDivider;
 import net.jejer.hipda.ui.widget.SimpleGridMenu;
 import net.jejer.hipda.ui.widget.SmoothLinearLayoutManager;
-import net.jejer.hipda.ui.widget.ValueChagerView;
+import net.jejer.hipda.ui.widget.ValueChangerView;
 import net.jejer.hipda.ui.widget.XFooterView;
 import net.jejer.hipda.ui.widget.XHeaderView;
 import net.jejer.hipda.ui.widget.XRecyclerView;
@@ -88,10 +93,6 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import okhttp3.Request;
 
 public class ThreadDetailFragment extends BaseFragment {
@@ -149,7 +150,7 @@ public class ThreadDetailFragment extends BaseFragment {
     private Animation mBlinkAnim;
 
     private boolean mDataReceived = false;
-    private boolean mInloading = false;
+    private boolean mLoading = false;
     private boolean mHeaderLoading = false;
     private boolean mFooterLoading = false;
 
@@ -270,7 +271,7 @@ public class ThreadDetailFragment extends BaseFragment {
         mLoadingView.setErrorStateListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!mInloading) {
+                if (!mLoading) {
                     mLoadingView.setState(ContentLoadingView.LOAD_NOW);
                     refresh();
                 }
@@ -338,7 +339,7 @@ public class ThreadDetailFragment extends BaseFragment {
         super.onResume();
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
-        if (!mInloading) {
+        if (!mLoading) {
             if (mDetailBeans.size() == 0) {
                 refresh();
             } else {
@@ -544,7 +545,7 @@ public class ThreadDetailFragment extends BaseFragment {
     }
 
     private void refresh() {
-        mInloading = true;
+        mLoading = true;
         mLoadingView.setState(ContentLoadingView.LOADING);
         startJob(mCurrentPage, FETCH_REFRESH, POSITION_NORMAL);
     }
@@ -593,37 +594,6 @@ public class ThreadDetailFragment extends BaseFragment {
             return detailListBean.getContentImages();
         }
         return null;
-    }
-
-    private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
-
-        @Override
-        public void onItemClick(View view, int position) {
-        }
-
-        @Override
-        public void onLongItemClick(View view, int position) {
-//            DetailBean detailBean = mDetailAdapter.getItem(position);
-            DetailBean detailBean = null;
-            TextView floorView = (TextView) view.findViewById(R.id.floor);
-            if (floorView != null) {
-                String floor = floorView.getText().toString();
-                if (!TextUtils.isEmpty(floor) && TextUtils.isDigitsOnly(floor)) {
-                    int pos = mDetailAdapter.getPositionByFloor(Integer.parseInt(floor));
-                    detailBean = mDetailAdapter.getItem(pos);
-                }
-            }
-            if (detailBean == null) {
-                return;
-            }
-
-            showGridMenu(detailBean);
-        }
-
-        @Override
-        public void onDoubleTap(View view, int position) {
-            showGotoPageDialog();
-        }
     }
 
     private void showGridMenu(final DetailBean detailBean) {
@@ -843,7 +813,7 @@ public class ThreadDetailFragment extends BaseFragment {
         final View view = inflater.inflate(R.layout.dialog_goto_page, null);
         TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
         final TextView tvPage = (TextView) view.findViewById(R.id.tv_page);
-        final ImageButton btnFirstPage = (ImageButton) view.findViewById(R.id.btn_fisrt_page);
+        final ImageButton btnFirstPage = (ImageButton) view.findViewById(R.id.btn_first_page);
         final ImageButton btnLastPage = (ImageButton) view.findViewById(R.id.btn_last_page);
         final ImageButton btnNextPage = (ImageButton) view.findViewById(R.id.btn_next_page);
         final ImageButton btnPreviousPage = (ImageButton) view.findViewById(R.id.btn_previous_page);
@@ -1024,11 +994,11 @@ public class ThreadDetailFragment extends BaseFragment {
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.dialog_thread_font_size, null);
 
-        final ValueChagerView valueChangerSize = (ValueChagerView) view.findViewById(R.id.value_changer_size);
-        final ValueChagerView valueChangerLs = (ValueChagerView) view.findViewById(R.id.value_changer_ls);
+        final ValueChangerView valueChangerSize = (ValueChangerView) view.findViewById(R.id.value_changer_size);
+        final ValueChangerView valueChangerLs = (ValueChangerView) view.findViewById(R.id.value_changer_ls);
 
         valueChangerSize.setCurrentValue(HiSettingsHelper.getInstance().getPostTextSizeAdj());
-        valueChangerSize.setOnChangeListener(new ValueChagerView.OnChangeListener() {
+        valueChangerSize.setOnChangeListener(new ValueChangerView.OnChangeListener() {
             @Override
             public void onChange(int currentValue) {
                 HiSettingsHelper.getInstance().setPostTextSizeAdj(currentValue);
@@ -1038,7 +1008,7 @@ public class ThreadDetailFragment extends BaseFragment {
         });
 
         valueChangerLs.setCurrentValue(HiSettingsHelper.getInstance().getPostLineSpacing());
-        valueChangerLs.setOnChangeListener(new ValueChagerView.OnChangeListener() {
+        valueChangerLs.setOnChangeListener(new ValueChangerView.OnChangeListener() {
             @Override
             public void onChange(int currentValue) {
                 HiSettingsHelper.getInstance().setPostLineSpacing(currentValue);
@@ -1052,18 +1022,6 @@ public class ThreadDetailFragment extends BaseFragment {
         BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) view.getParent());
         mBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         dialog.show();
-    }
-
-    private class GoToFloorOnClickListener implements Button.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            if (!TextUtils.isEmpty(mAuthorId)) {
-                UIUtils.toast("请先退出只查看该作者模式");
-                return;
-            }
-            int floor = (Integer) view.getTag();
-            gotoFloor(floor);
-        }
     }
 
     public void gotoFloor(int floor) {
@@ -1193,7 +1151,7 @@ public class ThreadDetailFragment extends BaseFragment {
             if (refresh || mCurrentPage == mMaxPage || mCurrentPage == LAST_PAGE) {
                 fetchType = FETCH_REFRESH;
             }
-            mInloading = true;
+            mLoading = true;
             mLoadingView.setState(ContentLoadingView.LOADING);
             startJob(mCurrentPage, fetchType, POSITION_NORMAL);
         }
@@ -1204,83 +1162,6 @@ public class ThreadDetailFragment extends BaseFragment {
                 && mMainFab.getVisibility() == View.INVISIBLE
                 && mQuickReply.getVisibility() != View.VISIBLE)
             mMainFab.show();
-    }
-
-    private class AvatarOnClickListener extends OnSingleClickListener {
-        @Override
-        public void onSingleClick(View view) {
-            String uid = (String) view.getTag(R.id.avatar_tag_uid);
-            String username = (String) view.getTag(R.id.avatar_tag_username);
-            FragmentUtils.showUserInfoActivity(getActivity(), false, uid, username);
-        }
-    }
-
-    private class WarningOnClickListener extends OnSingleClickListener {
-        @Override
-        public void onSingleClick(View view) {
-            if (view.getTag() != null && HiUtils.isValidId(view.getTag().toString())) {
-                OkHttpHelper.getInstance().asyncGet(
-                        HiUtils.UserWarningUrl.replace("{tid}", mTid).replace("{uid}", view.getTag().toString()),
-                        new OkHttpHelper.ResultCallback() {
-                            @Override
-                            public void onError(Request request, Exception e) {
-                                UIUtils.toast(OkHttpHelper.getErrorMessage(e).getMessage());
-                            }
-
-                            @Override
-                            public void onResponse(String response) {
-                                try {
-                                    Document doc = Jsoup.parse(response);
-                                    String title = doc.select("h3.float_ctrl").text();
-                                    StringBuilder sb = new StringBuilder();
-                                    Elements trES = doc.select("div.floatwrap table.list tbody tr");
-                                    for (int i = 0; i < trES.size(); i++) {
-                                        Element tr = trES.get(i);
-                                        sb.append(tr.text()).append("\n");
-                                    }
-                                    sb.append("\n\n");
-                                    sb.append(doc.select("div.moreconf").text());
-                                    UIUtils.showMessageDialog(mCtx, title, sb.toString(), false);
-                                } catch (Exception e) {
-                                    UIUtils.toast(OkHttpHelper.getErrorMessage(e).getMessage());
-                                }
-                            }
-                        });
-            }
-        }
-    }
-
-    private class OnScrollListener extends RecyclerView.OnScrollListener {
-        int firstVisiblesItem, lastVisibleItem, visibleItemCount, totalItemCount;
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            firstVisiblesItem = mLayoutManager.findFirstVisibleItemPosition();
-            lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
-            if (dy > 0) {
-                visibleItemCount = mLayoutManager.getChildCount();
-                totalItemCount = mLayoutManager.getItemCount();
-                if ((visibleItemCount + firstVisiblesItem) >= totalItemCount - 3) {
-                    if (!mFooterLoading && mCurrentPage < mMaxPage) {
-                        prefetchNextPage();
-                    }
-                }
-            } else if (dy < 0) {
-                if (!mHeaderLoading && firstVisiblesItem < 3 && mCurrentPage > 1) {
-                    prefetchPreviousPage();
-                }
-            }
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE
-                    && HiSettingsHelper.getInstance().isFabAutoHide()
-                    && mRecyclerView.isNearBottom()) {
-                showMainFab();
-            }
-        }
     }
 
     public String getTid() {
@@ -1307,14 +1188,14 @@ public class ThreadDetailFragment extends BaseFragment {
                     int replyTop = newTop - 30;
                     View view = mLayoutManager.findViewByPosition(pos);
                     if (view != null) {
-                        //post view is visable
+                        //post view is visible
                         View rootView = ((ThreadDetailActivity) getActivity()).getRootView();
                         int postTop = UIUtils.getRelativeTop(view, (ViewGroup) rootView);
                         int scroll = postTop - replyTop + view.getHeight();
                         if (scroll > 0)
                             mRecyclerView.smoothScrollBy(0, scroll);
                     } else if (mPostViewTop > 0 && mPostViewHeight > 0) {
-                        //post view is not visable, get stored position
+                        //post view is not visible, get stored position
                         int scroll = mPostViewTop - replyTop + mPostViewHeight;
                         if (scroll > 0)
                             mRecyclerView.smoothScrollBy(0, scroll);
@@ -1326,96 +1207,6 @@ public class ThreadDetailFragment extends BaseFragment {
             mPostViewHeight = -1;
             mPostViewTop = -1;
         }
-    }
-
-    private class ThreadDetailEventCallback extends EventCallback<ThreadDetailEvent> {
-        @Override
-        public void onFail(ThreadDetailEvent event) {
-            if (event.mLoadingPosition == POSITION_HEADER) {
-                mHeaderLoading = false;
-                mRecyclerView.setHeaderState(XHeaderView.STATE_ERROR);
-            } else if (event.mLoadingPosition == POSITION_FOOTER) {
-                mFooterLoading = false;
-                mRecyclerView.setFooterState(XFooterView.STATE_ERROR);
-            } else {
-                mInloading = false;
-                if (mDetailBeans.size() == 0) {
-                    mLoadingView.setState(ContentLoadingView.ERROR);
-                }
-                UIUtils.errorSnack(getView(), event.mMessage, event.mDetail);
-            }
-        }
-
-        @Override
-        public void onSuccess(ThreadDetailEvent event) {
-            DetailListBean details = event.mData;
-
-            mMaxPostInPage = HiSettingsHelper.getInstance().getMaxPostsInPage();
-            if (ThreadDetailJob.FIND_AUTHOR_ID.equals(mAuthorId))
-                mAuthorId = event.mAuthorId;
-
-            // Set title
-            if (details.getTitle() != null && !details.getTitle().isEmpty()) {
-                mTitle = details.getTitle();
-            }
-
-            mFid = details.getFid();
-            if (TextUtils.isEmpty(mTid))
-                mTid = details.getTid();
-
-            // Set MaxPage earlier than showOrLoadPage()
-            mMaxPage = details.getLastPage();
-
-            mCache.put(details.getPage(), details);
-
-            if (event.mLoadingPosition == POSITION_HEADER) {
-                mHeaderLoading = false;
-                mRecyclerView.setHeaderState(XHeaderView.STATE_READY);
-            } else if (event.mLoadingPosition == POSITION_FOOTER) {
-                mFooterLoading = false;
-                if (event.mFectchType == FETCH_NEXT) {
-                    mRecyclerView.setFooterState(mCurrentPage < mMaxPage ? XFooterView.STATE_READY : XFooterView.STATE_END);
-                }
-            } else {
-                mInloading = false;
-                mLoadingView.setState(ContentLoadingView.CONTENT);
-            }
-
-            if (event.mFectchType == FETCH_NORMAL || event.mFectchType == FETCH_REFRESH) {
-                if (!mDataReceived) {
-                    mDataReceived = true;
-                    setHasOptionsMenu(true);
-                    getActivity().invalidateOptionsMenu();
-                    showMainFab();
-                }
-                mDetailBeans = details.getAll();
-                mDetailAdapter.setDatas(mDetailBeans);
-                mCurrentPage = details.getPage();
-
-                showOrLoadPage();
-            }
-
-            if (!mHistorySaved || details.getPage() == 1) {
-                mHistorySaved = true;
-                String uid = null, username = null, postTime = null;
-                if (details.getPage() == 1 && details.getCount() > 0) {
-                    DetailBean detailBean = details.getAll().get(0);
-                    uid = detailBean.getUid();
-                    username = detailBean.getAuthor();
-                    postTime = detailBean.getTimePost();
-                }
-                HistoryDao.saveHistoryInBackground(mTid, String.valueOf(mFid), mTitle, uid, username, postTime);
-            }
-        }
-
-        @Override
-        public void onFailRelogin(ThreadDetailEvent event) {
-            mInloading = false;
-            mDetailBeans.clear();
-            mDetailAdapter.notifyDataSetChanged();
-            mLoadingView.setState(ContentLoadingView.NOT_LOGIN);
-        }
-
     }
 
     @SuppressWarnings("unused")
@@ -1480,15 +1271,15 @@ public class ThreadDetailFragment extends BaseFragment {
                 showOrLoadPage(true);
             } else {
                 boolean append = false;
-                DetailBean lastpost = null;
+                DetailBean lastPost = null;
                 if (mDetailBeans.size() > 0)
-                    lastpost = mDetailBeans.get(mDetailBeans.size() - 1);
-                if (lastpost != null && event.fromQuickReply && details != null
+                    lastPost = mDetailBeans.get(mDetailBeans.size() - 1);
+                if (lastPost != null && event.fromQuickReply && details != null
                         && mCurrentPage == details.getPage() && mCurrentPage == details.getLastPage()) {
                     List<DetailBean> newBeans = details.getAll();
                     if (newBeans.size() > mDetailBeans.size()) {
-                        DetailBean oldLastpost = newBeans.get(mDetailBeans.size() - 1);
-                        append = oldLastpost.getPostId().equals(lastpost.getPostId());
+                        DetailBean oldLastPost = newBeans.get(mDetailBeans.size() - 1);
+                        append = oldLastPost.getPostId().equals(lastPost.getPostId());
                     }
                 }
                 if (append) {
@@ -1531,7 +1322,7 @@ public class ThreadDetailFragment extends BaseFragment {
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(NetworkReadyEvent event) {
-        if (!mInloading && mDetailBeans.size() == 0) {
+        if (!mLoading && mDetailBeans.size() == 0) {
             refresh();
         }
     }
@@ -1543,6 +1334,216 @@ public class ThreadDetailFragment extends BaseFragment {
             return;
         EventBus.getDefault().removeStickyEvent(event);
         mEventCallback.process(event);
+    }
+
+    private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
+
+        @Override
+        public void onItemClick(View view, int position) {
+        }
+
+        @Override
+        public void onLongItemClick(View view, int position) {
+//            DetailBean detailBean = mDetailAdapter.getItem(position);
+            DetailBean detailBean = null;
+            TextView floorView = (TextView) view.findViewById(R.id.floor);
+            if (floorView != null) {
+                String floor = floorView.getText().toString();
+                if (!TextUtils.isEmpty(floor) && TextUtils.isDigitsOnly(floor)) {
+                    int pos = mDetailAdapter.getPositionByFloor(Integer.parseInt(floor));
+                    detailBean = mDetailAdapter.getItem(pos);
+                }
+            }
+            if (detailBean == null) {
+                return;
+            }
+
+            showGridMenu(detailBean);
+        }
+
+        @Override
+        public void onDoubleTap(View view, int position) {
+            showGotoPageDialog();
+        }
+    }
+
+    private class GoToFloorOnClickListener implements Button.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            if (!TextUtils.isEmpty(mAuthorId)) {
+                UIUtils.toast("请先退出只查看该作者模式");
+                return;
+            }
+            int floor = (Integer) view.getTag();
+            gotoFloor(floor);
+        }
+    }
+
+    private class AvatarOnClickListener extends OnSingleClickListener {
+        @Override
+        public void onSingleClick(View view) {
+            String uid = (String) view.getTag(R.id.avatar_tag_uid);
+            String username = (String) view.getTag(R.id.avatar_tag_username);
+            FragmentUtils.showUserInfoActivity(getActivity(), false, uid, username);
+        }
+    }
+
+    private class WarningOnClickListener extends OnSingleClickListener {
+        @Override
+        public void onSingleClick(View view) {
+            if (view.getTag() != null && HiUtils.isValidId(view.getTag().toString())) {
+                OkHttpHelper.getInstance().asyncGet(
+                        HiUtils.UserWarningUrl.replace("{tid}", mTid).replace("{uid}", view.getTag().toString()),
+                        new OkHttpHelper.ResultCallback() {
+                            @Override
+                            public void onError(Request request, Exception e) {
+                                UIUtils.toast(OkHttpHelper.getErrorMessage(e).getMessage());
+                            }
+
+                            @Override
+                            public void onResponse(String response) {
+                                try {
+                                    Document doc = Jsoup.parse(response);
+                                    String title = doc.select("h3.float_ctrl").text();
+                                    StringBuilder sb = new StringBuilder();
+                                    Elements trES = doc.select("div.floatwrap table.list tbody tr");
+                                    for (int i = 0; i < trES.size(); i++) {
+                                        Element tr = trES.get(i);
+                                        sb.append(tr.text()).append("\n");
+                                    }
+                                    sb.append("\n\n");
+                                    sb.append(doc.select("div.moreconf").text());
+                                    UIUtils.showMessageDialog(mCtx, title, sb.toString(), false);
+                                } catch (Exception e) {
+                                    UIUtils.toast(OkHttpHelper.getErrorMessage(e).getMessage());
+                                }
+                            }
+                        });
+            }
+        }
+    }
+
+    private class OnScrollListener extends RecyclerView.OnScrollListener {
+        int firstVisibleItem, lastVisibleItem, visibleItemCount, totalItemCount;
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+            lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
+            if (dy > 0) {
+                visibleItemCount = mLayoutManager.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                if ((visibleItemCount + firstVisibleItem) >= totalItemCount - 3) {
+                    if (!mFooterLoading && mCurrentPage < mMaxPage) {
+                        prefetchNextPage();
+                    }
+                }
+            } else if (dy < 0) {
+                if (!mHeaderLoading && firstVisibleItem < 3 && mCurrentPage > 1) {
+                    prefetchPreviousPage();
+                }
+            }
+        }
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            if (newState == RecyclerView.SCROLL_STATE_IDLE
+                    && HiSettingsHelper.getInstance().isFabAutoHide()
+                    && mRecyclerView.isNearBottom()) {
+                showMainFab();
+            }
+        }
+    }
+
+    private class ThreadDetailEventCallback extends EventCallback<ThreadDetailEvent> {
+        @Override
+        public void onFail(ThreadDetailEvent event) {
+            if (event.mLoadingPosition == POSITION_HEADER) {
+                mHeaderLoading = false;
+                mRecyclerView.setHeaderState(XHeaderView.STATE_ERROR);
+            } else if (event.mLoadingPosition == POSITION_FOOTER) {
+                mFooterLoading = false;
+                mRecyclerView.setFooterState(XFooterView.STATE_ERROR);
+            } else {
+                mLoading = false;
+                if (mDetailBeans.size() == 0) {
+                    mLoadingView.setState(ContentLoadingView.ERROR);
+                }
+                UIUtils.errorSnack(getView(), event.mMessage, event.mDetail);
+            }
+        }
+
+        @Override
+        public void onSuccess(ThreadDetailEvent event) {
+            DetailListBean details = event.mData;
+
+            mMaxPostInPage = HiSettingsHelper.getInstance().getMaxPostsInPage();
+            if (ThreadDetailJob.FIND_AUTHOR_ID.equals(mAuthorId))
+                mAuthorId = event.mAuthorId;
+
+            // Set title
+            if (details.getTitle() != null && !details.getTitle().isEmpty()) {
+                mTitle = details.getTitle();
+            }
+
+            mFid = details.getFid();
+            if (TextUtils.isEmpty(mTid))
+                mTid = details.getTid();
+
+            // Set MaxPage earlier than showOrLoadPage()
+            mMaxPage = details.getLastPage();
+
+            mCache.put(details.getPage(), details);
+
+            if (event.mLoadingPosition == POSITION_HEADER) {
+                mHeaderLoading = false;
+                mRecyclerView.setHeaderState(XHeaderView.STATE_READY);
+            } else if (event.mLoadingPosition == POSITION_FOOTER) {
+                mFooterLoading = false;
+                if (event.mFetchType == FETCH_NEXT) {
+                    mRecyclerView.setFooterState(mCurrentPage < mMaxPage ? XFooterView.STATE_READY : XFooterView.STATE_END);
+                }
+            } else {
+                mLoading = false;
+                mLoadingView.setState(ContentLoadingView.CONTENT);
+            }
+
+            if (event.mFetchType == FETCH_NORMAL || event.mFetchType == FETCH_REFRESH) {
+                if (!mDataReceived) {
+                    mDataReceived = true;
+                    setHasOptionsMenu(true);
+                    getActivity().invalidateOptionsMenu();
+                    showMainFab();
+                }
+                mDetailBeans = details.getAll();
+                mDetailAdapter.setDatas(mDetailBeans);
+                mCurrentPage = details.getPage();
+
+                showOrLoadPage();
+            }
+
+            if (!mHistorySaved || details.getPage() == 1) {
+                mHistorySaved = true;
+                String uid = null, username = null, postTime = null;
+                if (details.getPage() == 1 && details.getCount() > 0) {
+                    DetailBean detailBean = details.getAll().get(0);
+                    uid = detailBean.getUid();
+                    username = detailBean.getAuthor();
+                    postTime = detailBean.getTimePost();
+                }
+                HistoryDao.saveHistoryInBackground(mTid, String.valueOf(mFid), mTitle, uid, username, postTime);
+            }
+        }
+
+        @Override
+        public void onFailRelogin(ThreadDetailEvent event) {
+            mLoading = false;
+            mDetailBeans.clear();
+            mDetailAdapter.notifyDataSetChanged();
+            mLoadingView.setState(ContentLoadingView.NOT_LOGIN);
+        }
+
     }
 
 }

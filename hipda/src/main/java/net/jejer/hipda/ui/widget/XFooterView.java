@@ -8,11 +8,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import net.jejer.hipda.R;
 import net.jejer.hipda.utils.ColorHelper;
 import net.jejer.hipda.utils.Utils;
-
-import androidx.core.content.ContextCompat;
 
 /**
  * Created by GreenSkinMonster on 2016-11-08.
@@ -48,6 +48,10 @@ public class XFooterView extends RelativeLayout {
         mHintView = (TextView) mLayout.findViewById(R.id.footer_text);
     }
 
+    protected int getState() {
+        return mState;
+    }
+
     protected void setState(int state) {
         if (state == mState) return;
         switch (state) {
@@ -80,8 +84,9 @@ public class XFooterView extends RelativeLayout {
         mState = state;
     }
 
-    protected int getState() {
-        return mState;
+    protected int getBottomMargin() {
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mLayout.getLayoutParams();
+        return lp.bottomMargin;
     }
 
     protected void setBottomMargin(int margin) {
@@ -89,11 +94,6 @@ public class XFooterView extends RelativeLayout {
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mLayout.getLayoutParams();
         lp.bottomMargin = margin;
         mLayout.setLayoutParams(lp);
-    }
-
-    protected int getBottomMargin() {
-        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mLayout.getLayoutParams();
-        return lp.bottomMargin;
     }
 
 }

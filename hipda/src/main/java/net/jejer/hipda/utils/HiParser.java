@@ -757,7 +757,7 @@ public class HiParser {
             for (Element url : logoutUrls) {
                 String formhash = Utils.getMiddleString(url.attr("href"), "formhash=", "&");
                 if (!TextUtils.isEmpty(formhash)) {
-                    info.setFormhash(formhash);
+                    info.setFormHash(formhash);
                     break;
                 }
             }

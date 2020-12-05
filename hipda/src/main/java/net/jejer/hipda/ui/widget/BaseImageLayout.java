@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
@@ -29,8 +31,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
-
-import androidx.annotation.Nullable;
 
 /**
  * Created by GreenSkinMonster on 2019-03-07.

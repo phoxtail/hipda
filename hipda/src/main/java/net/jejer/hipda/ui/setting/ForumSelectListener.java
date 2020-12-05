@@ -8,6 +8,12 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.preference.Preference;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import net.jejer.hipda.R;
 import net.jejer.hipda.bean.Forum;
 import net.jejer.hipda.bean.HiSettingsHelper;
@@ -17,12 +23,6 @@ import net.jejer.hipda.utils.UIUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.preference.Preference;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by GreenSkinMonster on 2017-06-07.
@@ -126,6 +126,15 @@ public class ForumSelectListener extends OnPreferenceClickListener {
         return true;
     }
 
+    private static class ViewHolder extends RecyclerView.ViewHolder {
+        CheckBox cb_forum_enabled;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+            cb_forum_enabled = (CheckBox) itemView.findViewById(R.id.forum_enabled);
+        }
+    }
+
     private class RvAdapter extends RecyclerView.Adapter {
 
         @Override
@@ -157,15 +166,6 @@ public class ForumSelectListener extends OnPreferenceClickListener {
         ForumStatus(Forum forum, boolean enabled) {
             mForum = forum;
             mEnabled = enabled;
-        }
-    }
-
-    private static class ViewHolder extends RecyclerView.ViewHolder {
-        CheckBox cb_forum_enabled;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-            cb_forum_enabled = (CheckBox) itemView.findViewById(R.id.forum_enabled);
         }
     }
 }

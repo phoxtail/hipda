@@ -3,10 +3,10 @@
 
     <external-path
         name="external_storage_root"
-        path="."/>
+        path="." />
 
     <external-path
         name="my_images"
-        path="Android/data/${applicationId}/files/Pictures"/>
+        path="Android/data/${applicationId}/files/Pictures" />
 
 </paths>

@@ -3,12 +3,12 @@ package net.jejer.hipda.ui.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.RequestManager;
 
 import net.jejer.hipda.bean.ThreadBean;
 import net.jejer.hipda.ui.widget.ThreadItemLayout;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 public class ThreadListAdapter extends BaseRvAdapter<ThreadBean> {
 

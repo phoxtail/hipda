@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.vanniktech.emoji.emoji.Emoji;
 import com.vanniktech.emoji.listeners.OnEmojiClickedListener;
 
@@ -15,9 +17,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-
 final class EmojiArrayAdapter extends ArrayAdapter<Emoji> {
+    @Nullable
+    private OnEmojiClickedListener onEmojiClickedListener;
+
+    @SuppressWarnings("PMD.UseVarargs")
+    EmojiArrayAdapter(final Context context, final Emoji[] data) {
+        super(context, R.layout.emoji_text_view, toList(data));
+    }
+
     /**
      * we need this because Arrays.asList does not support {@link Collection#clear()}
      */
@@ -26,14 +34,6 @@ final class EmojiArrayAdapter extends ArrayAdapter<Emoji> {
         final List<Emoji> list = new ArrayList<>(data.length);
         Collections.addAll(list, data);
         return list;
-    }
-
-    @Nullable
-    private OnEmojiClickedListener onEmojiClickedListener;
-
-    @SuppressWarnings("PMD.UseVarargs")
-    EmojiArrayAdapter(final Context context, final Emoji[] data) {
-        super(context, R.layout.emoji_text_view, toList(data));
     }
 
     @Override

@@ -31,6 +31,23 @@ public class LoginHelper {
         mCtx = ctx;
     }
 
+    public static boolean checkLoggedin(Context context, String mRsp) {
+        boolean loggedIn = !mRsp.contains(context.getString(R.string.not_login));
+        if (!loggedIn)
+            logout();
+        return loggedIn;
+    }
+
+    public static boolean isLoggedIn() {
+        return OkHttpHelper.getInstance().isLoggedIn();
+    }
+
+    public static void logout() {
+        OkHttpHelper.getInstance().clearCookies();
+        FavoriteHelper.getInstance().clearAll();
+        HiSettingsHelper.getInstance().setBlacklists(new ArrayList<String>());
+    }
+
     public int login() {
         return login(false);
     }
@@ -120,23 +137,6 @@ public class LoginHelper {
             mErrorMsg = "登录失败 : " + OkHttpHelper.getErrorMessage(e);
             return Constants.STATUS_FAIL;
         }
-    }
-
-    public static boolean checkLoggedin(Context context, String mRsp) {
-        boolean loggedIn = !mRsp.contains(context.getString(R.string.not_login));
-        if (!loggedIn)
-            logout();
-        return loggedIn;
-    }
-
-    public static boolean isLoggedIn() {
-        return OkHttpHelper.getInstance().isLoggedIn();
-    }
-
-    public static void logout() {
-        OkHttpHelper.getInstance().clearCookies();
-        FavoriteHelper.getInstance().clearAll();
-        HiSettingsHelper.getInstance().setBlacklists(new ArrayList<String>());
     }
 
     public String getErrorMsg() {

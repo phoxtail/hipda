@@ -7,6 +7,11 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vanniktech.emoji.EmojiPopup;
@@ -19,10 +24,6 @@ import net.jejer.hipda.utils.Utils;
 
 import java.util.UUID;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
@@ -37,7 +38,7 @@ public class BaseActivity extends AppCompatActivity {
     protected Toolbar mToolbar;
     protected AppBarLayout mAppBarLayout;
     protected FloatingActionButton mMainFab;
-    protected FloatingActionButton mNotiificationFab;
+    protected FloatingActionButton mNotificationFab;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,7 +126,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public FloatingActionButton getNotificationFab() {
-        return mNotiificationFab;
+        return mNotificationFab;
     }
 
     public EmojiPopup.Builder getEmojiBuilder() {

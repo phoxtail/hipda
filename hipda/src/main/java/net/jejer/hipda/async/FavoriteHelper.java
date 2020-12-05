@@ -47,10 +47,6 @@ public class FavoriteHelper {
         mAttentionCache = mCachePref.getStringSet(ATTENTION_CACHE_KEY, new HashSet<String>());
     }
 
-    private static class SingletonHolder {
-        public static final FavoriteHelper INSTANCE = new FavoriteHelper();
-    }
-
     public static FavoriteHelper getInstance() {
         return SingletonHolder.INSTANCE;
     }
@@ -292,6 +288,10 @@ public class FavoriteHelper {
         } catch (Exception e) {
             UIUtils.toast("移除失败 : " + OkHttpHelper.getErrorMessage(e));
         }
+    }
+
+    private static class SingletonHolder {
+        public static final FavoriteHelper INSTANCE = new FavoriteHelper();
     }
 
     private class ParseResult {

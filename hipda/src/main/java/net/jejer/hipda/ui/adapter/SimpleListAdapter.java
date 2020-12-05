@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import net.jejer.hipda.R;
 import net.jejer.hipda.bean.HiSettingsHelper;
 import net.jejer.hipda.bean.SimpleListItemBean;
@@ -16,9 +19,6 @@ import net.jejer.hipda.ui.BaseFragment;
 import net.jejer.hipda.utils.ColorHelper;
 import net.jejer.hipda.utils.HtmlCompat;
 import net.jejer.hipda.utils.Utils;
-
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by GreenSkinMonster on 2016-11-14.

@@ -33,10 +33,8 @@ public class PostHelper {
     public static final int MODE_QUICK_REPLY = 4;
     public static final int MODE_EDIT_POST = 5;
     public static final int MODE_QUICK_DELETE = 6;
-
-    private static long LAST_POST_TIME = 0;
     private static final long POST_DELAY_IN_SECS = 30;
-
+    private static long LAST_POST_TIME = 0;
     private boolean ERR_502_TMP_FIXED = false;
 
     private int mMode;
@@ -57,6 +55,14 @@ public class PostHelper {
         mInfo = info;
         mPostArg = postArg;
         mTid = postArg.getTid();
+    }
+
+    public static int getWaitTimeToPost() {
+        long delta = (System.currentTimeMillis() - LAST_POST_TIME) / 1000;
+        if (POST_DELAY_IN_SECS > delta) {
+            return (int) (POST_DELAY_IN_SECS - delta);
+        }
+        return 0;
     }
 
     public PostBean post() {
@@ -258,14 +264,6 @@ public class PostHelper {
 
         if (mStatus == Constants.STATUS_SUCCESS && (mMode != MODE_EDIT_POST || delete))
             LAST_POST_TIME = System.currentTimeMillis();
-    }
-
-    public static int getWaitTimeToPost() {
-        long delta = (System.currentTimeMillis() - LAST_POST_TIME) / 1000;
-        if (POST_DELAY_IN_SECS > delta) {
-            return (int) (POST_DELAY_IN_SECS - delta);
-        }
-        return 0;
     }
 
     private boolean isReply() {

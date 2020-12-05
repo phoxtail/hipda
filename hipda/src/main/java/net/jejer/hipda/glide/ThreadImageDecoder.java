@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.load.Options;
 import com.bumptech.glide.load.ResourceDecoder;
 import com.bumptech.glide.load.engine.Resource;
@@ -17,8 +19,6 @@ import net.jejer.hipda.utils.Utils;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import androidx.annotation.NonNull;
 
 /**
  * pre scale bitmap before load to ImageView
@@ -34,6 +34,18 @@ public class ThreadImageDecoder implements ResourceDecoder<InputStream, Bitmap> 
 
     public ThreadImageDecoder(ImageInfo imageInfo) {
         mImageInfo = imageInfo;
+    }
+
+    private static int getMaxWidth() {
+        long maxMemory = Runtime.getRuntime().maxMemory();
+        if (maxMemory <= 64 * 1024 * 1024) {
+            return 460;
+        } else if (maxMemory <= 128 * 1024 * 1024) {
+            return 520;
+        } else if (maxMemory <= 256 * 1024 * 1024) {
+            return 560;
+        }
+        return 720;
     }
 
     @Override
@@ -115,18 +127,6 @@ public class ThreadImageDecoder implements ResourceDecoder<InputStream, Bitmap> 
             degree = 270;
         }
         return degree;
-    }
-
-    private static int getMaxWidth() {
-        long maxMemory = Runtime.getRuntime().maxMemory();
-        if (maxMemory <= 64 * 1024 * 1024) {
-            return 460;
-        } else if (maxMemory <= 128 * 1024 * 1024) {
-            return 520;
-        } else if (maxMemory <= 256 * 1024 * 1024) {
-            return 560;
-        }
-        return 720;
     }
 
 }

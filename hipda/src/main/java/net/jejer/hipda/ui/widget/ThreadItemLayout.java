@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.bumptech.glide.RequestManager;
 
 import net.jejer.hipda.R;
@@ -16,8 +18,6 @@ import net.jejer.hipda.bean.ThreadBean;
 import net.jejer.hipda.glide.GlideHelper;
 import net.jejer.hipda.utils.ColorHelper;
 import net.jejer.hipda.utils.Utils;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 /**
  * Created by GreenSkinMonster on 2016-04-21.
@@ -28,7 +28,7 @@ public class ThreadItemLayout extends ConstraintLayout {
     private TextView mTvAuthor;
     private TextView mTvThreadType;
     private TextView mTvTitle;
-    private TextView mTvReplycounter;
+    private TextView mTvReplyCounter;
     private TextView mTvCreateTime;
     private ImageView mTvImageIndicator;
 
@@ -46,7 +46,7 @@ public class ThreadItemLayout extends ConstraintLayout {
         mTvAuthor = findViewById(R.id.tv_username);
         mTvThreadType = findViewById(R.id.tv_thread_type);
         mTvTitle = findViewById(R.id.tv_title);
-        mTvReplycounter = findViewById(R.id.tv_replycounter);
+        mTvReplyCounter = findViewById(R.id.tv_replycounter);
         mTvCreateTime = findViewById(R.id.tv_create_time);
         mTvImageIndicator = findViewById(R.id.tv_image_indicator);
         mGlide = glide;
@@ -76,7 +76,7 @@ public class ThreadItemLayout extends ConstraintLayout {
             mTvThreadType.setVisibility(View.GONE);
         }
 
-        mTvReplycounter.setText(
+        mTvReplyCounter.setText(
                 Utils.toCountText(thread.getCountCmts())
                         + "/"
                         + Utils.toCountText(thread.getCountViews()));

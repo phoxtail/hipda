@@ -13,6 +13,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import net.jejer.hipda.R;
 import net.jejer.hipda.bean.ContentAbs;
 import net.jejer.hipda.bean.ContentAttach;
@@ -33,11 +38,6 @@ import net.jejer.hipda.utils.UIUtils;
 import net.jejer.hipda.utils.Utils;
 
 import java.util.List;
-
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by GreenSkinMonster on 2016-11-08.
@@ -138,9 +138,9 @@ public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
         }
 
         boolean trimBr = false;
-        String postStaus = detail.getPostStatus();
-        if (postStaus != null && postStaus.length() > 0) {
-            holder.postStatus.setText(Utils.shortyTime(postStaus));
+        String postStatus = detail.getPostStatus();
+        if (postStatus != null && postStatus.length() > 0) {
+            holder.postStatus.setText(Utils.shortyTime(postStatus));
             holder.postStatus.setVisibility(View.VISIBLE);
             trimBr = true;
         } else {
@@ -240,7 +240,7 @@ public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
                     int floor = -1;
                     if (content instanceof ContentGoToFloor) {
                         //floor is not accurate if some user deleted post
-                        //use floor to get page, then get cache by postid
+                        //use floor to get page, then get cache by postId
                         ContentGoToFloor goToFloor = (ContentGoToFloor) content;
                         author = goToFloor.getAuthor();
                         floor = goToFloor.getFloor();

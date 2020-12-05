@@ -9,23 +9,21 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Scroller;
 
-import net.jejer.hipda.ui.adapter.BaseRvAdapter;
-import net.jejer.hipda.utils.Utils;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import net.jejer.hipda.ui.adapter.BaseRvAdapter;
+import net.jejer.hipda.utils.Utils;
 
 /**
  * Created by GreenSkinMonster on 2016-11-13.
  */
 public class XRecyclerView extends RecyclerView {
 
+    protected final static int HEIGHT_IN_DP = 48;
     private final static int SCROLL_BACK_HEADER = 0;
     private final static int SCROLL_BACK_FOOTER = 1;
-
     private final static int SCROLL_DURATION = 400;
-
-    protected final static int HEIGHT_IN_DP = 48;
     private final static int PULL_DELTA_IN_DP = 40;
     private final static float OFFSET_RADIO = 1.8f;
 
@@ -133,7 +131,7 @@ public class XRecyclerView extends RecyclerView {
     }
 
     private void updateHeaderHeight(float delta) {
-        int topMagin = mHeaderView.getTopMargin();
+        int topMargin = mHeaderView.getTopMargin();
 
         if (mHeaderView.getTopMargin() > mPullDelta) {
             stopScroll();
@@ -141,7 +139,7 @@ public class XRecyclerView extends RecyclerView {
             onHeaderReady();
             resetHeaderHeight();
         } else {
-            mHeaderView.setTopMargin(topMagin + (int) delta);
+            mHeaderView.setTopMargin(topMargin + (int) delta);
         }
     }
 

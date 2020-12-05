@@ -6,10 +6,10 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.core.view.GestureDetectorCompat;
+
 import net.jejer.hipda.R;
 import net.jejer.hipda.bean.HiSettingsHelper;
-
-import androidx.core.view.GestureDetectorCompat;
 
 /**
  * Created by GreenSkinMonster on 2016-11-10.
@@ -22,15 +22,6 @@ public class RecyclerItemClickListener implements View.OnTouchListener {
     private OnItemClickListener mListener;
     private View mChildView;
     private long mLastClickTime;
-
-    public interface OnItemClickListener {
-        void onItemClick(View view, int position);
-
-        void onLongItemClick(View view, int position);
-
-        void onDoubleTap(View view, int position);
-    }
-
     private GestureDetectorCompat mGestureDetector;
 
     public RecyclerItemClickListener(Context context, OnItemClickListener listener) {
@@ -107,5 +98,13 @@ public class RecyclerItemClickListener implements View.OnTouchListener {
             }
         }
         return true;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+
+        void onLongItemClick(View view, int position);
+
+        void onDoubleTap(View view, int position);
     }
 }

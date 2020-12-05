@@ -14,7 +14,7 @@ import net.jejer.hipda.R;
  * Created by GreenSkinMonster on 2017-06-06.
  */
 
-public class ValueChagerView extends RelativeLayout {
+public class ValueChangerView extends RelativeLayout {
 
     private Button mBtnPlus;
     private Button mBtnMinus;
@@ -26,27 +26,27 @@ public class ValueChagerView extends RelativeLayout {
 
     private OnChangeListener mOnChangeListener;
 
-    public ValueChagerView(Context context) {
+    public ValueChangerView(Context context) {
         super(context);
         init(context, null);
     }
 
-    public ValueChagerView(Context context, AttributeSet attrs) {
+    public ValueChangerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public ValueChagerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ValueChangerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
     private void init(Context context, AttributeSet attrs) {
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ValueChagerView);
-        String title = a.getString(R.styleable.ValueChagerView_title);
-        mMinValue = a.getInt(R.styleable.ValueChagerView_minValue, 0);
-        mMaxValue = a.getInt(R.styleable.ValueChagerView_maxValue, 0);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ValueChangerView);
+        String title = a.getString(R.styleable.ValueChangerView_title);
+        mMinValue = a.getInt(R.styleable.ValueChangerView_minValue, 0);
+        mMaxValue = a.getInt(R.styleable.ValueChangerView_maxValue, 0);
         a.recycle();
 
         inflate(getContext(), R.layout.vw_value_changer, this);
@@ -58,7 +58,7 @@ public class ValueChagerView extends RelativeLayout {
         tvTitle.setText(title);
         updateViews();
 
-        mBtnPlus.setOnClickListener(new View.OnClickListener() {
+        mBtnPlus.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mCurrentValue < mMaxValue) {
@@ -71,7 +71,7 @@ public class ValueChagerView extends RelativeLayout {
             }
         });
 
-        mBtnMinus.setOnClickListener(new View.OnClickListener() {
+        mBtnMinus.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mCurrentValue > mMinValue) {

@@ -10,7 +10,7 @@
             android:key="PERF_WIFI_IMAGE_POLICY"
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
-            android:title="@string/pref_title_wifi_image_policy"/>
+            android:title="@string/pref_title_wifi_image_policy" />
 
         <ListPreference
             android:defaultValue="none"
@@ -19,7 +19,7 @@
             android:key="PERF_MOBILE_IMAGE_POLICY"
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
-            android:title="@string/pref_title_mobile_image_policy"/>
+            android:title="@string/pref_title_mobile_image_policy" />
 
     </PreferenceCategory>
 
@@ -27,7 +27,7 @@
         <Preference
             android:defaultValue=""
             android:key="PERF_SAVE_FOLDER"
-            android:title="@string/pref_title_save_folder"/>
+            android:title="@string/pref_title_save_folder" />
 
         <ListPreference
             android:defaultValue="500"
@@ -36,7 +36,7 @@
             android:key="PERF_CACHE_SIZE_IN_MB"
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
-            android:title="@string/pref_cache_size_title"/>
+            android:title="@string/pref_cache_size_title" />
 
     </PreferenceCategory>
 

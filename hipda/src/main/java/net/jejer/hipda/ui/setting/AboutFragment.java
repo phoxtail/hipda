@@ -36,11 +36,11 @@ public class AboutFragment extends BaseFragment {
 
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         TabLayout.Tab notesTab = tabLayout.newTab().setText("更新记录");
-        TabLayout.Tab donarTab = tabLayout.newTab().setText("捐助名单");
+        TabLayout.Tab sponsorTab = tabLayout.newTab().setText("捐助名单");
         TabLayout.Tab linksTab = tabLayout.newTab().setText("感谢");
 
         tabLayout.addTab(notesTab);
-        tabLayout.addTab(donarTab);
+        tabLayout.addTab(sponsorTab);
         tabLayout.addTab(linksTab);
 
         tabContent.setText(getContent(0));

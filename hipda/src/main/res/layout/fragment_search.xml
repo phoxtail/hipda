@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fragment_threadlist"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?list_item_background">
@@ -15,7 +14,7 @@
             android:id="@+id/rv_threads"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -24,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:orientation="vertical"/>
+        android:orientation="vertical" />
 
     <RelativeLayout
         android:id="@+id/search_filter_layout"
@@ -45,14 +44,14 @@
             android:inputType="text"
             android:maxLength="20"
             android:maxLines="1"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
 
         <CheckBox
             android:id="@+id/cb_fulltext"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:layout_alignParentLeft="true"
             android:layout_below="@+id/et_author"
+            android:layout_alignParentLeft="true"
             android:layout_margin="4dp"
             android:checked="false"
             android:clickable="true"
@@ -60,18 +59,18 @@
             android:minWidth="96dp"
             android:text="全文"
             android:textColor="?android:textColorPrimary"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
 
         <Spinner
             android:id="@+id/sp_forum"
             android:layout_width="match_parent"
             android:layout_height="36dp"
-            android:layout_alignParentRight="true"
             android:layout_below="@+id/et_author"
+            android:layout_alignParentRight="true"
             android:layout_margin="4dp"
             android:layout_toRightOf="@id/cb_fulltext"
             android:gravity="center_vertical"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
 
         <View
             android:id="@+id/vw_delim"
@@ -79,7 +78,7 @@
             android:layout_height="1dp"
             android:layout_below="@id/sp_forum"
             android:layout_margin="6dp"
-            android:background="@color/background_silver"/>
+            android:background="@color/background_silver" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_history"

@@ -4,15 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.google.android.material.appbar.AppBarLayout;
 
 import net.jejer.hipda.R;
 import net.jejer.hipda.job.SimpleListJob;
 import net.jejer.hipda.ui.widget.OnSingleClickListener;
-
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 /**
  * Created by GreenSkinMonster on 2017-06-16.

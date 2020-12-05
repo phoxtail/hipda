@@ -16,6 +16,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupWindow;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.vanniktech.emoji.emoji.Emoji;
 import com.vanniktech.emoji.listeners.OnEmojiBackspaceClickListener;
 import com.vanniktech.emoji.listeners.OnEmojiClickedListener;
@@ -23,9 +26,6 @@ import com.vanniktech.emoji.listeners.OnEmojiPopupDismissListener;
 import com.vanniktech.emoji.listeners.OnEmojiPopupShownListener;
 import com.vanniktech.emoji.listeners.OnSoftKeyboardCloseListener;
 import com.vanniktech.emoji.listeners.OnSoftKeyboardOpenListener;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public final class EmojiPopup {
     private static final int MIN_KEYBOARD_HEIGHT = 100;
@@ -35,28 +35,18 @@ public final class EmojiPopup {
     private final EmojiEditText emojiEditText;
     private final View rootView;
     private final Context context;
-
+    @NonNull
+    private final RecentEmoji recentEmoji;
+    private final PopupWindow popupWindow;
     private int keyBoardHeight;
     private boolean isKeyboardOpen;
     private boolean isListenerAttached;
-
     @Nullable
     private OnEmojiPopupShownListener onEmojiPopupShownListener;
     @Nullable
     private OnSoftKeyboardCloseListener onSoftKeyboardCloseListener;
     @Nullable
     private OnSoftKeyboardOpenListener onSoftKeyboardOpenListener;
-    @Nullable
-    private OnEmojiBackspaceClickListener onEmojiBackspaceClickListener;
-    @Nullable
-    private OnEmojiClickedListener onEmojiClickedListener;
-    @Nullable
-    private OnEmojiPopupDismissListener onEmojiPopupDismissListener;
-
-    @NonNull
-    private final RecentEmoji recentEmoji;
-
-    private final PopupWindow popupWindow;
     private final ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -96,6 +86,12 @@ public final class EmojiPopup {
             }
         }
     };
+    @Nullable
+    private OnEmojiBackspaceClickListener onEmojiBackspaceClickListener;
+    @Nullable
+    private OnEmojiClickedListener onEmojiClickedListener;
+    @Nullable
+    private OnEmojiPopupDismissListener onEmojiPopupDismissListener;
 
     private EmojiPopup(final View rootView, final EmojiEditText emojiEditText, @Nullable final RecentEmoji recent) {
         this.context = rootView.getContext();
@@ -204,17 +200,39 @@ public final class EmojiPopup {
         }
     }
 
-    public static final class Builder {
-        /**
-         * @param rootView the rootView of your layout.xml which will be used for calculating the height of the keyboard
-         * @return builder for building {@link EmojiPopup}
-         */
-        public static Builder fromRootView(final View rootView) {
-            return new Builder(rootView);
+    private SharedPreferences getPreferences() {
+        return context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+    }
+
+    private void setupListener() {
+        if (!isListenerAttached) {
+            rootView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
+            isListenerAttached = true;
         }
+    }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public void removeListener() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            //noinspection deprecation
+            rootView.getViewTreeObserver().removeGlobalOnLayoutListener(onGlobalLayoutListener);
+        } else {
+            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
+        }
+        isListenerAttached = false;
+    }
+
+    public void addImage(String imgId, Bitmap bitmap) {
+        EmojiHandler.addImage(imgId, bitmap);
+    }
+
+    public void cleanup() {
+        dismiss();
+        EmojiHandler.cleanup();
+    }
+
+    public static final class Builder {
         private final View rootView;
-
         @Nullable
         private OnEmojiPopupShownListener onEmojiPopupShownListener;
         @Nullable
@@ -227,12 +245,19 @@ public final class EmojiPopup {
         private OnEmojiClickedListener onEmojiClickedListener;
         @Nullable
         private OnEmojiPopupDismissListener onEmojiPopupDismissListener;
-
         @Nullable
         private RecentEmoji recentEmoji;
 
         private Builder(final View rootView) {
             this.rootView = rootView;
+        }
+
+        /**
+         * @param rootView the rootView of your layout.xml which will be used for calculating the height of the keyboard
+         * @return builder for building {@link EmojiPopup}
+         */
+        public static Builder fromRootView(final View rootView) {
+            return new Builder(rootView);
         }
 
         public Builder setOnSoftKeyboardCloseListener(@Nullable final OnSoftKeyboardCloseListener listener) {
@@ -285,37 +310,6 @@ public final class EmojiPopup {
             emojiPopup.onEmojiBackspaceClickListener = onEmojiBackspaceClickListener;
             return emojiPopup;
         }
-    }
-
-    private SharedPreferences getPreferences() {
-        return context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
-    }
-
-    private void setupListener() {
-        if (!isListenerAttached) {
-            rootView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
-            isListenerAttached = true;
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public void removeListener() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            //noinspection deprecation
-            rootView.getViewTreeObserver().removeGlobalOnLayoutListener(onGlobalLayoutListener);
-        } else {
-            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
-        }
-        isListenerAttached = false;
-    }
-
-    public void addImage(String imgId, Bitmap bitmap) {
-        EmojiHandler.addImage(imgId, bitmap);
-    }
-
-    public void cleanup() {
-        dismiss();
-        EmojiHandler.cleanup();
     }
 
 }

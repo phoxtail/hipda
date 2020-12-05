@@ -11,10 +11,9 @@ import net.jejer.hipda.ui.HiApplication;
  */
 public class ContentDBHelper extends SQLiteOpenHelper {
 
+    public static final String TABLE_NAME = "Contents";
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "content.db";
-    public static final String TABLE_NAME = "Contents";
-
     private static final String CONTENTS_TABLE_CREATE =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     "session_id TEXT PRIMARY KEY, " +

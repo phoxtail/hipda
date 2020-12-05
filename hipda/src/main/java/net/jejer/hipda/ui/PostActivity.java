@@ -4,14 +4,14 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
-import com.google.android.material.appbar.AppBarLayout;
-
-import net.jejer.hipda.R;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
+
+import com.google.android.material.appbar.AppBarLayout;
+
+import net.jejer.hipda.R;
 
 /**
  * Created by GreenSkinMonster on 2017-06-14.

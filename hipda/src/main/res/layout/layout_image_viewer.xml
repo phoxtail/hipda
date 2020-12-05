@@ -1,15 +1,15 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-       xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
         android:id="@+id/scale_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/glide_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <net.jejer.hipda.ui.widget.DownloadProgressBar
         android:id="@+id/progressbar"
@@ -19,6 +19,6 @@
         android:layout_gravity="center"
         android:visibility="gone"
         app:cancelable="false"
-        app:finishIconDrawable="@drawable/ic_action_play"/>
+        app:finishIconDrawable="@drawable/ic_action_play" />
 
 </merge>

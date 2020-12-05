@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.viewpager.widget.PagerAdapter;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -14,8 +16,6 @@ import net.jejer.hipda.glide.GlideHelper;
 import net.jejer.hipda.ui.widget.ImageViewerLayout;
 
 import java.util.List;
-
-import androidx.viewpager.widget.PagerAdapter;
 
 /**
  * adapter for image gallery

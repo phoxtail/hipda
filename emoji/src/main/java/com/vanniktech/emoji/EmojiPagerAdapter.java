@@ -4,9 +4,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import java.util.List;
-
 import androidx.viewpager.widget.PagerAdapter;
+
+import java.util.List;
 
 final class EmojiPagerAdapter extends PagerAdapter {
     private final List<FrameLayout> views;

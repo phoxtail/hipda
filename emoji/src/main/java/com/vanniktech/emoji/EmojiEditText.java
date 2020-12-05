@@ -5,10 +5,10 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 
-import com.vanniktech.emoji.emoji.Emoji;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
+
+import com.vanniktech.emoji.emoji.Emoji;
 
 public class EmojiEditText extends AppCompatEditText {
     private int emojiSize;

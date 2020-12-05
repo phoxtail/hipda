@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
+import androidx.preference.Preference;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -18,8 +20,6 @@ import net.jejer.hipda.utils.Utils;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Map;
-
-import androidx.preference.Preference;
 
 /**
  * Created by GreenSkinMonster on 2016-07-24.

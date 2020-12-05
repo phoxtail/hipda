@@ -4,12 +4,12 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.TypedValue;
 
+import androidx.core.graphics.ColorUtils;
+
 import net.jejer.hipda.R;
 import net.jejer.hipda.bean.HiSettingsHelper;
 
 import java.util.HashMap;
-
-import androidx.core.graphics.ColorUtils;
 
 /**
  * get color id from theme attr id
@@ -17,9 +17,9 @@ import androidx.core.graphics.ColorUtils;
  */
 public class ColorHelper {
 
-    private static HashMap<Integer, Integer> COLOR_IDS = new HashMap<>();
     private final static int DAY_REF_COLOR = Color.parseColor("#ffffff");
     private final static int NIGHT_REF_COLOR = Color.parseColor("#000000");
+    private static HashMap<Integer, Integer> COLOR_IDS = new HashMap<>();
 
     public static void clear() {
         COLOR_IDS.clear();

@@ -1,11 +1,11 @@
 package net.jejer.hipda.job;
 
+import androidx.annotation.Nullable;
+
 import com.birbit.android.jobqueue.CancelReason;
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-
-import androidx.annotation.Nullable;
 
 /**
  * Created by GreenSkinMonster on 2016-03-28.

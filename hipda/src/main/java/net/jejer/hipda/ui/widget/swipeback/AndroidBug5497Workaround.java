@@ -12,21 +12,17 @@ import android.widget.FrameLayout;
  */
 
 public class AndroidBug5497Workaround {
-    public static void assistActivity(Activity activity) {
-        new AndroidBug5497Workaround(activity);
-    }
-
     private View mChildOfContent;
     private int usableHeightPrevious;
     private FrameLayout.LayoutParams frameLayoutParams;
     private int contentHeight;
-    private boolean isfirst = true;
+    private boolean isFirst = true;
     private int statusBarHeight;
 
     private AndroidBug5497Workaround(Activity activity) {
 
         //获取状态栏的高度
-        // 原例子中更改toobar margin的情况需要考虑状态栏高度
+        // 原例子中更改toolbar margin的情况需要考虑状态栏高度
         //int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
         //statusBarHeight = activity.getResources().getDimensionPixelSize(resourceId);
 
@@ -39,9 +35,9 @@ public class AndroidBug5497Workaround {
         //界面出现变动都会调用这个监听事件
         mChildOfContent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             public void onGlobalLayout() {
-                if (isfirst) {
+                if (isFirst) {
                     contentHeight = mChildOfContent.getHeight();//兼容华为等机型
-                    isfirst = false;
+                    isFirst = false;
                 }
                 possiblyResizeChildOfContent();
             }
@@ -49,6 +45,10 @@ public class AndroidBug5497Workaround {
 
         frameLayoutParams = (FrameLayout.LayoutParams)
                 mChildOfContent.getLayoutParams();
+    }
+
+    public static void assistActivity(Activity activity) {
+        new AndroidBug5497Workaround(activity);
     }
 
     //重新调整跟布局的高度

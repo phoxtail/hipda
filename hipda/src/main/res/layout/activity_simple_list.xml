@@ -1,17 +1,16 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    android:id="@+id/main_activity_root_view"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_activity_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/include_appbar_layout"/>
+    <include layout="@layout/include_appbar_layout" />
 
     <FrameLayout
         android:id="@+id/main_frame_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_main"
@@ -23,6 +22,6 @@
         app:fabSize="mini"
         app:layout_anchor="@id/main_frame_container"
         app:layout_anchorGravity="bottom|right|end"
-        app:layout_behavior="net.jejer.hipda.ui.widget.FABHideOnScrollBehavior"/>
+        app:layout_behavior="net.jejer.hipda.ui.widget.FABHideOnScrollBehavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

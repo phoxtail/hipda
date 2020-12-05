@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- https://stackoverflow.com/questions/51518758/preferencefragmentcompat-has-padding-on-preferencecategory-that-i-cant-get-rid?answertab=active#tab-top -->
+<?xml version="1.0" encoding="utf-8"?><!-- https://stackoverflow.com/questions/51518758/preferencefragmentcompat-has-padding-on-preferencecategory-that-i-cant-get-rid?answertab=active#tab-top -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <bool name="config_materialPreferenceIconSpaceReserved" tools:ignore="MissingDefaultResource,PrivateResource">
         false

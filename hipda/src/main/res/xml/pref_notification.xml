@@ -4,29 +4,29 @@
     <SwitchPreference
         android:defaultValue="false"
         android:key="PERF_NOTI_TASK_ENABLED"
-        android:title="@string/pref_noti_task_enabled"/>
+        android:title="@string/pref_noti_task_enabled" />
 
     <Preference
         android:key="PERF_NOTI_SOUND"
         android:ringtoneType="notification"
         android:showDefault="true"
-        android:title="@string/pref_noti_sound"/>
+        android:title="@string/pref_noti_sound" />
 
     <PreferenceCategory android:title="@string/pref_category_silent_mode">
         <SwitchPreference
             android:defaultValue="false"
             android:key="PERF_NOTI_SILENT_MODE"
-            android:title="@string/pref_noti_silent_mode"/>
+            android:title="@string/pref_noti_silent_mode" />
 
         <Preference
             android:defaultValue="22:00"
             android:key="PERF_NOTI_SILENT_BEGIN"
-            android:title="@string/pref_noti_silent_begin"/>
+            android:title="@string/pref_noti_silent_begin" />
 
         <Preference
             android:defaultValue="08:00"
             android:key="PERF_NOTI_SILENT_END"
-            android:title="@string/pref_noti_silent_end"/>
+            android:title="@string/pref_noti_silent_end" />
     </PreferenceCategory>
 
 </PreferenceScreen>

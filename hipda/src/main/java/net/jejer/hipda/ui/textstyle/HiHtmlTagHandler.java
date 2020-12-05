@@ -19,6 +19,8 @@ import java.util.HashMap;
  */
 public class HiHtmlTagHandler implements Html.TagHandler {
 
+    final HashMap<String, String> attributes = new HashMap<>();
+
     public void handleTag(boolean opening, String tag, Editable output,
                           XMLReader xmlReader) {
         if (tag.equalsIgnoreCase("strike") || tag.equals("s")) {
@@ -74,8 +76,6 @@ public class HiHtmlTagHandler implements Html.TagHandler {
             return null;
         }
     }
-
-    final HashMap<String, String> attributes = new HashMap<>();
 
     private void processAttributes(final XMLReader xmlReader) {
         try {

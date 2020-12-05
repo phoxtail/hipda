@@ -3,12 +3,12 @@ package net.jejer.hipda.ui;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import net.jejer.hipda.ui.widget.swipeback.SwipeBackActivityBase;
 import net.jejer.hipda.ui.widget.swipeback.SwipeBackActivityHelper;
 import net.jejer.hipda.ui.widget.swipeback.SwipeBackLayout;
 import net.jejer.hipda.ui.widget.swipeback.SwipeUtils;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 
 /**

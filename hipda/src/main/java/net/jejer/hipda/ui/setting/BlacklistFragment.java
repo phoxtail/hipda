@@ -14,6 +14,11 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
@@ -37,10 +42,6 @@ import org.jsoup.nodes.Document;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import okhttp3.Request;
 
 /**
@@ -53,7 +54,7 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
 
     private List<String> mBlacklists = new ArrayList<>();
 
-    private String mFormhash;
+    private String mFormHash;
     private LayoutInflater mInflater;
     private Drawable mDrawable;
     private boolean mDialogShown;
@@ -121,7 +122,7 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
                 mSwipeLayout.setRefreshing(false);
                 try {
                     Document doc = Jsoup.parse(response);
-                    mFormhash = HiParser.parseFormhash(doc);
+                    mFormHash = HiParser.parseFormhash(doc);
                     String errorMsg = HiParser.parseErrorMessage(doc);
                     if (TextUtils.isEmpty(errorMsg)) {
                         mBlacklists = HiParser.parseBlacklist(doc);
@@ -158,7 +159,7 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
 
     private void removeFromBlacklist(final String username) {
         mRemoving.add(username);
-        BlacklistHelper.delBlacklist(mFormhash, username, new OkHttpHelper.ResultCallback() {
+        BlacklistHelper.delBlacklist(mFormHash, username, new OkHttpHelper.ResultCallback() {
             @Override
             public void onError(Request request, Exception e) {
                 UIUtils.toast(OkHttpHelper.getErrorMessage(e).getMessage());
@@ -267,7 +268,7 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
                     values[0] = i;
                     publishProgress(values);
                     try {
-                        String errorMsg = BlacklistHelper.addBlacklist2(mFormhash, username);
+                        String errorMsg = BlacklistHelper.addBlacklist2(mFormHash, username);
                         if (TextUtils.isEmpty(errorMsg)) {
                             uploaded.add(username);
                         } else {
@@ -305,6 +306,17 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
         }.execute();
     }
 
+    private static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView tv_username;
+        ImageButton ib_remove;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+            tv_username = (TextView) itemView.findViewById(R.id.tv_username);
+            ib_remove = (ImageButton) itemView.findViewById(R.id.ib_remove);
+        }
+    }
+
     private class RvAdapter extends RecyclerView.Adapter {
 
         @Override
@@ -327,17 +339,6 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
         @Override
         public int getItemCount() {
             return mBlacklists != null ? mBlacklists.size() : 0;
-        }
-    }
-
-    private static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tv_username;
-        ImageButton ib_remove;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-            tv_username = (TextView) itemView.findViewById(R.id.tv_username);
-            ib_remove = (ImageButton) itemView.findViewById(R.id.ib_remove);
         }
     }
 

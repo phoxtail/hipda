@@ -22,6 +22,8 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.WindowManager;
 
+import androidx.annotation.AttrRes;
+
 import com.bumptech.glide.Glide;
 
 import net.jejer.hipda.okhttp.OkHttpHelper;
@@ -50,26 +52,22 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import androidx.annotation.AttrRes;
-
 /**
  * Common utils
  * Created by GreenSkinMonster on 2015-03-23.
  */
 public class Utils {
 
+    public final static String URL_REGEX = "[(http(s)?)://ww.zA-Z0-9@:%._+,256}.-z]{2,6}\\b([-a-zA-Z0-9@:%_+/=]*)";
+    public final static Pattern URL_PATTERN = Pattern.compile(URL_REGEX);
+    public final static String REPLACE_URL_REGEX = "(" + URL_REGEX + ")";
     private static Whitelist mWhitelist = null;
     private static int mScreenWidth = -1;
     private static int mScreenHeight = -1;
-
     private static String THIS_YEAR;
     private static String TODAY;
     private static String YESTERDAY;
     private static long UPDATE_TIME = 0;
-
-    public final static String URL_REGEX = "[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)";
-    public final static Pattern URL_PATTERN = Pattern.compile(URL_REGEX);
-    public final static String REPLACE_URL_REGEX = "(" + URL_REGEX + ")";
 
     public static String nullToText(CharSequence text) {
         if (TextUtils.isEmpty(text)) {

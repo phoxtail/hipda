@@ -26,9 +26,9 @@ import okhttp3.Request;
 
 public class BlacklistHelper {
 
-    public static void addBlacklist(String formhash, final String username) {
+    public static void addBlacklist(String formHash, final String username) {
         ParamsMap params = new ParamsMap();
-        params.put("formhash", formhash);
+        params.put("formhsash", formHash);
         params.put("user", username);
         try {
             OkHttpHelper.getInstance().asyncPost(HiUtils.AddBlackUrl, params, new OkHttpHelper.ResultCallback() {
@@ -60,9 +60,9 @@ public class BlacklistHelper {
         }
     }
 
-    public static void delBlacklist(final String formhash, final String username, OkHttpHelper.ResultCallback callback) {
+    public static void delBlacklist(final String formHash, final String username, OkHttpHelper.ResultCallback callback) {
         ParamsMap params = new ParamsMap();
-        params.put("formhash", formhash);
+        params.put("formhash", formHash);
         params.put("user", username);
         try {
             OkHttpHelper.getInstance().asyncPost(HiUtils.DelBlackUrl, params, callback);

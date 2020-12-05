@@ -12,17 +12,8 @@
 -dontwarn okhttp3.internal.platform.ConscryptPlatform
 
 #google stuff
--dontwarn android.support.**
--keep class android.support.v7.** { *; }
--keep interface android.support.v7.** { *; }
--keep class org.apache.http.** { *; }
 -dontwarn org.apache.http.**
 -dontwarn android.net.**
-
--keeppackagenames org.jsoup.nodes
--keep public class org.jsoup.** {
-    public *;
-}
 
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public class * extends com.bumptech.glide.module.AppGlideModule
@@ -31,30 +22,18 @@
   public *;
 }
 
--keep class net.jejer.hipda.** { *; }
-
 #Android-Iconics
--keep class .R
 -keep class **.R$* {
     <fields>;
 }
 
 -dontwarn com.birbit.android.jobqueue.scheduling.Gcm*
 
-#EventBus 3.x
--keepclassmembers class ** {
-    @org.greenrobot.eventbus.Subscribe <methods>;
-}
--keep enum org.greenrobot.eventbus.ThreadMode { *; }
 
 # Only required if you use AsyncExecutor
 -keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
     <init>(java.lang.Throwable);
 }
-
--keepattributes SourceFile,LineNumberTable
--keep class com.crashlytics.** { *; }
--dontwarn com.crashlytics.**
 
 -keepclassmembers class * implements android.os.Parcelable {
     static ** CREATOR;
@@ -63,13 +42,3 @@
 #Matisse
 -dontwarn com.squareup.picasso.**
 -dontwarn com.zhihu.matisse.**
-
-#evernote android job
--dontwarn com.evernote.android.job.gcm.**
--dontwarn com.evernote.android.job.util.GcmAvailableHelper
-
--keep public class com.evernote.android.job.v21.PlatformJobService
--keep public class com.evernote.android.job.v14.PlatformAlarmService
--keep public class com.evernote.android.job.v14.PlatformAlarmReceiver
--keep public class com.evernote.android.job.JobBootReceiver
--keep public class com.evernote.android.job.JobRescheduleService

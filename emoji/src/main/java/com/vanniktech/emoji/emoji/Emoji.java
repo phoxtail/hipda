@@ -1,21 +1,20 @@
 package com.vanniktech.emoji.emoji;
 
-import java.io.Serializable;
-
 import androidx.annotation.NonNull;
+
+import java.io.Serializable;
 
 public final class Emoji implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    public static Emoji fromEmoji(final String emoji) {
-        return new Emoji(emoji);
-    }
-
     @NonNull
     private final String emoji;
 
     public Emoji(@NonNull final String emoji) {
         this.emoji = emoji;
+    }
+
+    public static Emoji fromEmoji(final String emoji) {
+        return new Emoji(emoji);
     }
 
     @NonNull

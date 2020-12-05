@@ -6,6 +6,17 @@ import android.os.Parcelable;
 import net.jejer.hipda.utils.Utils;
 
 public class ContentImg extends ContentAbs implements Parcelable {
+    public static final Creator<ContentImg> CREATOR = new Creator<ContentImg>() {
+        @Override
+        public ContentImg createFromParcel(Parcel in) {
+            return new ContentImg(in);
+        }
+
+        @Override
+        public ContentImg[] newArray(int size) {
+            return new ContentImg[size];
+        }
+    };
     private String mUrl;
     private String mThumbUrl;
     private String mAuthor;
@@ -62,7 +73,6 @@ public class ContentImg extends ContentAbs implements Parcelable {
         this.mAuthor = mAuthor;
     }
 
-
     public long getFileSize() {
         return mFileSize;
     }
@@ -70,18 +80,6 @@ public class ContentImg extends ContentAbs implements Parcelable {
     public String getThumbUrl() {
         return mThumbUrl;
     }
-
-    public static final Creator<ContentImg> CREATOR = new Creator<ContentImg>() {
-        @Override
-        public ContentImg createFromParcel(Parcel in) {
-            return new ContentImg(in);
-        }
-
-        @Override
-        public ContentImg[] newArray(int size) {
-            return new ContentImg[size];
-        }
-    };
 
     @Override
     public int describeContents() {

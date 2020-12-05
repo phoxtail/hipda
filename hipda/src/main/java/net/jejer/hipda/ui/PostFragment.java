@@ -31,6 +31,9 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -79,12 +82,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-
 public class PostFragment extends BaseFragment {
-    private static final int SELECT_PICTURE = 1;
-
     public static final String ARG_FID_KEY = "fid";
     public static final String ARG_TID_KEY = "tid";
     public static final String ARG_PID_KEY = "pid";
@@ -94,9 +92,8 @@ public class PostFragment extends BaseFragment {
     public static final String ARG_QUOTE_TEXT_KEY = "quote_text";
     public static final String ARG_MODE_KEY = "mode";
     public static final String ARG_PARENT_ID = "parent_id";
-
     public static final String BUNDLE_POSITION_KEY = "content_position";
-
+    private static final int SELECT_PICTURE = 1;
     private int mFid;
     private String mTid;
     private String mPid;
@@ -666,33 +663,6 @@ public class PostFragment extends BaseFragment {
         }
     }
 
-    private class PrePostListener implements PrePostAsyncTask.PrePostListener {
-        @Override
-        public void PrePostComplete(int mode, boolean result, String message, PrePostInfoBean info) {
-            mFetchingInfo = false;
-            mProgressBar.hide();
-            if (result) {
-                mPrePostInfo = info;
-                setupPrePostInfo();
-                if (mFetchInfoCount > 1)
-                    UIUtils.toast("收集信息成功");
-            } else {
-                if (getView() != null) {
-                    mSnackbar = Snackbar.make(getView(), "收集信息失败 : " + message, Snackbar.LENGTH_LONG);
-                    UIUtils.setSnackbarMessageTextColor(mSnackbar, ContextCompat.getColor(getActivity(), R.color.md_yellow_500));
-                    mSnackbar.setAction("重试", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            fetchPrePostInfo(true);
-                            mSnackbar.dismiss();
-                        }
-                    });
-                    mSnackbar.show();
-                }
-            }
-        }
-    }
-
     private void fetchPrePostInfo(boolean showProgressNow) {
         if (!mFetchingInfo) {
             mFetchingInfo = true;
@@ -905,6 +875,33 @@ public class PostFragment extends BaseFragment {
             }
         }
         EventBus.getDefault().removeStickyEvent(event);
+    }
+
+    private class PrePostListener implements PrePostAsyncTask.PrePostListener {
+        @Override
+        public void PrePostComplete(int mode, boolean result, String message, PrePostInfoBean info) {
+            mFetchingInfo = false;
+            mProgressBar.hide();
+            if (result) {
+                mPrePostInfo = info;
+                setupPrePostInfo();
+                if (mFetchInfoCount > 1)
+                    UIUtils.toast("收集信息成功");
+            } else {
+                if (getView() != null) {
+                    mSnackbar = Snackbar.make(getView(), "收集信息失败 : " + message, Snackbar.LENGTH_LONG);
+                    UIUtils.setSnackbarMessageTextColor(mSnackbar, ContextCompat.getColor(getActivity(), R.color.md_yellow_500));
+                    mSnackbar.setAction("重试", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            fetchPrePostInfo(true);
+                            mSnackbar.dismiss();
+                        }
+                    });
+                    mSnackbar.show();
+                }
+            }
+        }
     }
 
     private class SavedContentsAdapter extends ArrayAdapter {

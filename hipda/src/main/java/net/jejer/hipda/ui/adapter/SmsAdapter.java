@@ -10,6 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.daasuu.bl.ArrowDirection;
 import com.daasuu.bl.BubbleLayout;
 
@@ -21,9 +24,6 @@ import net.jejer.hipda.ui.SmsFragment;
 import net.jejer.hipda.ui.widget.TextViewWithEmoticon;
 import net.jejer.hipda.utils.Constants;
 import net.jejer.hipda.utils.Utils;
-
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by GreenSkinMonster on 2016-11-14.

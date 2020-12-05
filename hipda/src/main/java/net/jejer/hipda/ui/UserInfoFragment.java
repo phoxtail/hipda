@@ -13,6 +13,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
@@ -50,12 +54,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import okhttp3.Request;
 
-public class UserinfoFragment extends BaseFragment implements PostSmsAsyncTask.SmsPostListener {
+public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.SmsPostListener {
 
     public static final String ARG_USERNAME = "USERNAME";
     public static final String ARG_UID = "UID";
@@ -63,7 +64,7 @@ public class UserinfoFragment extends BaseFragment implements PostSmsAsyncTask.S
     private String mUid;
     private String mUsername;
     private String mAvatarUrl;
-    private String mFormhash;
+    private String mFormHash;
 
     private ImageView mAvatarView;
     private TextView mDetailView;
@@ -80,7 +81,7 @@ public class UserinfoFragment extends BaseFragment implements PostSmsAsyncTask.S
     private boolean isThreadsLoaded;
 
     private int mPage = 1;
-    private boolean mInloading = false;
+    private boolean mLoading = false;
     private String mSearchId;
     private int mMaxPage;
 
@@ -117,7 +118,7 @@ public class UserinfoFragment extends BaseFragment implements PostSmsAsyncTask.S
                 public void onSingleClick(View v) {
                     if (!TextUtils.isEmpty(mAvatarUrl)) {
                         GlideHelper.clearAvatarCache(mAvatarUrl);
-                        GlideHelper.loadAvatar(UserinfoFragment.this, mAvatarView, mAvatarUrl);
+                        GlideHelper.loadAvatar(UserInfoFragment.this, mAvatarView, mAvatarUrl);
                         UIUtils.toast("头像已经刷新");
                     } else {
                         UIUtils.toast("用户未设置头像");
@@ -166,7 +167,7 @@ public class UserinfoFragment extends BaseFragment implements PostSmsAsyncTask.S
                         SearchBean bean = new SearchBean();
                         bean.setUid(mUid);
                         bean.setSearchId(mSearchId);
-                        SimpleListJob job = new SimpleListJob(UserinfoFragment.this.getActivity(), mSessionId,
+                        SimpleListJob job = new SimpleListJob(UserInfoFragment.this.getActivity(), mSessionId,
                                 SimpleListJob.TYPE_SEARCH_USER_THREADS,
                                 mPage,
                                 bean);
@@ -233,12 +234,58 @@ public class UserinfoFragment extends BaseFragment implements PostSmsAsyncTask.S
                 showSendSmsDialog(mUid, mUsername, this);
                 return true;
             case R.id.action_blacklist:
-                BlacklistHelper.addBlacklist(mFormhash, mUsername);
+                BlacklistHelper.addBlacklist(mFormHash, mUsername);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    @Override
+    public void onSmsPrePost() {
+        smsPostProgressDialog = HiProgressDialog.show(getActivity(), "正在发送...");
+    }
+
+    @Override
+    public void onSmsPostDone(int status, final String message, AlertDialog dialog) {
+        if (status == Constants.STATUS_SUCCESS) {
+            smsPostProgressDialog.dismiss(message);
+            if (dialog != null)
+                dialog.dismiss();
+        } else {
+            smsPostProgressDialog.dismissError(message);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(SimpleListEvent event) {
+        if (!mSessionId.equals(event.mSessionId))
+            return;
+
+        EventBus.getDefault().removeStickyEvent(event);
+
+        if (event.mStatus == Constants.STATUS_IN_PROGRESS) {
+            return;
+        }
+
+        SimpleListBean list = event.mData;
+        mLoading = false;
+
+        if (mButton != null)
+            mButton.setEnabled(true);
+
+        if (list == null || list.getCount() == 0) {
+            UIUtils.toast("帖子加载失败");
+            return;
+        }
+
+        mSearchId = list.getSearchId();
+        mMaxPage = list.getMaxPage();
+        mSimpleListItemBeans.addAll(list.getAll());
+        mSimpleListAdapter.setDatas(mSimpleListItemBeans);
+        isThreadsLoaded = true;
     }
 
     private class UserInfoCallback implements OkHttpHelper.ResultCallback {
@@ -254,7 +301,7 @@ public class UserinfoFragment extends BaseFragment implements PostSmsAsyncTask.S
             if (info != null) {
                 if (HiSettingsHelper.getInstance().isLoadAvatar()) {
                     mAvatarView.setVisibility(View.VISIBLE);
-                    GlideHelper.loadAvatar(UserinfoFragment.this, mAvatarView, info.getAvatarUrl());
+                    GlideHelper.loadAvatar(UserInfoFragment.this, mAvatarView, info.getAvatarUrl());
                     mAvatarUrl = info.getAvatarUrl();
                 } else {
                     mAvatarView.setVisibility(View.GONE);
@@ -263,7 +310,7 @@ public class UserinfoFragment extends BaseFragment implements PostSmsAsyncTask.S
                 mDetailView.setText((!TextUtils.isEmpty(sig) ? "签名: " + sig + "\n\n" : "") + info.getDetail());
                 mUsername = info.getUsername();
                 mUsernameView.setText(mUsername);
-                mFormhash = info.getFormhash();
+                mFormHash = info.getFormHash();
                 if (info.isOnline()) {
                     mOnlineView.setVisibility(View.VISIBLE);
                 } else {
@@ -287,15 +334,15 @@ public class UserinfoFragment extends BaseFragment implements PostSmsAsyncTask.S
                 int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
 
                 if ((visibleItemCount + firstVisibleItem) >= totalItemCount - 5) {
-                    if (!mInloading) {
-                        mInloading = true;
+                    if (!mLoading) {
+                        mLoading = true;
                         if (mPage < mMaxPage) {
                             mPage++;
                             mRecyclerView.setFooterState(XFooterView.STATE_LOADING);
                             SearchBean bean = new SearchBean();
                             bean.setUid(mUid);
                             bean.setSearchId(mSearchId);
-                            SimpleListJob job = new SimpleListJob(UserinfoFragment.this.getActivity(), mSessionId,
+                            SimpleListJob job = new SimpleListJob(UserInfoFragment.this.getActivity(), mSessionId,
                                     SimpleListJob.TYPE_SEARCH_USER_THREADS,
                                     mPage,
                                     bean);
@@ -331,52 +378,6 @@ public class UserinfoFragment extends BaseFragment implements PostSmsAsyncTask.S
         @Override
         public void onDoubleTap(View view, int position) {
         }
-    }
-
-    @Override
-    public void onSmsPrePost() {
-        smsPostProgressDialog = HiProgressDialog.show(getActivity(), "正在发送...");
-    }
-
-    @Override
-    public void onSmsPostDone(int status, final String message, AlertDialog dialog) {
-        if (status == Constants.STATUS_SUCCESS) {
-            smsPostProgressDialog.dismiss(message);
-            if (dialog != null)
-                dialog.dismiss();
-        } else {
-            smsPostProgressDialog.dismissError(message);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onEvent(SimpleListEvent event) {
-        if (!mSessionId.equals(event.mSessionId))
-            return;
-
-        EventBus.getDefault().removeStickyEvent(event);
-
-        if (event.mStatus == Constants.STATUS_IN_PROGRESS) {
-            return;
-        }
-
-        SimpleListBean list = event.mData;
-        mInloading = false;
-
-        if (mButton != null)
-            mButton.setEnabled(true);
-
-        if (list == null || list.getCount() == 0) {
-            UIUtils.toast("帖子加载失败");
-            return;
-        }
-
-        mSearchId = list.getSearchId();
-        mMaxPage = list.getMaxPage();
-        mSimpleListItemBeans.addAll(list.getAll());
-        mSimpleListAdapter.setDatas(mSimpleListItemBeans);
-        isThreadsLoaded = true;
     }
 
 }

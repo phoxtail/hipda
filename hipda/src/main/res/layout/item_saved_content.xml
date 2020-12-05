@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:padding="8dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/tv_desc"
@@ -11,7 +11,7 @@
         android:layout_gravity="left"
         android:layout_margin="4dp"
         android:background="?attr/quote_background"
-        android:textSize="14sp"/>
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/tv_content"
@@ -20,6 +20,6 @@
         android:layout_margin="4dp"
         android:ellipsize="end"
         android:maxLines="3"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
 
 </LinearLayout>

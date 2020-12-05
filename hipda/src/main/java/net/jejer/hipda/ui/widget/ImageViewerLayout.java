@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.core.content.ContextCompat;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.davemorrissey.labs.subscaleview.ImageSource;
@@ -23,8 +25,6 @@ import net.jejer.hipda.bean.ContentImg;
 import net.jejer.hipda.cache.ImageContainer;
 import net.jejer.hipda.cache.ImageInfo;
 import net.jejer.hipda.utils.Utils;
-
-import androidx.core.content.ContextCompat;
 
 /**
  * Created by GreenSkinMonster on 2015-11-07.

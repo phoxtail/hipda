@@ -9,13 +9,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+
 import net.jejer.hipda.R;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import androidx.appcompat.app.AlertDialog;
 
 /**
  * Created by GreenSkinMonster on 2016-11-23.
@@ -58,6 +58,12 @@ public class SimplePopupMenu {
         });
     }
 
+    public void add(String actionKey, String actionName, AdapterView.OnItemClickListener listener) {
+        mActionKeys.add(actionKey);
+        mActions.put(actionKey, actionName);
+        mListeners.put(actionKey, listener);
+    }
+
     private class MenuActionAdapter extends ArrayAdapter<String> {
         MenuActionAdapter(Context context) {
             super(context, 0, mActionKeys);
@@ -77,12 +83,6 @@ public class SimplePopupMenu {
             text.setText(mActions.get(actionKey));
             return view;
         }
-    }
-
-    public void add(String actionKey, String actionName, AdapterView.OnItemClickListener listener) {
-        mActionKeys.add(actionKey);
-        mActions.put(actionKey, actionName);
-        mListeners.put(actionKey, listener);
     }
 
 }

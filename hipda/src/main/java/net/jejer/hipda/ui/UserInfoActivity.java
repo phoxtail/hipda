@@ -2,12 +2,12 @@ package net.jejer.hipda.ui;
 
 import android.os.Bundle;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+
 import com.google.android.material.appbar.AppBarLayout;
 
 import net.jejer.hipda.R;
-
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentManager;
 
 /**
  * Created by GreenSkinMonster on 2017-06-15.
@@ -32,7 +32,7 @@ public class UserInfoActivity extends SwipeBaseActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.findFragmentById(R.id.main_frame_container) == null) {
             Bundle arguments = getIntent().getExtras();
-            UserinfoFragment fragment = new UserinfoFragment();
+            UserInfoFragment fragment = new UserInfoFragment();
             fragment.setArguments(arguments);
             fragmentManager.beginTransaction()
                     .add(R.id.main_frame_container, fragment).commit();

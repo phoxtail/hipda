@@ -16,6 +16,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -34,13 +41,6 @@ import net.jejer.hipda.utils.UIUtils;
 import net.jejer.hipda.utils.Utils;
 
 import java.util.UUID;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 /**
  * a base fragment
@@ -153,10 +153,10 @@ public abstract class BaseFragment extends Fragment {
 
     void showSendSmsDialog(final String uid, final String username, final PostSmsAsyncTask.SmsPostListener listener) {
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View viewlayout = inflater.inflate(R.layout.dialog_send_sms, null);
+        final View viewLayout = inflater.inflate(R.layout.dialog_send_sms, null);
 
-        final EditText etSmsContent = viewlayout.findViewById(R.id.et_sms_content);
-        final EditText etRecipient = viewlayout.findViewById(R.id.et_sms_receipient);
+        final EditText etSmsContent = viewLayout.findViewById(R.id.et_sms_content);
+        final EditText etRecipient = viewLayout.findViewById(R.id.et_sms_recipient);
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(getActivity());
 
         if (!TextUtils.isEmpty(uid)) {
@@ -164,7 +164,7 @@ public abstract class BaseFragment extends Fragment {
         }
 
         popDialog.setTitle("发送短消息" + (!TextUtils.isEmpty(uid) ? "给 " + Utils.nullToText(username) : ""));
-        popDialog.setView(viewlayout);
+        popDialog.setView(viewLayout);
         popDialog.setPositiveButton("发送", null);
         popDialog.setNegativeButton("取消", null);
         final AlertDialog dialog = popDialog.create();

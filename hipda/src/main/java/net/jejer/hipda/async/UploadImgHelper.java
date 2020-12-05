@@ -72,10 +72,27 @@ public class UploadImgHelper {
         }
     }
 
-    public interface UploadImgListener {
-        void updateProgress(int total, int current, int percentage);
+    private static ByteArrayOutputStream readFileToStream(String file) {
+        FileInputStream fileInputStream = null;
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            fileInputStream = new FileInputStream(file);
+            int readBytes;
+            byte[] buf = new byte[1024];
+            while ((readBytes = fileInputStream.read(buf)) > 0) {
+                bos.write(buf, 0, readBytes);
+            }
+            return bos;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                if (fileInputStream != null)
+                    fileInputStream.close();
+            } catch (Exception ignored) {
 
-        void itemComplete(Uri uri, int total, int current, String currentFileName, String message, String detail, String imgId, Bitmap thumbtail);
+            }
+        }
     }
 
     public void upload() {
@@ -103,8 +120,8 @@ public class UploadImgHelper {
         ImageFileInfo imageFileInfo = CursorUtils.getImageFileInfo(mCtx, uri);
         mCurrentFileName = imageFileInfo.getFileName();
 
-        ByteArrayOutputStream baos = getImageStream(uri, imageFileInfo);
-        if (baos == null) {
+        ByteArrayOutputStream avatar = getImageStream(uri, imageFileInfo);
+        if (avatar == null) {
             mMessage = "处理图片发生错误";
             return null;
         }
@@ -116,7 +133,7 @@ public class UploadImgHelper {
         }
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd_HHmm", Locale.US);
         String fileName = "Hi_" + formatter.format(new Date()) + "." + Utils.getImageFileSuffix(imageFileInfo.getMime());
-        RequestBody requestBody = RequestBody.create(MediaType.parse(imageFileInfo.getMime()), baos.toByteArray());
+        RequestBody requestBody = RequestBody.create(MediaType.parse(imageFileInfo.getMime()), avatar.toByteArray());
         builder.addFormDataPart("Filedata", fileName, requestBody);
 
         Request request = new Request.Builder()
@@ -138,7 +155,7 @@ public class UploadImgHelper {
                     mMessage = "无效上传图片ID";
                     mDetail = "原图限制：" + Utils.toSizeText(HiSettingsHelper.getInstance().getMaxUploadFileSize())
                             + "\n压缩目标：" + Utils.toSizeText(mMaxImageFileSize)
-                            + "\n实际大小：" + Utils.toSizeText(baos.size())
+                            + "\n实际大小：" + Utils.toSizeText(avatar.size())
                             + "\n" + responseText;
                 } else {
                     imgId = s[2];
@@ -147,7 +164,7 @@ public class UploadImgHelper {
                 mMessage = "无法获取图片ID";
                 mDetail = "原图限制：" + Utils.toSizeText(HiSettingsHelper.getInstance().getMaxUploadFileSize())
                         + "\n压缩目标：" + Utils.toSizeText(mMaxImageFileSize)
-                        + "\n实际大小：" + Utils.toSizeText(baos.size())
+                        + "\n实际大小：" + Utils.toSizeText(avatar.size())
                         + "\n" + responseText;
             }
         } catch (Exception e) {
@@ -155,11 +172,11 @@ public class UploadImgHelper {
             mMessage = OkHttpHelper.getErrorMessage(e).getMessage();
             mDetail = "原图限制：" + Utils.toSizeText(HiSettingsHelper.getInstance().getMaxUploadFileSize())
                     + "\n压缩目标：" + Utils.toSizeText(mMaxImageFileSize)
-                    + "\n实际大小：" + Utils.toSizeText(baos.size())
+                    + "\n实际大小：" + Utils.toSizeText(avatar.size())
                     + "\n" + e.getMessage();
         } finally {
             try {
-                baos.close();
+                avatar.close();
             } catch (IOException ignored) {
             }
         }
@@ -182,18 +199,18 @@ public class UploadImgHelper {
         }
 
         //gif or very long/wide image or small image or filePath is null
-        if (isDirectUploadable(imageFileInfo)) {
+        if (canDirectUpload(imageFileInfo)) {
             mThumb = ThumbnailUtils.extractThumbnail(bitmap, THUMB_SIZE, THUMB_SIZE);
             bitmap.recycle();
             return readFileToStream(imageFileInfo.getFilePath());
         }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(CompressFormat.JPEG, MAX_QUALITY, baos);
+        ByteArrayOutputStream avatar = new ByteArrayOutputStream();
+        bitmap.compress(CompressFormat.JPEG, MAX_QUALITY, avatar);
         bitmap.recycle();
         bitmap = null;
 
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
+        ByteArrayInputStream isBm = new ByteArrayInputStream(avatar.toByteArray());
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(isBm, null, opts);
@@ -209,11 +226,11 @@ public class UploadImgHelper {
         newOpts.inJustDecodeBounds = false;
         newOpts.inSampleSize = be;
 
-        isBm = new ByteArrayInputStream(baos.toByteArray());
-        Bitmap newbitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
+        isBm = new ByteArrayInputStream(avatar.toByteArray());
+        Bitmap newBitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
 
-        width = newbitmap.getWidth();
-        height = newbitmap.getHeight();
+        width = newBitmap.getWidth();
+        height = newBitmap.getHeight();
 
         //scale bitmap so later compress could run less times, once is the best result
         //rotate if needed
@@ -231,34 +248,34 @@ public class UploadImgHelper {
             if (scale < 1)
                 matrix.postScale(scale, scale);
 
-            Bitmap scaledBitmap = Bitmap.createBitmap(newbitmap, 0, 0, newbitmap.getWidth(),
-                    newbitmap.getHeight(), matrix, true);
+            Bitmap scaledBitmap = Bitmap.createBitmap(newBitmap, 0, 0, newBitmap.getWidth(),
+                    newBitmap.getHeight(), matrix, true);
 
-            newbitmap.recycle();
-            newbitmap = scaledBitmap;
+            newBitmap.recycle();
+            newBitmap = scaledBitmap;
         }
 
         int quality = MAX_QUALITY;
-        baos.reset();
-        newbitmap.compress(CompressFormat.JPEG, quality, baos);
-        while (baos.size() > mMaxImageFileSize) {
+        avatar.reset();
+        newBitmap.compress(CompressFormat.JPEG, quality, avatar);
+        while (avatar.size() > mMaxImageFileSize) {
             quality -= 10;
             if (quality <= 50) {
                 mMessage = "无法压缩图片至指定大小 " + Utils.toSizeText(mMaxImageFileSize);
                 return null;
             }
-            baos.reset();
-            newbitmap.compress(CompressFormat.JPEG, quality, baos);
+            avatar.reset();
+            newBitmap.compress(CompressFormat.JPEG, quality, avatar);
         }
 
-        mThumb = ThumbnailUtils.extractThumbnail(newbitmap, THUMB_SIZE, THUMB_SIZE);
-        newbitmap.recycle();
-        newbitmap = null;
+        mThumb = ThumbnailUtils.extractThumbnail(newBitmap, THUMB_SIZE, THUMB_SIZE);
+        newBitmap.recycle();
+        newBitmap = null;
 
-        return baos;
+        return avatar;
     }
 
-    private boolean isDirectUploadable(ImageFileInfo imageFileInfo) {
+    private boolean canDirectUpload(ImageFileInfo imageFileInfo) {
         if (mOriginal)
             return true;
 
@@ -286,27 +303,10 @@ public class UploadImgHelper {
         return fileSize <= mMaxImageFileSize && w * h <= mMaxPixels;
     }
 
-    private static ByteArrayOutputStream readFileToStream(String file) {
-        FileInputStream fileInputStream = null;
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            fileInputStream = new FileInputStream(file);
-            int readedBytes;
-            byte[] buf = new byte[1024];
-            while ((readedBytes = fileInputStream.read(buf)) > 0) {
-                bos.write(buf, 0, readedBytes);
-            }
-            return bos;
-        } catch (Exception e) {
-            return null;
-        } finally {
-            try {
-                if (fileInputStream != null)
-                    fileInputStream.close();
-            } catch (Exception ignored) {
+    public interface UploadImgListener {
+        void updateProgress(int total, int current, int percentage);
 
-            }
-        }
+        void itemComplete(Uri uri, int total, int current, String currentFileName, String message, String detail, String imgId, Bitmap thumbnail);
     }
 
 }

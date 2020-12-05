@@ -55,7 +55,7 @@ public class HiParserThreadList {
             Element tbodyE = tbodyES.get(i);
             ThreadBean thread = new ThreadBean();
 
-			/* title and tid */
+            /* title and tid */
             String[] idSpil = tbodyE.attr("id").split("_");
             if (idSpil.length != 2) {
                 continue;
@@ -96,7 +96,7 @@ public class HiParserThreadList {
                 thread.setNew(imgSrc.contains("new"));
             }
 
-			/*  author, authorId and create_time  */
+            /*  author, authorId and create_time  */
             Elements authorES = tbodyE.select("td.author");
             if (authorES.size() == 0) {
                 continue;
@@ -133,7 +133,7 @@ public class HiParserThreadList {
                 thread.setTimeUpdate(threadUpdateTime);
             }
 
-			/*  comments and views  */
+            /*  comments and views  */
             Elements nums = tbodyE.select("td.nums");
             if (nums.size() == 0) {
                 continue;
@@ -195,6 +195,10 @@ public class HiParserThreadList {
         return threads;
     }
 
+    public static void holdFetchNotify() {
+        HOLD_FETCH_NOTIFY = System.currentTimeMillis();
+    }
+
     public static class parseNotifyRunnable implements Runnable {
 
         private Document mDoc;
@@ -212,10 +216,6 @@ public class HiParserThreadList {
                 NotiHelper.showNotification(mCtx);
             }
         }
-    }
-
-    public static void holdFetchNotify() {
-        HOLD_FETCH_NOTIFY = System.currentTimeMillis();
     }
 
 }

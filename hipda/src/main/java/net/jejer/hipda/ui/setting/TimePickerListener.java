@@ -3,10 +3,10 @@ package net.jejer.hipda.ui.setting;
 import android.content.DialogInterface;
 import android.widget.TimePicker;
 
-import net.jejer.hipda.bean.HiSettingsHelper;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
+
+import net.jejer.hipda.bean.HiSettingsHelper;
 
 /**
  * Created by GreenSkinMonster on 2017-06-02.

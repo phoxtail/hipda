@@ -23,6 +23,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -54,7 +60,7 @@ import net.jejer.hipda.ui.widget.FABHideOnScrollBehavior;
 import net.jejer.hipda.ui.widget.HiProgressDialog;
 import net.jejer.hipda.ui.widget.OnViewItemSingleClickListener;
 import net.jejer.hipda.ui.widget.SimpleDivider;
-import net.jejer.hipda.ui.widget.ValueChagerView;
+import net.jejer.hipda.ui.widget.ValueChangerView;
 import net.jejer.hipda.ui.widget.XFooterView;
 import net.jejer.hipda.ui.widget.XRecyclerView;
 import net.jejer.hipda.utils.ColorHelper;
@@ -70,34 +76,25 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 public class ThreadListFragment extends BaseFragment
         implements SwipeRefreshLayout.OnRefreshListener {
 
-    private final static int MIN_TREADS_IN_PAGE = 10;
     public static final String ARG_FID_KEY = "fid";
-
+    private final static int MIN_TREADS_IN_PAGE = 10;
+    private final int[] mFidHolder = new int[1];
     private Context mCtx;
     private int mForumId = 0;
     private int mPage = 1;
     private ThreadListAdapter mThreadListAdapter;
     private List<ThreadBean> mThreadBeans = new ArrayList<>();
     private XRecyclerView mRecyclerView;
-    private boolean mInloading = false;
+    private boolean mLoading = false;
     private HiProgressDialog postProgressDialog;
     private SwipeRefreshLayout swipeLayout;
     private ContentLoadingView mLoadingView;
     private int mFirstVisibleItem = 0;
     private boolean mDataReceived = false;
-
     private MenuItem mForumTypeMenuItem;
-    private final int[] mFidHolder = new int[1];
-
     private ThreadListEventCallback mEventCallback = new ThreadListEventCallback();
 
     @Override
@@ -148,8 +145,8 @@ public class ThreadListFragment extends BaseFragment
         mLoadingView.setErrorStateListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!mInloading) {
-                    mInloading = true;
+                if (!mLoading) {
+                    mLoading = true;
                     mLoadingView.setState(ContentLoadingView.LOAD_NOW);
                     refresh();
                 }
@@ -193,10 +190,10 @@ public class ThreadListFragment extends BaseFragment
     private void startLoading() {
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
-        if (!mInloading) {
+        if (!mLoading) {
             if (mThreadBeans.size() == 0) {
                 mLoadingView.setState(ContentLoadingView.LOAD_NOW);
-                mInloading = true;
+                mLoading = true;
                 ThreadListJob job = new ThreadListJob(getActivity(), mSessionId, mForumId, mPage);
                 JobMgr.addJob(job);
             } else {
@@ -264,7 +261,7 @@ public class ThreadListFragment extends BaseFragment
                 showForumTypesDialog();
                 return true;
             case R.id.action_order_by:
-                if (!mInloading) {
+                if (!mLoading) {
                     item.setChecked(!item.isChecked());
                     HiSettingsHelper.getInstance().setSortByPostTime(mForumId, item.isChecked());
                     setActionBarSubtitle();
@@ -341,7 +338,7 @@ public class ThreadListFragment extends BaseFragment
         mPage = 1;
         mRecyclerView.scrollToTop();
         hideFooter();
-        mInloading = true;
+        mLoading = true;
         if (HiSettingsHelper.getInstance().isFabAutoHide() && mMainFab != null) {
             FABHideOnScrollBehavior.hideFab(mMainFab);
         }
@@ -361,65 +358,6 @@ public class ThreadListFragment extends BaseFragment
             mThreadListAdapter.notifyDataSetChanged();
     }
 
-    private class OnScrollListener extends RecyclerView.OnScrollListener {
-        int visibleItemCount, totalItemCount;
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            if (dy > 0) {
-                LinearLayoutManager mLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                visibleItemCount = mLayoutManager.getChildCount();
-                totalItemCount = mLayoutManager.getItemCount();
-                mFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-
-                if ((visibleItemCount + mFirstVisibleItem) >= totalItemCount - 5) {
-                    if (!mInloading) {
-                        mPage++;
-                        mInloading = true;
-                        mRecyclerView.setFooterState(XFooterView.STATE_LOADING);
-                        ThreadListJob job = new ThreadListJob(getActivity(), mSessionId, mForumId, mPage);
-                        JobMgr.addJob(job);
-                    }
-                }
-            }
-        }
-    }
-
-    private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
-
-        @Override
-        public void onItemClick(View view, int position) {
-            ThreadBean thread = mThreadListAdapter.getItem(position);
-            if (thread != null) {
-                String tid = thread.getTid();
-                String title = thread.getTitle();
-                FragmentUtils.showThreadActivity(getActivity(), false, tid, title, -1, -1, null, thread.getMaxPage());
-                HistoryDao.saveHistoryInBackground(tid, mFidHolder[0] + "",
-                        title, thread.getAuthorId(), thread.getAuthor(), thread.getTimeCreate());
-            }
-        }
-
-        @Override
-        public void onLongItemClick(View view, int position) {
-            ThreadBean thread = mThreadListAdapter.getItem(position);
-            if (thread != null) {
-                String tid = thread.getTid();
-                String title = thread.getTitle();
-                int page = 1;
-                int maxPostsInPage = HiSettingsHelper.getInstance().getMaxPostsInPage();
-                if (maxPostsInPage > 0 && TextUtils.isDigitsOnly(thread.getCountCmts())) {
-                    page = (int) Math.ceil((Integer.parseInt(thread.getCountCmts()) + 1) * 1.0f / maxPostsInPage);
-                }
-                FragmentUtils.showThreadActivity(getActivity(), false, tid, title, page, ThreadDetailFragment.LAST_FLOOR, null, thread.getMaxPage());
-                HistoryDao.saveHistoryInBackground(tid, "", title, thread.getAuthorId(), thread.getAuthor(), thread.getTimeCreate());
-            }
-        }
-
-        @Override
-        public void onDoubleTap(View view, int position) {
-        }
-    }
-
     private void hideFooter() {
         mRecyclerView.setFooterState(XFooterView.STATE_HIDDEN);
     }
@@ -428,13 +366,13 @@ public class ThreadListFragment extends BaseFragment
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.dialog_thread_list_settings, null);
 
-        final ValueChagerView valueChagerView = view.findViewById(R.id.value_changer);
+        final ValueChangerView valueChangerView = view.findViewById(R.id.value_changer);
 
-        valueChagerView.setCurrentValue(HiSettingsHelper.getInstance().getTitleTextSizeAdj());
+        valueChangerView.setCurrentValue(HiSettingsHelper.getInstance().getTitleTextSizeAdj());
 
         final BottomSheetDialog dialog = new BottomDialog(getActivity());
 
-        valueChagerView.setOnChangeListener(new ValueChagerView.OnChangeListener() {
+        valueChangerView.setOnChangeListener(new ValueChangerView.OnChangeListener() {
             @Override
             public void onChange(int currentValue) {
                 HiSettingsHelper.getInstance().setTitleTextSizeAdj(currentValue);
@@ -452,14 +390,14 @@ public class ThreadListFragment extends BaseFragment
     private void showForumTypesDialog() {
         final String currentTypeId = HiSettingsHelper.getInstance().getBSTypeId();
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View viewlayout = inflater.inflate(R.layout.dialog_forum_types, null);
+        final View viewLayout = inflater.inflate(R.layout.dialog_forum_types, null);
 
-        final ListView listView = viewlayout.findViewById(R.id.lv_forum_types);
+        final ListView listView = viewLayout.findViewById(R.id.lv_forum_types);
 
         listView.setAdapter(new ForumTypesAdapter(getActivity()));
 
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(getActivity());
-        popDialog.setView(viewlayout);
+        popDialog.setView(viewLayout);
         final AlertDialog dialog = popDialog.create();
         dialog.show();
 
@@ -482,7 +420,7 @@ public class ThreadListFragment extends BaseFragment
 
     private void showOpenUrlDialog() {
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View viewlayout = inflater.inflate(R.layout.dialog_open_by_url, null);
+        final View viewLayout = inflater.inflate(R.layout.dialog_open_by_url, null);
 
         String urlFromClip = HiUtils.ThreadListUrl;
         ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
@@ -492,14 +430,14 @@ public class ThreadListFragment extends BaseFragment
                 urlFromClip = text;
         }
 
-        final EditText etUrl = viewlayout.findViewById(R.id.et_url);
+        final EditText etUrl = viewLayout.findViewById(R.id.et_url);
         etUrl.setText(urlFromClip);
         etUrl.selectAll();
         etUrl.requestFocus();
 
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(getActivity());
         popDialog.setTitle(mCtx.getResources().getString(R.string.action_open_by_url));
-        popDialog.setView(viewlayout);
+        popDialog.setView(viewLayout);
         popDialog.setPositiveButton(getResources().getString(android.R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -538,11 +476,11 @@ public class ThreadListFragment extends BaseFragment
             int smsCount = NotiHelper.getCurrentNotification().getSmsCount();
             int threadCount = NotiHelper.getCurrentNotification().getThreadCount();
             if (smsCount > 0) {
-                mNotificationFab.hide(); //avoid desgin lib bug cause image lost
+                mNotificationFab.hide(); //avoid design lib bug cause image lost
                 mNotificationFab.setImageResource(R.drawable.ic_mail_white_24dp);
                 mNotificationFab.show();
             } else if (threadCount > 0) {
-                mNotificationFab.hide(); //avoid desgin lib bug cause image lost
+                mNotificationFab.hide(); //avoid design lib bug cause image lost
                 mNotificationFab.setImageResource(R.drawable.ic_notifications_white_24dp);
                 mNotificationFab.show();
             } else {
@@ -560,122 +498,11 @@ public class ThreadListFragment extends BaseFragment
         mRecyclerView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0));
     }
 
-    private class ForumTypesAdapter extends ArrayAdapter {
-
-        public ForumTypesAdapter(Context context) {
-            super(context, 0, HiUtils.BS_TYPES);
-        }
-
-        @Override
-        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-            View row;
-            if (convertView == null) {
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                row = inflater.inflate(R.layout.item_forum_type, parent, false);
-            } else {
-                row = convertView;
-            }
-            ImageView icon = row.findViewById(R.id.forum_type_icon);
-            TextView text = row.findViewById(R.id.forum_type_text);
-
-            text.setText(HiUtils.BS_TYPES[position]);
-            if (position == HiUtils.getBSTypeIndexByFid(HiSettingsHelper.getInstance().getBSTypeId())) {
-                icon.setImageDrawable(new IconicsDrawable(getActivity(), HiUtils.BS_TYPE_ICONS[position]).color(ColorHelper.getColorAccent(getActivity())).sizeDp(20));
-                text.setTextColor(ColorHelper.getColorAccent(getActivity()));
-            } else {
-                icon.setImageDrawable(new IconicsDrawable(getActivity(), HiUtils.BS_TYPE_ICONS[position]).color(ColorHelper.getTextColorPrimary(getActivity())).sizeDp(20));
-                text.setTextColor(ColorHelper.getTextColorPrimary(getActivity()));
-            }
-
-            return row;
-        }
-    }
-
-    private class ThreadListEventCallback extends EventCallback<ThreadListEvent> {
-        @Override
-        public void onSuccess(ThreadListEvent event) {
-            mInloading = false;
-            swipeLayout.setRefreshing(false);
-            mLoadingView.setState(ContentLoadingView.CONTENT);
-            hideFooter();
-
-            ThreadListBean threads = event.mData;
-            if (TextUtils.isEmpty(HiSettingsHelper.getInstance().getUid())
-                    && !TextUtils.isEmpty(threads.getUid())) {
-                HiSettingsHelper.getInstance().setUid(threads.getUid());
-                if (getActivity() != null)
-                    ((MainFrameActivity) getActivity()).updateAccountHeader();
-            }
-
-            if (mPage == 1) {
-                mThreadBeans.clear();
-                mThreadBeans.addAll(threads.getThreads());
-                mThreadListAdapter.setDatas(mThreadBeans);
-                mRecyclerView.scrollToTop();
-            } else {
-                for (ThreadBean newthread : threads.getThreads()) {
-                    boolean duplicate = false;
-                    for (int i = 0; i < mThreadBeans.size(); i++) {
-                        ThreadBean oldthread = mThreadBeans.get(i);
-                        if (newthread != null && newthread.getTid().equals(oldthread.getTid())) {
-                            duplicate = true;
-                            break;
-                        }
-                    }
-                    if (!duplicate) {
-                        mThreadBeans.add(newthread);
-                    }
-                }
-                mThreadListAdapter.setDatas(mThreadBeans);
-            }
-
-            if (!mDataReceived) {
-                mDataReceived = true;
-                mMainFab.show();
-                if (HiSettingsHelper.getInstance().isAppBarCollapsible())
-                    ((MainFrameActivity) getActivity()).mAppBarLayout.setExpanded(true, true);
-            }
-            showNotification();
-
-            if (mPage <= 5 && mThreadBeans.size() < MIN_TREADS_IN_PAGE) {
-                if (mPage == 1 && mThreadBeans.size() == 0)
-                    UIUtils.toast("置顶贴较多，请在网页版论坛 个人中心 \n将 论坛个性化设定 - 每页主题 设为 默认");
-                mPage++;
-                mInloading = true;
-                ThreadListJob job = new ThreadListJob(getActivity(), mSessionId, mForumId, mPage);
-                JobMgr.addJob(job);
-            }
-        }
-
-        @Override
-        public void onFail(ThreadListEvent event) {
-            mInloading = false;
-            swipeLayout.setRefreshing(false);
-            hideFooter();
-
-            if (mPage > 1)
-                mPage--;
-
-            if (mThreadBeans.size() > 0) {
-                mLoadingView.setState(ContentLoadingView.CONTENT);
-            } else {
-                mLoadingView.setState(ContentLoadingView.ERROR);
-            }
-            UIUtils.errorSnack(getView(), event.mMessage, event.mDetail);
-        }
-
-        @Override
-        public void onFailRelogin(ThreadListEvent event) {
-            enterNotLoginState();
-            ((MainFrameActivity) getActivity()).showLoginDialog();
-        }
-    }
-
     protected void enterNotLoginState() {
         setHasOptionsMenu(false);
         getActivity().invalidateOptionsMenu();
 
-        mInloading = false;
+        mLoading = false;
         swipeLayout.setRefreshing(false);
         hideFooter();
         mThreadBeans.clear();
@@ -730,7 +557,7 @@ public class ThreadListFragment extends BaseFragment
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(NetworkReadyEvent event) {
-        if (!mInloading && mThreadBeans.size() == 0)
+        if (!mLoading && mThreadBeans.size() == 0)
             refresh();
     }
 
@@ -756,6 +583,176 @@ public class ThreadListFragment extends BaseFragment
                     break;
                 }
             }
+        }
+    }
+
+    private class OnScrollListener extends RecyclerView.OnScrollListener {
+        int visibleItemCount, totalItemCount;
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (dy > 0) {
+                LinearLayoutManager mLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                visibleItemCount = mLayoutManager.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                mFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+
+                if ((visibleItemCount + mFirstVisibleItem) >= totalItemCount - 5) {
+                    if (!mLoading) {
+                        mPage++;
+                        mLoading = true;
+                        mRecyclerView.setFooterState(XFooterView.STATE_LOADING);
+                        ThreadListJob job = new ThreadListJob(getActivity(), mSessionId, mForumId, mPage);
+                        JobMgr.addJob(job);
+                    }
+                }
+            }
+        }
+    }
+
+    private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
+
+        @Override
+        public void onItemClick(View view, int position) {
+            ThreadBean thread = mThreadListAdapter.getItem(position);
+            if (thread != null) {
+                String tid = thread.getTid();
+                String title = thread.getTitle();
+                FragmentUtils.showThreadActivity(getActivity(), false, tid, title, -1, -1, null, thread.getMaxPage());
+                HistoryDao.saveHistoryInBackground(tid, mFidHolder[0] + "",
+                        title, thread.getAuthorId(), thread.getAuthor(), thread.getTimeCreate());
+            }
+        }
+
+        @Override
+        public void onLongItemClick(View view, int position) {
+            ThreadBean thread = mThreadListAdapter.getItem(position);
+            if (thread != null) {
+                String tid = thread.getTid();
+                String title = thread.getTitle();
+                int page = 1;
+                int maxPostsInPage = HiSettingsHelper.getInstance().getMaxPostsInPage();
+                if (maxPostsInPage > 0 && TextUtils.isDigitsOnly(thread.getCountCmts())) {
+                    page = (int) Math.ceil((Integer.parseInt(thread.getCountCmts()) + 1) * 1.0f / maxPostsInPage);
+                }
+                FragmentUtils.showThreadActivity(getActivity(), false, tid, title, page, ThreadDetailFragment.LAST_FLOOR, null, thread.getMaxPage());
+                HistoryDao.saveHistoryInBackground(tid, "", title, thread.getAuthorId(), thread.getAuthor(), thread.getTimeCreate());
+            }
+        }
+
+        @Override
+        public void onDoubleTap(View view, int position) {
+        }
+    }
+
+    private class ForumTypesAdapter extends ArrayAdapter {
+
+        public ForumTypesAdapter(Context context) {
+            super(context, 0, HiUtils.BS_TYPES);
+        }
+
+        @Override
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            View row;
+            if (convertView == null) {
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                row = inflater.inflate(R.layout.item_forum_type, parent, false);
+            } else {
+                row = convertView;
+            }
+            ImageView icon = row.findViewById(R.id.forum_type_icon);
+            TextView text = row.findViewById(R.id.forum_type_text);
+
+            text.setText(HiUtils.BS_TYPES[position]);
+            if (position == HiUtils.getBSTypeIndexByFid(HiSettingsHelper.getInstance().getBSTypeId())) {
+                icon.setImageDrawable(new IconicsDrawable(getActivity(), HiUtils.BS_TYPE_ICONS[position]).color(ColorHelper.getColorAccent(getActivity())).sizeDp(20));
+                text.setTextColor(ColorHelper.getColorAccent(getActivity()));
+            } else {
+                icon.setImageDrawable(new IconicsDrawable(getActivity(), HiUtils.BS_TYPE_ICONS[position]).color(ColorHelper.getTextColorPrimary(getActivity())).sizeDp(20));
+                text.setTextColor(ColorHelper.getTextColorPrimary(getActivity()));
+            }
+
+            return row;
+        }
+    }
+
+    private class ThreadListEventCallback extends EventCallback<ThreadListEvent> {
+        @Override
+        public void onSuccess(ThreadListEvent event) {
+            mLoading = false;
+            swipeLayout.setRefreshing(false);
+            mLoadingView.setState(ContentLoadingView.CONTENT);
+            hideFooter();
+
+            ThreadListBean threads = event.mData;
+            if (TextUtils.isEmpty(HiSettingsHelper.getInstance().getUid())
+                    && !TextUtils.isEmpty(threads.getUid())) {
+                HiSettingsHelper.getInstance().setUid(threads.getUid());
+                if (getActivity() != null)
+                    ((MainFrameActivity) getActivity()).updateAccountHeader();
+            }
+
+            if (mPage == 1) {
+                mThreadBeans.clear();
+                mThreadBeans.addAll(threads.getThreads());
+                mThreadListAdapter.setDatas(mThreadBeans);
+                mRecyclerView.scrollToTop();
+            } else {
+                for (ThreadBean newThread : threads.getThreads()) {
+                    boolean duplicate = false;
+                    for (int i = 0; i < mThreadBeans.size(); i++) {
+                        ThreadBean oldThread = mThreadBeans.get(i);
+                        if (newThread != null && newThread.getTid().equals(oldThread.getTid())) {
+                            duplicate = true;
+                            break;
+                        }
+                    }
+                    if (!duplicate) {
+                        mThreadBeans.add(newThread);
+                    }
+                }
+                mThreadListAdapter.setDatas(mThreadBeans);
+            }
+
+            if (!mDataReceived) {
+                mDataReceived = true;
+                mMainFab.show();
+                if (HiSettingsHelper.getInstance().isAppBarCollapsible())
+                    ((MainFrameActivity) getActivity()).mAppBarLayout.setExpanded(true, true);
+            }
+            showNotification();
+
+            if (mPage <= 5 && mThreadBeans.size() < MIN_TREADS_IN_PAGE) {
+                if (mPage == 1 && mThreadBeans.size() == 0)
+                    UIUtils.toast("置顶贴较多，请在网页版论坛 个人中心 \n将 论坛个性化设定 - 每页主题 设为 默认");
+                mPage++;
+                mLoading = true;
+                ThreadListJob job = new ThreadListJob(getActivity(), mSessionId, mForumId, mPage);
+                JobMgr.addJob(job);
+            }
+        }
+
+        @Override
+        public void onFail(ThreadListEvent event) {
+            mLoading = false;
+            swipeLayout.setRefreshing(false);
+            hideFooter();
+
+            if (mPage > 1)
+                mPage--;
+
+            if (mThreadBeans.size() > 0) {
+                mLoadingView.setState(ContentLoadingView.CONTENT);
+            } else {
+                mLoadingView.setState(ContentLoadingView.ERROR);
+            }
+            UIUtils.errorSnack(getView(), event.mMessage, event.mDetail);
+        }
+
+        @Override
+        public void onFailRelogin(ThreadListEvent event) {
+            enterNotLoginState();
+            ((MainFrameActivity) getActivity()).showLoginDialog();
         }
     }
 

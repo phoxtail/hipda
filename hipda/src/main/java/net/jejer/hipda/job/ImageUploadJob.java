@@ -58,11 +58,11 @@ public class ImageUploadJob extends BaseJob implements UploadImgHelper.UploadImg
     }
 
     @Override
-    public void itemComplete(Uri uri, int total, int current, String currentFileName, String message, String detail, String imgId, Bitmap thumbtail) {
+    public void itemComplete(Uri uri, int total, int current, String currentFileName, String message, String detail, String imgId, Bitmap thumbnail) {
         UploadImage image = new UploadImage();
         image.setFileName(currentFileName);
         image.setImgId(imgId);
-        image.setThumb(thumbtail);
+        image.setThumb(thumbnail);
         image.setUri(uri);
 
         ImageUploadEvent event = new ImageUploadEvent();

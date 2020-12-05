@@ -16,6 +16,36 @@ import net.jejer.hipda.R;
  */
 public class DrawerHelper {
 
+    public static IDrawerItem getPrimaryMenuItem(DrawerItem drawerItem) {
+        PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
+                .withName(drawerItem.name)
+                .withIdentifier(drawerItem.id)
+                .withIcon(drawerItem.icon);
+
+        if (drawerItem.withBadge) {
+            primaryDrawerItem
+                    .withBadgeStyle(new BadgeStyle()
+                            .withTextColor(Color.WHITE)
+                            .withColorRes(R.color.grey));
+        }
+        return primaryDrawerItem;
+    }
+
+    public static IDrawerItem getSecondaryMenuItem(DrawerItem drawerItem) {
+        SecondaryDrawerItem secondaryDrawerItem = new SecondaryDrawerItem()
+                .withName(drawerItem.name)
+                .withIdentifier(drawerItem.id)
+                .withIcon(drawerItem.icon);
+
+        if (drawerItem.withBadge) {
+            secondaryDrawerItem
+                    .withBadgeStyle(new BadgeStyle()
+                            .withTextColor(Color.WHITE)
+                            .withColorRes(R.color.grey));
+        }
+        return secondaryDrawerItem;
+    }
+
     public enum DrawerItem {
         SEARCH(Constants.DRAWER_SEARCH, R.string.title_drawer_search, GoogleMaterial.Icon.gmd_search),
         NEW_POSTS(Constants.DRAWER_NEW_POSTS, R.string.title_drawer_new_posts, GoogleMaterial.Icon.gmd_wb_sunny),
@@ -45,36 +75,6 @@ public class DrawerHelper {
             this.icon = icon;
             withBadge = false;
         }
-    }
-
-    public static IDrawerItem getPrimaryMenuItem(DrawerItem drawerItem) {
-        PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
-                .withName(drawerItem.name)
-                .withIdentifier(drawerItem.id)
-                .withIcon(drawerItem.icon);
-
-        if (drawerItem.withBadge) {
-            primaryDrawerItem
-                    .withBadgeStyle(new BadgeStyle()
-                            .withTextColor(Color.WHITE)
-                            .withColorRes(R.color.grey));
-        }
-        return primaryDrawerItem;
-    }
-
-    public static IDrawerItem getSecondaryMenuItem(DrawerItem drawerItem) {
-        SecondaryDrawerItem secondaryDrawerItem = new SecondaryDrawerItem()
-                .withName(drawerItem.name)
-                .withIdentifier(drawerItem.id)
-                .withIcon(drawerItem.icon);
-
-        if (drawerItem.withBadge) {
-            secondaryDrawerItem
-                    .withBadgeStyle(new BadgeStyle()
-                            .withTextColor(Color.WHITE)
-                            .withColorRes(R.color.grey));
-        }
-        return secondaryDrawerItem;
     }
 
 }

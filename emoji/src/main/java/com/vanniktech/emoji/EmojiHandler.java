@@ -17,10 +17,13 @@ import java.util.Map;
 public final class EmojiHandler {
     private static final Map<String, Integer> EMOJIS_MAP = new HashMap<>(Default.EMOJIS.length + Monkey.EMOJIS.length + Dumb.EMOJIS.length);
     private static final Map<String, Integer> DRAWABLE_MAP = new HashMap<>(Default.EMOJIS.length + Monkey.EMOJIS.length + Dumb.EMOJIS.length);
-    private static Map<String, Bitmap> IMAGE_MAP;
-
     private final static String IMG_MATCH_START = "[attachimg]";
     private final static String IMG_MATCH_END = "[/attachimg]";
+    private static Map<String, Bitmap> IMAGE_MAP;
+
+    private EmojiHandler() {
+        throw new AssertionError("No instances.");
+    }
 
     public static void init(boolean isLightTheme) {
         EMOJIS_MAP.clear();
@@ -119,10 +122,6 @@ public final class EmojiHandler {
 
     public static int getDrawableResId(String imgSrc) {
         return DRAWABLE_MAP.containsKey(imgSrc) ? DRAWABLE_MAP.get(imgSrc) : 0;
-    }
-
-    private EmojiHandler() {
-        throw new AssertionError("No instances.");
     }
 
     public static void cleanup() {

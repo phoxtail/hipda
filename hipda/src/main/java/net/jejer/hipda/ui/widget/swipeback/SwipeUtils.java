@@ -1,13 +1,12 @@
-
 package net.jejer.hipda.ui.widget.swipeback;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.os.Build;
 
-import java.lang.reflect.Method;
-
 import androidx.annotation.RequiresApi;
+
+import java.lang.reflect.Method;
 
 /**
  * Created by Chaojun Wang on 6/9/14.

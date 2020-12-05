@@ -8,7 +8,7 @@ import net.jejer.hipda.bean.DetailListBean;
 
 public class ThreadDetailEvent extends BaseEvent {
     public DetailListBean mData;
-    public int mFectchType;
+    public int mFetchType;
     public int mPage;
     public int mLoadingPosition;
     public String mAuthorId;

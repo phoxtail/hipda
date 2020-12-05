@@ -23,6 +23,14 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.bumptech.glide.Glide;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -80,14 +88,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
 public class MainFrameActivity extends BaseActivity {
 
     public final static int PERMISSIONS_REQUEST_CODE_STORAGE = 200;
@@ -98,6 +98,8 @@ public class MainFrameActivity extends BaseActivity {
 
     private NetworkStateReceiver mNetworkReceiver;
     private LoginDialog mLoginDialog;
+    private float mStartX;
+    private float mStartY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +122,7 @@ public class MainFrameActivity extends BaseActivity {
         updateAppBarScrollFlag();
 
         mMainFab = findViewById(R.id.fab_main);
-        mNotiificationFab = findViewById(R.id.fab_notification);
+        mNotificationFab = findViewById(R.id.fab_notification);
 
         //hack, to avoid MainFrameActivity be created more than once
         if (HiApplication.getMainActivityCount() > 1) {
@@ -130,7 +132,7 @@ public class MainFrameActivity extends BaseActivity {
 
         if (UIUtils.isTablet(this)) {
             mMainFab.setSize(FloatingActionButton.SIZE_NORMAL);
-            mNotiificationFab.setSize(FloatingActionButton.SIZE_NORMAL);
+            mNotificationFab.setSize(FloatingActionButton.SIZE_NORMAL);
         }
 
         updateFabGravity();
@@ -347,7 +349,7 @@ public class MainFrameActivity extends BaseActivity {
 
     public void updateFabGravity() {
         CoordinatorLayout.LayoutParams mainFabParams = (CoordinatorLayout.LayoutParams) mMainFab.getLayoutParams();
-        CoordinatorLayout.LayoutParams notiFabParams = (CoordinatorLayout.LayoutParams) mNotiificationFab.getLayoutParams();
+        CoordinatorLayout.LayoutParams notiFabParams = (CoordinatorLayout.LayoutParams) mNotificationFab.getLayoutParams();
         if (HiSettingsHelper.getInstance().isFabLeftSide()) {
             mainFabParams.anchorGravity = Gravity.BOTTOM | Gravity.LEFT | Gravity.END;
         } else {
@@ -444,9 +446,6 @@ public class MainFrameActivity extends BaseActivity {
         finishWithDefault();
     }
 
-    private float mStartX;
-    private float mStartY;
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         int action = ev.getAction();
@@ -467,116 +466,6 @@ public class MainFrameActivity extends BaseActivity {
                 break;
         }
         return super.dispatchTouchEvent(ev);
-    }
-
-    private class DrawerItemClickListener implements Drawer.OnDrawerItemClickListener {
-        @Override
-        public boolean onItemClick(View view, int position, IDrawerItem iDrawerItem) {
-
-            if (iDrawerItem.getIdentifier() == Constants.DRAWER_NO_ACTION)
-                return false;
-
-            switch ((int) iDrawerItem.getIdentifier()) {
-                case Constants.DRAWER_SEARCH:
-                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_SEARCH);
-                    break;
-                case Constants.DRAWER_NEW_POSTS:
-                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_NEW_POSTS);
-                    break;
-                case Constants.DRAWER_MYPOST:
-                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_MYPOST);
-                    break;
-                case Constants.DRAWER_MYREPLY:
-                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_MYREPLY);
-                    break;
-                case Constants.DRAWER_FAVORITES:
-                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_FAVORITES);
-                    break;
-                case Constants.DRAWER_HISTORIES:
-                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_HISTORIES);
-                    break;
-                case Constants.DRAWER_SMS:
-                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_SMS);
-                    break;
-                case Constants.DRAWER_THREADNOTIFY:
-                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_THREAD_NOTIFY);
-                    break;
-                case Constants.DRAWER_SETTINGS:
-                    Intent intent = new Intent(MainFrameActivity.this, SettingActivity.class);
-                    ActivityCompat.startActivity(MainFrameActivity.this, intent,
-                            FragmentUtils.getAnimBundle(MainFrameActivity.this, false));
-                    break;
-                default:
-                    int forumId = (int) iDrawerItem.getIdentifier();
-                    FragmentUtils.showForum(getSupportFragmentManager(), forumId);
-                    break;
-            }
-
-            return false;
-        }
-
-    }
-
-    private class ProfileImageListener implements AccountHeader.OnAccountHeaderProfileImageListener {
-
-        @Override
-        public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
-            if (LoginHelper.isLoggedIn()) {
-                Dialog dialog = new AlertDialog.Builder(MainFrameActivity.this)
-                        .setTitle("退出登录？")
-                        .setMessage("确认退出当前登录用户 <" + HiSettingsHelper.getInstance().getUsername() + "> ，并清除保存的登录信息？\n")
-                        .setPositiveButton(getResources().getString(android.R.string.ok),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        HiProgressDialog progressDialog = HiProgressDialog.show(MainFrameActivity.this, "正在退出...");
-                                        HiSettingsHelper.getInstance().setUsername("");
-                                        HiSettingsHelper.getInstance().setPassword("");
-                                        HiSettingsHelper.getInstance().setSecQuestion("");
-                                        HiSettingsHelper.getInstance().setSecAnswer("");
-                                        HiSettingsHelper.getInstance().setUid("");
-                                        LoginHelper.logout();
-                                        updateAccountHeader();
-
-                                        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_frame_container);
-                                        if (fragment != null && fragment instanceof ThreadListFragment) {
-                                            ((ThreadListFragment) fragment).enterNotLoginState();
-                                        }
-
-                                        progressDialog.dismiss("已退出登录状态", 2000);
-                                        new Handler().postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                showLoginDialog();
-                                            }
-                                        }, 2000);
-                                    }
-                                })
-                        .setNegativeButton(getResources().getString(android.R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                }).create();
-                dialog.show();
-            } else {
-                showLoginDialog();
-            }
-            return false;
-        }
-
-        @Override
-        public boolean onProfileImageLongClick(View view, IProfile profile, boolean current) {
-            return false;
-        }
-    }
-
-    private class NetworkStateReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            HiSettingsHelper.updateMobileNetworkStatus(context);
-            EventBus.getDefault().post(new NetworkReadyEvent());
-        }
     }
 
     public void updateDrawerBadge() {
@@ -722,6 +611,116 @@ public class MainFrameActivity extends BaseActivity {
             if (mLoginDialog.isShowing())
                 mLoginDialog.dismiss();
             mLoginDialog = null;
+        }
+    }
+
+    private class DrawerItemClickListener implements Drawer.OnDrawerItemClickListener {
+        @Override
+        public boolean onItemClick(View view, int position, IDrawerItem iDrawerItem) {
+
+            if (iDrawerItem.getIdentifier() == Constants.DRAWER_NO_ACTION)
+                return false;
+
+            switch ((int) iDrawerItem.getIdentifier()) {
+                case Constants.DRAWER_SEARCH:
+                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_SEARCH);
+                    break;
+                case Constants.DRAWER_NEW_POSTS:
+                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_NEW_POSTS);
+                    break;
+                case Constants.DRAWER_MYPOST:
+                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_MYPOST);
+                    break;
+                case Constants.DRAWER_MYREPLY:
+                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_MYREPLY);
+                    break;
+                case Constants.DRAWER_FAVORITES:
+                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_FAVORITES);
+                    break;
+                case Constants.DRAWER_HISTORIES:
+                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_HISTORIES);
+                    break;
+                case Constants.DRAWER_SMS:
+                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_SMS);
+                    break;
+                case Constants.DRAWER_THREADNOTIFY:
+                    FragmentUtils.showSimpleListActivity(MainFrameActivity.this, false, SimpleListJob.TYPE_THREAD_NOTIFY);
+                    break;
+                case Constants.DRAWER_SETTINGS:
+                    Intent intent = new Intent(MainFrameActivity.this, SettingActivity.class);
+                    ActivityCompat.startActivity(MainFrameActivity.this, intent,
+                            FragmentUtils.getAnimBundle(MainFrameActivity.this, false));
+                    break;
+                default:
+                    int forumId = (int) iDrawerItem.getIdentifier();
+                    FragmentUtils.showForum(getSupportFragmentManager(), forumId);
+                    break;
+            }
+
+            return false;
+        }
+
+    }
+
+    private class ProfileImageListener implements AccountHeader.OnAccountHeaderProfileImageListener {
+
+        @Override
+        public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
+            if (LoginHelper.isLoggedIn()) {
+                Dialog dialog = new AlertDialog.Builder(MainFrameActivity.this)
+                        .setTitle("退出登录？")
+                        .setMessage("确认退出当前登录用户 <" + HiSettingsHelper.getInstance().getUsername() + "> ，并清除保存的登录信息？\n")
+                        .setPositiveButton(getResources().getString(android.R.string.ok),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        HiProgressDialog progressDialog = HiProgressDialog.show(MainFrameActivity.this, "正在退出...");
+                                        HiSettingsHelper.getInstance().setUsername("");
+                                        HiSettingsHelper.getInstance().setPassword("");
+                                        HiSettingsHelper.getInstance().setSecQuestion("");
+                                        HiSettingsHelper.getInstance().setSecAnswer("");
+                                        HiSettingsHelper.getInstance().setUid("");
+                                        LoginHelper.logout();
+                                        updateAccountHeader();
+
+                                        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_frame_container);
+                                        if (fragment != null && fragment instanceof ThreadListFragment) {
+                                            ((ThreadListFragment) fragment).enterNotLoginState();
+                                        }
+
+                                        progressDialog.dismiss("已退出登录状态", 2000);
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                showLoginDialog();
+                                            }
+                                        }, 2000);
+                                    }
+                                })
+                        .setNegativeButton(getResources().getString(android.R.string.cancel),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                }).create();
+                dialog.show();
+            } else {
+                showLoginDialog();
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onProfileImageLongClick(View view, IProfile profile, boolean current) {
+            return false;
+        }
+    }
+
+    private class NetworkStateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            HiSettingsHelper.updateMobileNetworkStatus(context);
+            EventBus.getDefault().post(new NetworkReadyEvent());
         }
     }
 

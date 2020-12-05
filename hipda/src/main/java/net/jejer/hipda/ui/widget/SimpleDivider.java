@@ -6,11 +6,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 
-import net.jejer.hipda.R;
-import net.jejer.hipda.bean.HiSettingsHelper;
-
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import net.jejer.hipda.R;
+import net.jejer.hipda.bean.HiSettingsHelper;
 
 /**
  * Created by GreenSkinMonster on 2016-11-14.

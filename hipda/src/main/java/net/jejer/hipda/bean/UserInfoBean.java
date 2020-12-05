@@ -7,7 +7,7 @@ public class UserInfoBean {
     private String mUsername;
     private String mUid;
     private boolean mOnline;
-    private String mFormhash;
+    private String mFormHash;
 
     public UserInfoBean() {
     }
@@ -52,11 +52,11 @@ public class UserInfoBean {
         this.mOnline = online;
     }
 
-    public String getFormhash() {
-        return mFormhash;
+    public String getFormHash() {
+        return mFormHash;
     }
 
-    public void setFormhash(String formhash) {
-        mFormhash = formhash;
+    public void setFormHash(String formHash) {
+        mFormHash = formHash;
     }
 }

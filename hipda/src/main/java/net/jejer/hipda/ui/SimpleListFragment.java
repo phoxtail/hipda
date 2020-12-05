@@ -11,6 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
@@ -48,11 +53,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class SimpleListFragment extends BaseFragment
         implements SwipeRefreshLayout.OnRefreshListener, PostSmsAsyncTask.SmsPostListener {
@@ -259,82 +259,6 @@ public class SimpleListFragment extends BaseFragment
         mRecyclerView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0));
     }
 
-    private class OnScrollListener extends RecyclerView.OnScrollListener {
-        int visibleItemCount, totalItemCount;
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            if (dy > 0) {
-                LinearLayoutManager mLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                visibleItemCount = mLayoutManager.getChildCount();
-                totalItemCount = mLayoutManager.getItemCount();
-                mFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-
-                if ((visibleItemCount + mFirstVisibleItem) >= totalItemCount - 5) {
-                    if (!mInloading) {
-                        mInloading = true;
-                        if (mPage < mMaxPage) {
-                            mPage++;
-                            mRecyclerView.setFooterState(XFooterView.STATE_LOADING);
-                            SimpleListJob job = new SimpleListJob(getActivity(), mSessionId, mType, mPage, mSearchId);
-                            JobMgr.addJob(job);
-                        } else {
-                            mRecyclerView.setFooterState(XFooterView.STATE_END);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
-
-        @Override
-        public void onItemClick(View view, int position) {
-            if (position < 0 || position >= mSimpleListAdapter.getItemCount()) {
-                return;
-            }
-            SimpleListItemBean item = mSimpleListAdapter.getItem(position);
-            if (item == null)
-                return;
-            if (mType == SimpleListJob.TYPE_SMS) {
-                FragmentUtils.showSmsActivity(getActivity(), false, item.getUid(), item.getAuthor());
-            } else {
-                if (HiUtils.isValidId(item.getTid()) || HiUtils.isValidId(item.getPid())) {
-                    FragmentUtils.showThreadActivity(getActivity(), false, item.getTid(), item.getTitle(), -1, -1, item.getPid(), -1);
-                } else if (HiUtils.isValidId(item.getUid())) {
-                    FragmentUtils.showUserInfoActivity(getActivity(), false, item.getUid(), item.getAuthor());
-                }
-            }
-        }
-
-        @Override
-        public void onLongItemClick(View view, int position) {
-            if (position < 0 || position >= mSimpleListAdapter.getItemCount()) {
-                return;
-            }
-            SimpleListItemBean item = mSimpleListAdapter.getItem(position);
-            if (item == null)
-                return;
-            if (mType == SimpleListJob.TYPE_SMS) {
-            } else if (mType == SimpleListJob.TYPE_FAVORITES) {
-                showFavoriteActionDialog(item);
-            } else if (mType == SimpleListJob.TYPE_ATTENTION) {
-                showAttentionActionDialog(item);
-            } else {
-                if (HiUtils.isValidId(item.getTid()) || HiUtils.isValidId(item.getPid())) {
-                    showLastPage(item);
-                } else if (HiUtils.isValidId(item.getUid())) {
-                    FragmentUtils.showUserInfoActivity(getActivity(), false, item.getUid(), item.getAuthor());
-                }
-            }
-        }
-
-        @Override
-        public void onDoubleTap(View view, int position) {
-        }
-    }
-
     private void showFavoriteActionDialog(final SimpleListItemBean item) {
         final SimplePopupMenu popupMenu = new SimplePopupMenu(getActivity());
         popupMenu.add("cancel", "取消收藏", new AdapterView.OnItemClickListener() {
@@ -421,6 +345,106 @@ public class SimpleListFragment extends BaseFragment
         }
     }
 
+    @SuppressWarnings("unused")
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(SimpleListEvent event) {
+        if (!mSessionId.equals(event.mSessionId))
+            return;
+        EventBus.getDefault().removeStickyEvent(event);
+        mEventCallback.process(event);
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(SmsRefreshEvent event) {
+        EventBus.getDefault().removeStickyEvent(event);
+        if (mType == SimpleListJob.TYPE_SMS)
+            onRefresh();
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NetworkReadyEvent event) {
+        if (!mInloading && mSimpleListItemBeans.size() == 0)
+            refresh();
+    }
+
+    private class OnScrollListener extends RecyclerView.OnScrollListener {
+        int visibleItemCount, totalItemCount;
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (dy > 0) {
+                LinearLayoutManager mLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                visibleItemCount = mLayoutManager.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                mFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+
+                if ((visibleItemCount + mFirstVisibleItem) >= totalItemCount - 5) {
+                    if (!mInloading) {
+                        mInloading = true;
+                        if (mPage < mMaxPage) {
+                            mPage++;
+                            mRecyclerView.setFooterState(XFooterView.STATE_LOADING);
+                            SimpleListJob job = new SimpleListJob(getActivity(), mSessionId, mType, mPage, mSearchId);
+                            JobMgr.addJob(job);
+                        } else {
+                            mRecyclerView.setFooterState(XFooterView.STATE_END);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
+
+        @Override
+        public void onItemClick(View view, int position) {
+            if (position < 0 || position >= mSimpleListAdapter.getItemCount()) {
+                return;
+            }
+            SimpleListItemBean item = mSimpleListAdapter.getItem(position);
+            if (item == null)
+                return;
+            if (mType == SimpleListJob.TYPE_SMS) {
+                FragmentUtils.showSmsActivity(getActivity(), false, item.getUid(), item.getAuthor());
+            } else {
+                if (HiUtils.isValidId(item.getTid()) || HiUtils.isValidId(item.getPid())) {
+                    FragmentUtils.showThreadActivity(getActivity(), false, item.getTid(), item.getTitle(), -1, -1, item.getPid(), -1);
+                } else if (HiUtils.isValidId(item.getUid())) {
+                    FragmentUtils.showUserInfoActivity(getActivity(), false, item.getUid(), item.getAuthor());
+                }
+            }
+        }
+
+        @Override
+        public void onLongItemClick(View view, int position) {
+            if (position < 0 || position >= mSimpleListAdapter.getItemCount()) {
+                return;
+            }
+            SimpleListItemBean item = mSimpleListAdapter.getItem(position);
+            if (item == null)
+                return;
+            if (mType == SimpleListJob.TYPE_SMS) {
+            } else if (mType == SimpleListJob.TYPE_FAVORITES) {
+                showFavoriteActionDialog(item);
+            } else if (mType == SimpleListJob.TYPE_ATTENTION) {
+                showAttentionActionDialog(item);
+            } else {
+                if (HiUtils.isValidId(item.getTid()) || HiUtils.isValidId(item.getPid())) {
+                    showLastPage(item);
+                } else if (HiUtils.isValidId(item.getUid())) {
+                    FragmentUtils.showUserInfoActivity(getActivity(), false, item.getUid(), item.getAuthor());
+                }
+            }
+        }
+
+        @Override
+        public void onDoubleTap(View view, int position) {
+        }
+    }
+
     private class SimpleListEventCallback extends EventCallback<SimpleListEvent> {
 
         @Override
@@ -494,30 +518,6 @@ public class SimpleListFragment extends BaseFragment
             mRecyclerView.setFooterState(XFooterView.STATE_HIDDEN);
             mInloading = false;
         }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onEvent(SimpleListEvent event) {
-        if (!mSessionId.equals(event.mSessionId))
-            return;
-        EventBus.getDefault().removeStickyEvent(event);
-        mEventCallback.process(event);
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onEvent(SmsRefreshEvent event) {
-        EventBus.getDefault().removeStickyEvent(event);
-        if (mType == SimpleListJob.TYPE_SMS)
-            onRefresh();
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NetworkReadyEvent event) {
-        if (!mInloading && mSimpleListItemBeans.size() == 0)
-            refresh();
     }
 
 }

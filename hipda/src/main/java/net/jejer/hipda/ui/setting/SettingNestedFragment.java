@@ -10,6 +10,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.preference.Preference;
+
 import net.jejer.hipda.R;
 import net.jejer.hipda.async.TaskHelper;
 import net.jejer.hipda.bean.HiSettingsHelper;
@@ -23,11 +28,6 @@ import net.jejer.hipda.utils.Utils;
 
 import java.util.Date;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.preference.Preference;
-
 /**
  * nested setting fragment
  * Created by GreenSkinMonster on 2015-09-11.
@@ -39,10 +39,8 @@ public class SettingNestedFragment extends BaseSettingFragment {
     public static final int SCREEN_NOTIFICATION = 3;
     public static final int SCREEN_NETWORK = 4;
     public static final int SCREEN_OTHER = 5;
-
-    private static final int REQUEST_CODE_ALERT_RINGTONE = 1;
-
     public static final String TAG_KEY = "SCREEN_KEY";
+    private static final int REQUEST_CODE_ALERT_RINGTONE = 1;
     private HiProgressDialog mProgressDialog;
     private Preference ringtonePreference;
     private Preference mBlackListPreference;

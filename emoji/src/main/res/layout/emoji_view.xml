@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:ignore="Overdraw">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="Overdraw">
 
     <LinearLayout
         android:id="@+id/emojis_tab"
@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?attr/emojiBackground"
-            android:src="@drawable/emoji_recent"/>
+            android:src="@drawable/emoji_recent" />
 
         <ImageButton
             android:id="@+id/emojis_tab_1_default"
@@ -26,7 +26,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?attr/emojiBackground"
-            android:src="@drawable/emoji_people"/>
+            android:src="@drawable/emoji_people" />
 
         <ImageButton
             android:id="@+id/emojis_tab_2_monkey"
@@ -34,7 +34,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?attr/emojiBackground"
-            android:src="@drawable/emoji_nature"/>
+            android:src="@drawable/emoji_nature" />
 
         <ImageButton
             android:id="@+id/emojis_tab_3_dumb"
@@ -42,7 +42,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?attr/emojiBackground"
-            android:src="@drawable/emoji_food"/>
+            android:src="@drawable/emoji_food" />
 
         <ImageButton
             android:id="@+id/emojis_backspace"
@@ -50,16 +50,16 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?attr/emojiBackground"
-            android:src="@drawable/emoji_backspace_back_normal"/>
+            android:src="@drawable/emoji_backspace_back_normal" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#626e76"/>
+        android:background="#626e76" />
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/emojis_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 </LinearLayout>

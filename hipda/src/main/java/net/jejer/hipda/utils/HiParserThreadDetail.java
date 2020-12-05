@@ -3,6 +3,8 @@ package net.jejer.hipda.utils;
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import com.vdurmont.emoji.EmojiParser;
 
 import net.jejer.hipda.bean.ContentImg;
@@ -22,8 +24,6 @@ import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import java.util.regex.Matcher;
-
-import androidx.annotation.NonNull;
 
 public class HiParserThreadDetail {
 

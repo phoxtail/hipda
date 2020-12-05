@@ -6,12 +6,12 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.WindowManager;
 
+import androidx.core.content.ContextCompat;
+
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
 import net.jejer.hipda.R;
-
-import androidx.core.content.ContextCompat;
 
 /**
  * a simple progress dialog
@@ -29,6 +29,14 @@ public class HiProgressDialog extends ProgressDialog {
 
     private HiProgressDialog(Context context) {
         super(context);
+    }
+
+    public static HiProgressDialog show(Context context, String message) {
+        HiProgressDialog progressDialog = new HiProgressDialog(context);
+        progressDialog.setMessage(message);
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+        return progressDialog;
     }
 
     @Override
@@ -104,14 +112,6 @@ public class HiProgressDialog extends ProgressDialog {
     public void onDetachedFromWindow() {
         mAttachedToWindow = false;
         super.onDetachedFromWindow();
-    }
-
-    public static HiProgressDialog show(Context context, String message) {
-        HiProgressDialog progressDialog = new HiProgressDialog(context);
-        progressDialog.setMessage(message);
-        progressDialog.show();
-        progressDialog.setCancelable(false);
-        return progressDialog;
     }
 
 }

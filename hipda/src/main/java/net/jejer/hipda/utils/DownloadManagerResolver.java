@@ -1,5 +1,6 @@
 package net.jejer.hipda.utils;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,7 +10,6 @@ import android.net.Uri;
 import android.os.Build;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatTextView;
 
 /**
  * https://gist.github.com/Folyd/b9412bb6e2b06eb511f7
@@ -52,12 +52,10 @@ public final class DownloadManagerResolver {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private static AlertDialog createDialog(final Context context) {
-        AppCompatTextView messageTextView = new AppCompatTextView(context);
-        messageTextView.setTextSize(16f);
-        messageTextView.setText("下载管理器已停用，请启用");
         return new AlertDialog.Builder(context)
-                .setView(messageTextView, 50, 30, 50, 30)
+                .setMessage("下载管理器已停用，请启用")
                 .setPositiveButton(context.getResources().getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

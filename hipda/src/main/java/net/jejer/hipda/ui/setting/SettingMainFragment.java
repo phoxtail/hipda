@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.preference.Preference;
+
 import net.jejer.hipda.R;
 import net.jejer.hipda.async.UpdateHelper;
 import net.jejer.hipda.bean.HiSettingsHelper;
@@ -20,16 +24,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.preference.Preference;
-
 /**
  * main setting fragment
  * Created by GreenSkinMonster on 2015-09-11.
  */
 public class SettingMainFragment extends BaseSettingFragment {
 
+    static boolean mCacheCleared;
     private int mScreenOrietation;
     private String mTheme;
     private int mPrimaryColor;
@@ -37,7 +38,6 @@ public class SettingMainFragment extends BaseSettingFragment {
     private Set<String> mFreqMenus;
     private boolean mNavBarColored;
     private String mFont;
-    static boolean mCacheCleared;
     private boolean mNightSwitchEnabled;
     private String mForumServer;
     private boolean mTrustAllCerts;

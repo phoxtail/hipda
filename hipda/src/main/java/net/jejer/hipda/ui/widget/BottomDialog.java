@@ -8,9 +8,9 @@ import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-
 import androidx.annotation.NonNull;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 /**
  * Created by GreenSkinMonster on 2016-11-23.

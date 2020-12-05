@@ -11,10 +11,9 @@ import net.jejer.hipda.ui.HiApplication;
  */
 public class HistoryDBHelper extends SQLiteOpenHelper {
 
+    public static final String TABLE_NAME = "History";
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "history.db";
-    public static final String TABLE_NAME = "History";
-
     private static final String CONTENTS_TABLE_CREATE =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     "tid TEXT PRIMARY KEY, " +

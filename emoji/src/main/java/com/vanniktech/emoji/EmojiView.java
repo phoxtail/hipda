@@ -8,6 +8,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
+
 import com.vanniktech.emoji.emoji.Default;
 import com.vanniktech.emoji.emoji.Dumb;
 import com.vanniktech.emoji.emoji.Monkey;
@@ -18,11 +23,6 @@ import com.vanniktech.emoji.listeners.RepeatListener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
 
 
 @SuppressLint("ViewConstructor")
@@ -37,13 +37,10 @@ final class EmojiView extends FrameLayout implements ViewPager.OnPageChangeListe
 
     @ColorInt
     private final int themeAccentColor;
+    private final ImageView[] emojiTabs;
     @Nullable
     private OnEmojiBackspaceClickListener onEmojiBackspaceClickListener;
-
     private int emojiTabLastSelectedIndex = -1;
-
-    private final ImageView[] emojiTabs;
-
     private RecentEmojiGridView recentGridView;
 
     EmojiView(final Context context, final OnEmojiClickedListener onEmojiClickedListener, @NonNull final RecentEmoji recentEmoji) {

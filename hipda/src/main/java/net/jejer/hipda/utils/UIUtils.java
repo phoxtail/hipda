@@ -25,6 +25,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import net.jejer.hipda.BuildConfig;
@@ -38,11 +43,6 @@ import net.jejer.hipda.ui.MainFrameActivity;
 import net.jejer.hipda.ui.PostActivity;
 
 import java.io.File;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
 /**
  * Created by GreenSkinMonster on 2016-04-05.
@@ -91,18 +91,18 @@ public class UIUtils {
 
     public static AlertDialog.Builder getMessageDialogBuilder(final Context context, String message, final String detail) {
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View viewlayout = inflater.inflate(R.layout.item_simple_dialog, null);
+        final View viewLayout = inflater.inflate(R.layout.item_simple_dialog, null);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        final TextView tvTitle = (TextView) viewlayout.findViewById(R.id.tv_dialog_title);
+        final TextView tvTitle = (TextView) viewLayout.findViewById(R.id.tv_dialog_title);
         tvTitle.setText(message);
 
-        final TextView textView = (TextView) viewlayout.findViewById(R.id.tv_dialog_content);
+        final TextView textView = (TextView) viewLayout.findViewById(R.id.tv_dialog_content);
         textView.setText(detail);
         UIUtils.setLineSpacing(textView);
 
-        builder.setView(viewlayout);
+        builder.setView(viewLayout);
         return builder;
     }
 
