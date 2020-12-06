@@ -1,1 +1,2 @@
-include ':hipda', ':emoji'
+include ':app'
+rootProject.name = "hipda"
