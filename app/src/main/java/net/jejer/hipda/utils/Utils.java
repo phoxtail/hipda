@@ -23,6 +23,7 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import androidx.annotation.AttrRes;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.bumptech.glide.Glide;
 
@@ -37,12 +38,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -51,6 +50,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -58,8 +58,10 @@ import java.util.regex.Pattern;
  * Created by GreenSkinMonster on 2015-03-23.
  */
 public class Utils {
+    //public final static String URL_REGEX = "[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)";
+    @SuppressWarnings("Annotator")
+    public final static String URL_REGEX = "[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_+.~#?&//=]*)";
 
-    public final static String URL_REGEX = "[(http(s)?)://ww.zA-Z0-9@:%._+,256}.-z]{2,6}\\b([-a-zA-Z0-9@:%_+/=]*)";
     public final static Pattern URL_PATTERN = Pattern.compile(URL_REGEX);
     public final static String REPLACE_URL_REGEX = "(" + URL_REGEX + ")";
     private static Whitelist mWhitelist = null;
@@ -154,8 +156,8 @@ public class Utils {
         out.close();
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     public static String getImageFileName(String prefix, String mime) {
-
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd_HHmmss", Locale.US);
         String filename = prefix + "_" + formatter.format(new Date());
 
@@ -173,10 +175,6 @@ public class Utils {
             suffix = "bmp";
         }
         return suffix;
-    }
-
-    public static String formatDate(Date date) {
-        return formatDate(date, "yyyy-MM-dd HH:mm:ss");
     }
 
     public static String formatDate(Date date, String format) {
@@ -239,13 +237,13 @@ public class Utils {
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(attributeId, typedValue, true);
         int drawableRes = typedValue.resourceId;
-        return context.getResources().getDrawable(drawableRes);
+        return ResourcesCompat.getDrawable(context.getResources(), drawableRes, null);
     }
 
     public static int getScreenWidth() {
         if (mScreenWidth <= 0) {
             WindowManager wm = (WindowManager) HiApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE);
-            Display display = wm.getDefaultDisplay();
+            Display display = Objects.requireNonNull(wm).getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
             mScreenWidth = Math.min(size.x, size.y);
@@ -257,6 +255,7 @@ public class Utils {
     public static int getScreenHeight() {
         if (mScreenHeight <= 0) {
             WindowManager wm = (WindowManager) HiApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+            assert wm != null;
             Display display = wm.getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
@@ -276,15 +275,11 @@ public class Utils {
         System.exit(0);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void cleanShareTempFiles() {
         File destFile = HiApplication.getAppContext().getExternalCacheDir();
         if (destFile != null && destFile.exists() && destFile.isDirectory() && destFile.canWrite()) {
-            File[] files = destFile.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String filename) {
-                    return filename.startsWith(Constants.FILE_SHARE_PREFIX);
-                }
-            });
+            File[] files = destFile.listFiles((dir, filename) -> filename.startsWith(Constants.FILE_SHARE_PREFIX));
             if (files != null) {
                 for (File f : files) {
                     f.delete();
@@ -293,12 +288,13 @@ public class Utils {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void cleanPictures() {
         //defined in provider_paths.xml
         try {
             File destFile = HiApplication.getAppContext().getExternalFilesDir("Pictures");
             if (destFile != null && destFile.exists() && destFile.isDirectory()) {
-                for (File f : destFile.listFiles()) {
+                for (File f : Objects.requireNonNull(Objects.requireNonNull(destFile.listFiles()))) {
                     f.delete();
                 }
             }
@@ -312,21 +308,14 @@ public class Utils {
         return (runtime.totalMemory() - runtime.freeMemory()) > 0.6f * runtime.maxMemory();
     }
 
-    public static void printMemoryUsage() {
-        Runtime runtime = Runtime.getRuntime();
-
-        DecimalFormat df = new DecimalFormat("#.##");
-        Logger.e("\nmax=" + df.format(runtime.maxMemory() * 1.0f / 1024 / 1024) + "M"
-                + "\ntotal=" + df.format(runtime.totalMemory() * 1.0f / 1024 / 1024) + "M"
-                + "\nfree=" + df.format(runtime.freeMemory() * 1.0f / 1024 / 1024) + "M"
-                + "\nused=" + df.format((runtime.totalMemory() - runtime.freeMemory()) * 1.0f / 1024 / 1024) + "M"
-                + "\nusage=" + df.format((runtime.totalMemory() - runtime.freeMemory()) * 100.0f / runtime.maxMemory()) + "%");
-    }
-
     private static boolean deleteDir(File file) {
-        if (file != null) {
-            if (file.isDirectory()) {
-                String[] children = file.list();
+        if (file == null) {
+            return false;
+        }
+
+        if (file.isDirectory()) {
+            String[] children = file.list();
+            if (children != null) {
                 for (String aChildren : children) {
                     boolean success = deleteDir(new File(file, aChildren));
                     if (!success) {
@@ -334,19 +323,9 @@ public class Utils {
                     }
                 }
             }
-            return file.delete();
         }
-        return false;
-    }
 
-    public static void clearInternalCache() {
-        try {
-            File cache = HiApplication.getAppContext().getCacheDir();
-            if (cache != null && cache.isDirectory()) {
-                deleteDir(cache);
-            }
-        } catch (Exception ignored) {
-        }
+        return file.delete();
     }
 
     public static void clearOkhttpCache() {
@@ -368,11 +347,6 @@ public class Utils {
             }
         } catch (Exception ignored) {
         }
-    }
-
-    public static boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     public static boolean isFromGooglePlay(Context context) {
@@ -466,7 +440,7 @@ public class Utils {
             }
         }
 
-        if (end_idx == -1 || end_idx <= start_idx) {
+        if (end_idx <= start_idx) {
             return "";
         }
         return source.substring(start_idx, end_idx);
@@ -513,6 +487,7 @@ public class Utils {
             req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
             if (filename.toLowerCase().endsWith(".apk"))
                 req.setMimeType("application/vnd.android.package-archive");
+            assert dm != null;
             dm.enqueue(req);
         }
     }
@@ -559,7 +534,7 @@ public class Utils {
         }
     }
 
-    public static String md5(String content) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public static String md5(String content) throws NoSuchAlgorithmException {
         byte[] hash;
         hash = MessageDigest.getInstance("MD5").digest(content.getBytes(StandardCharsets.UTF_8));
 
@@ -573,39 +548,26 @@ public class Utils {
         return hex.toString();
     }
 
-    public static boolean isDestroyed(Activity activity) {
-        if (activity == null)
-            return true;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return activity.isDestroyed() || activity.isFinishing();
-        } else {
-            return activity.isFinishing();
-        }
-    }
-
     public static Bitmap getCircleBitmap(Bitmap bitmap) {
         Bitmap output;
         Rect srcRect, dstRect;
-        float r;
-        final int width = bitmap.getWidth();
-        final int height = bitmap.getHeight();
+        float radius;
+        int diameter;
 
-        if (width > height) {
-            output = Bitmap.createBitmap(height, height, Bitmap.Config.ARGB_8888);
-            int left = (width - height) / 2;
-            int right = left + height;
-            srcRect = new Rect(left, 0, right, height);
-            dstRect = new Rect(0, 0, height, height);
-            r = height / 2;
+        if (bitmap.getWidth() > bitmap.getHeight()) {
+            diameter = bitmap.getHeight();
+            srcRect = new Rect((bitmap.getWidth() - bitmap.getHeight()) / 2, 0,
+                    (bitmap.getWidth() + bitmap.getHeight()) / 2, diameter);
         } else {
-            output = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
-            int top = (height - width) / 2;
-            int bottom = top + width;
-            srcRect = new Rect(0, top, width, bottom);
-            dstRect = new Rect(0, 0, width, width);
-            r = width / 2;
+            diameter = bitmap.getWidth();
+            srcRect = new Rect(0, (bitmap.getHeight() - bitmap.getWidth()) / 2,
+                    diameter, (bitmap.getWidth() + bitmap.getHeight()) / 2);
         }
 
+        dstRect = new Rect(0, 0, diameter, diameter);
+        radius = ((float) diameter) / 2;
+
+        output = Bitmap.createBitmap(diameter, diameter, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
 
         final int color = 0xff424242;
@@ -614,7 +576,7 @@ public class Utils {
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
-        canvas.drawCircle(r, r, r, paint);
+        canvas.drawCircle(radius, radius, radius, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, srcRect, dstRect, paint);
 
@@ -630,5 +592,4 @@ public class Utils {
             return Bitmap.Config.HARDWARE;
         }
     }
-
 }
