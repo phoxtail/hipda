@@ -22,13 +22,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
-import net.jejer.hipda.emoji.EmojiEditText;
 
 import net.jejer.hipda.R;
 import net.jejer.hipda.async.PostSmsAsyncTask;
 import net.jejer.hipda.bean.HiSettingsHelper;
 import net.jejer.hipda.bean.SimpleListBean;
 import net.jejer.hipda.bean.SimpleListItemBean;
+import net.jejer.hipda.emoji.EmojiEditText;
 import net.jejer.hipda.job.EventCallback;
 import net.jejer.hipda.job.JobMgr;
 import net.jejer.hipda.job.SimpleListEvent;
@@ -63,19 +63,16 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
 
     public static final String ARG_AUTHOR = "AUTHOR";
     public static final String ARG_UID = "UID";
-
+    private final List<SimpleListItemBean> mSmsBeans = new ArrayList<>();
+    private final SmsEventCallback mEventCallback = new SmsEventCallback();
     private String mAuthor;
     private String mUid;
     private SmsAdapter mSmsAdapter;
-    private final List<SimpleListItemBean> mSmsBeans = new ArrayList<>();
     private XRecyclerView mRecyclerView;
-
     private EmojiEditText mEtSms;
     private ImageButton mIbEmojiSwitch;
     private CountdownButton mCountdownButton;
-
     private ContentLoadingView mLoadingView;
-    private final SmsEventCallback mEventCallback = new SmsEventCallback();
     private boolean mSending = false;
 
     @Override

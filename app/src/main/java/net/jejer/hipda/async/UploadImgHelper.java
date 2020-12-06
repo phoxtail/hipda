@@ -38,18 +38,14 @@ public class UploadImgHelper {
 
     private final static int MAX_QUALITY = 90;
     private static final int THUMB_SIZE = 256;
-
-    private int mMaxImageFileSize = 800 * 1024;
-    private int mMaxPixels = 2560 * 2560;
-
     private final UploadImgListener mListener;
-
     private final String mUid;
     private final String mHash;
     private final Context mCtx;
     private final Uri[] mUris;
     private final boolean mOriginal;
-
+    private int mMaxImageFileSize = 800 * 1024;
+    private int mMaxPixels = 2560 * 2560;
     private String mMessage = "";
     private String mDetail = "";
     private Bitmap mThumb;

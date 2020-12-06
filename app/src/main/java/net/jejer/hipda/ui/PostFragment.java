@@ -38,7 +38,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
-import net.jejer.hipda.emoji.EmojiEditText;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
@@ -53,6 +52,7 @@ import net.jejer.hipda.bean.PostBean;
 import net.jejer.hipda.bean.PrePostInfoBean;
 import net.jejer.hipda.db.Content;
 import net.jejer.hipda.db.ContentDao;
+import net.jejer.hipda.emoji.EmojiEditText;
 import net.jejer.hipda.glide.MatisseGlideEngine;
 import net.jejer.hipda.job.ImageUploadEvent;
 import net.jejer.hipda.job.ImageUploadJob;
@@ -93,6 +93,8 @@ public class PostFragment extends BaseFragment {
     public static final String ARG_PARENT_ID = "parent_id";
     public static final String BUNDLE_POSITION_KEY = "content_position";
     private static final int SELECT_PICTURE = 1;
+    private final PrePostAsyncTask.PrePostListener mPrePostListener = new PrePostListener();
+    private final Map<Uri, UploadImage> mUploadImages = new LinkedHashMap<>();
     private int mFid;
     private String mTid;
     private String mPid;
@@ -109,23 +111,18 @@ public class PostFragment extends BaseFragment {
     private EmojiEditText mEtContent;
     private ImageButton mIbEmojiSwitch;
     private int mContentPosition = -1;
-
-    private final PrePostAsyncTask.PrePostListener mPrePostListener = new PrePostListener();
     private PrePostInfoBean mPrePostInfo;
     private PrePostAsyncTask mPrePostAsyncTask;
     private Snackbar mSnackbar;
     private int mFetchInfoCount = 0;
     private boolean mFetchingInfo = false;
     private ContentLoadingProgressBar mProgressBar;
-
     private String mForumName;
     private String mParentSessionId;
     private Map<String, String> mTypeValues;
-
     private GridImageAdapter mImageAdapter;
     private HiProgressDialog mProgressDialog;
     private boolean mImageUploading = false;
-    private final Map<Uri, UploadImage> mUploadImages = new LinkedHashMap<>();
     private long mLastSavedTime = -1;
     private boolean mDeleteMode = false;
 

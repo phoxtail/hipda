@@ -19,10 +19,3 @@ allprojects {
     }
 }
 
-ext {
-    minSdkVersion = 16
-    compileSdkVersion = 28
-    targetSdkVersion = 28
-
-    androidxVersion = '1.0.2'
-}

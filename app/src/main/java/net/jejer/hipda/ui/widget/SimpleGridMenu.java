@@ -33,12 +33,11 @@ public class SimpleGridMenu {
 
     private final Context mContext;
     private final LayoutInflater mInflater;
+    private final LinkedHashMap<String, MenuItem> mMenuItems = new LinkedHashMap<>();
+    private final List<String> mActionKeys = new ArrayList<>();
     private String mTitle;
     private AlertDialog mDialog;
     private DialogInterface.OnDismissListener mOnDismissListener;
-
-    private final LinkedHashMap<String, MenuItem> mMenuItems = new LinkedHashMap<>();
-    private final List<String> mActionKeys = new ArrayList<>();
 
     public SimpleGridMenu(Context context) {
         mContext = context;

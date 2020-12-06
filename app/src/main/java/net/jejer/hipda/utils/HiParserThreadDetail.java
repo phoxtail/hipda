@@ -459,31 +459,31 @@ public class HiParserThreadDetail {
                 return false;
             } else // remove div.attach_popup
                 if (divE.hasClass("quote")) {
-                String tid = "";
-                String postId = "";
-                Elements redirectES = divE.select("a");
-                for (Element element : redirectES) {
-                    String href = Utils.nullToText(element.attr("href"));
-                    if (href.contains("redirect.php?goto=findpost")) {
-                        postId = Utils.getMiddleString(href, "pid=", "&");
-                        tid = Utils.getMiddleString(href, "ptid=", "&");
-                        break;
+                    String tid = "";
+                    String postId = "";
+                    Elements redirectES = divE.select("a");
+                    for (Element element : redirectES) {
+                        String href = Utils.nullToText(element.attr("href"));
+                        if (href.contains("redirect.php?goto=findpost")) {
+                            postId = Utils.getMiddleString(href, "pid=", "&");
+                            tid = Utils.getMiddleString(href, "ptid=", "&");
+                            break;
+                        }
                     }
-                }
-                Elements postEls = divE.select("font[size=2]");
-                String authorAndTime = "";
-                if (postEls.size() > 0) {
-                    authorAndTime = postEls.first().text();
-                    postEls.first().remove();
-                }
+                    Elements postEls = divE.select("font[size=2]");
+                    String authorAndTime = "";
+                    if (postEls.size() > 0) {
+                        authorAndTime = postEls.first().text();
+                        postEls.first().remove();
+                    }
 
-                //remove hidden elements
-                divE.select("[style*=display][style*=none]").remove();
+                    //remove hidden elements
+                    divE.select("[style*=display][style*=none]").remove();
 
-                //only keep line break, text with styles, links
-                content.addQuote(Utils.clean(divE.html()), authorAndTime, tid, postId);
-                return false;
-            } else return !divE.hasClass("attach_popup");
+                    //only keep line break, text with styles, links
+                    content.addQuote(Utils.clean(divE.html()), authorAndTime, tid, postId);
+                    return false;
+                } else return !divE.hasClass("attach_popup");
         } else if (contentN.nodeName().equals("table")) {
             return true;
         } else if (contentN.nodeName().equals("tbody")) {    //Groups the body content in a table

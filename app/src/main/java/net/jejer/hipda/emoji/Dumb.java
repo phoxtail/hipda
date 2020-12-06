@@ -1,7 +1,6 @@
 package net.jejer.hipda.emoji;
 
 import net.jejer.hipda.R;
-import net.jejer.hipda.emoji.Emoji;
 
 /**
  * Created by GreenSkinMonster on 2016-04-11.

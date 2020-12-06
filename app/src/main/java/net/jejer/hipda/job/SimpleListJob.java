@@ -45,11 +45,10 @@ public class SimpleListJob extends BaseJob {
 
     private final Context mCtx;
     private final int mType;
+    private final SimpleListEvent mEvent;
     private int mPage = 1;
     private String mExtra = "";
     private SearchBean mSearchBean;
-
-    private final SimpleListEvent mEvent;
 
     public SimpleListJob(Context context, String sessionId, int type, int page, String extra) {
         super(sessionId);

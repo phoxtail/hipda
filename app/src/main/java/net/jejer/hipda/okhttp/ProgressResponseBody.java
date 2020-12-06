@@ -18,8 +18,8 @@ public class ProgressResponseBody extends ResponseBody {
 
     private final ResponseBody responseBody;
     private final ProgressListener progressListener;
-    private BufferedSource bufferedSource;
     private final String url;
+    private BufferedSource bufferedSource;
 
     public ProgressResponseBody(String url, ResponseBody responseBody, ProgressListener progressListener) {
         this.responseBody = responseBody;

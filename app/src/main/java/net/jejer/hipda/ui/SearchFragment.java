@@ -81,25 +81,21 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
     private static final String PREFERENCE_KEY = "queries";
     private static final int MAX_HISTORY = 6;
     private final int mType = SimpleListJob.TYPE_SEARCH;
+    private final List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
+    private final SimpleListEventCallback mEventCallback = new SimpleListEventCallback();
     private XRecyclerView mRecyclerView;
     private SimpleListAdapter mSimpleListAdapter;
-    private final List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
     private SwipeRefreshLayout mSwipeLayout;
     private ContentLoadingView mLoadingView;
-
     private SearchView mSearchView;
     private RelativeLayout mSearchFilterLayout;
     private MenuItem mSearchMenuItem;
     private EditText mSearchTextView;
-
     private EditText mEtAuthor;
     private CheckBox mCbFulltext;
     private Spinner mSpForum;
     private KeyValueArrayAdapter mSpAdapter;
     private SearchHistoryAdapter mHistoryAdapter;
-
-    private final SimpleListEventCallback mEventCallback = new SimpleListEventCallback();
-
     private boolean mSearchFilterAnimating;
 
     private SearchBean mSearchBean = new SearchBean();
@@ -109,9 +105,6 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
     private int mPage = 1;
     private boolean mInloading = false;
     private int mMaxPage;
-    private Drawable mIconDrawable;
-    private Drawable mIbDrawable;
-
     private final TextView.OnEditorActionListener mSearchEditorActionListener = new TextView.OnEditorActionListener() {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -132,6 +125,8 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
             } else return isEnterDownEvent;
         }
     };
+    private Drawable mIconDrawable;
+    private Drawable mIbDrawable;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

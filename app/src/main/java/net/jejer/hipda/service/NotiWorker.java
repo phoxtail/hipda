@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
  * Created by GreenSkinMonster on 2019-03-16.
  */
 public class NotiWorker extends Worker {
-    private static WeakReference<Context> mContext;
     private final static String WORK_NAME = "noti_work";
     private final static int NOTI_REPEAT_MINUTTE = 15;
+    private static WeakReference<Context> mContext;
 
     /**
      * @param appContext   The application {@link Context}

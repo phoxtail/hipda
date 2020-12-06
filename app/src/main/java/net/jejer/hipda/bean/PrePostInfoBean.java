@@ -10,6 +10,10 @@ import java.util.Map;
  * Created by GreenSkinMonster on 2015-04-15.
  */
 public class PrePostInfoBean {
+    private final List<String> mAttaches = new ArrayList<>(0);
+    private final List<String> mNewAttaches = new ArrayList<>(0);
+    private final List<String> mDeleteAttaches = new ArrayList<>(0);
+    private final List<String> mAllImages = new ArrayList<>(0);
     private String mFormhash;
     private String mUid;
     private String mHash;
@@ -20,10 +24,6 @@ public class PrePostInfoBean {
     private String mNoticeAuthor;
     private String mNoticeAuthorMsg;
     private String mNoticeTrimStr;
-    private final List<String> mAttaches = new ArrayList<>(0);
-    private final List<String> mNewAttaches = new ArrayList<>(0);
-    private final List<String> mDeleteAttaches = new ArrayList<>(0);
-    private final List<String> mAllImages = new ArrayList<>(0);
     private Map<String, String> mTypeValues = new LinkedHashMap<>();
     private boolean mDeleteable;
 

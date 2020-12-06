@@ -27,7 +27,7 @@ public class ColorHelper {
 
     public static int getColorIdByAttr(Context ctx, int attrId) {
         Integer colorId = COLOR_IDS.get(attrId);
-        if (colorId == null ) {
+        if (colorId == null) {
             colorId = getColor(ctx, attrId);
             COLOR_IDS.put(attrId, colorId);
         }

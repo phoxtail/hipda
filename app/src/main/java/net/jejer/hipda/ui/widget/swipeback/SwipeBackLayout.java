@@ -67,48 +67,30 @@ public class SwipeBackLayout extends FrameLayout {
     private static final int[] EDGE_FLAGS = {
             EDGE_LEFT, EDGE_RIGHT, EDGE_BOTTOM, EDGE_ALL
     };
-
-    private int mEdgeFlag;
-
     /**
      * Threshold of scroll, we will close the activity, when scrollPercent over
      * this value;
      */
     private final float mScrollThreshold = DEFAULT_SCROLL_THRESHOLD;
-
-    private Activity mActivity;
-
-    private boolean mEnable = true;
-
-    private View mContentView;
-
     private final ViewDragHelper mDragHelper;
-
+    private final Rect mTmpRect = new Rect();
+    private int mEdgeFlag;
+    private Activity mActivity;
+    private boolean mEnable = true;
+    private View mContentView;
     private float mScrollPercent;
-
     private int mContentLeft;
-
     private int mContentTop;
-
     /**
      * The set of listeners to be sent events through.
      */
     private List<SwipeListener> mListeners;
-
     private Drawable mShadowLeft;
-
     private Drawable mShadowRight;
-
     private Drawable mShadowBottom;
-
     private float mScrimOpacity;
-
     private int mScrimColor = DEFAULT_SCRIM_COLOR;
-
     private boolean mInLayout;
-
-    private final Rect mTmpRect = new Rect();
-
     /**
      * Edge being dragged
      */

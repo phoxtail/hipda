@@ -1,7 +1,5 @@
 package net.jejer.hipda.emoji;
 
-import android.view.View;
-
 import androidx.annotation.NonNull;
 
 import java.util.Collection;

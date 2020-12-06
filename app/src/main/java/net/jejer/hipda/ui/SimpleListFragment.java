@@ -57,18 +57,15 @@ import java.util.Set;
 public class SimpleListFragment extends BaseFragment
         implements SwipeRefreshLayout.OnRefreshListener, PostSmsAsyncTask.SmsPostListener {
     public static final String ARG_TYPE = "type";
-
+    private final List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
+    private final SimpleListEventCallback mEventCallback = new SimpleListEventCallback();
     private int mType;
-
     private XRecyclerView mRecyclerView;
     private SimpleListAdapter mSimpleListAdapter;
-    private final List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
     private String mSearchId = "";
     private SwipeRefreshLayout mSwipeLayout;
     private ContentLoadingView mLoadingView;
     private HiProgressDialog mSmsPostProgressDialog;
-    private final SimpleListEventCallback mEventCallback = new SimpleListEventCallback();
-
     private int mPage = 1;
     private boolean mInloading = false;
     private int mMaxPage;

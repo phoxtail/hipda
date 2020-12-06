@@ -19,9 +19,9 @@ public class PostJob extends BaseJob {
     private final static int MIN_JOB_TIME_MS = 500;
 
     private final PostBean mPostArg;
+    private final PostEvent mEvent;
     private PrePostInfoBean mPrePostInfo;
     private int mMode;
-    private final PostEvent mEvent;
 
     public PostJob(String sessionId, int mode, PrePostInfoBean prePostInfo, PostBean postArg, boolean fromQuickReply) {
 

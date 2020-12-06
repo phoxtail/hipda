@@ -104,6 +104,7 @@ public class ViewDragHelper {
     };
     private final Callback mCallback;
     private final ViewGroup mParentView;
+    private final ScrollerCompat mScroller;
     // Current drag state; idle, dragging or settling
     private int mDragState;
     // Distance to travel before a drag may begin
@@ -123,7 +124,6 @@ public class ViewDragHelper {
     private float mMinVelocity;
     private int mEdgeSize;
     private int mTrackingEdges;
-    private final ScrollerCompat mScroller;
     private View mCapturedView;
     private final Runnable mSetIdleRunnable = new Runnable() {
         public void run() {

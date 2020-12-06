@@ -51,21 +51,17 @@ import okhttp3.Request;
 public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG_KEY = "BLACKLIST_KEY";
-
+    private final RvAdapter mAdapter = new RvAdapter();
+    private final List<String> mRemoving = new ArrayList<>();
     private List<String> mBlacklists = new ArrayList<>();
-
     private String mFormHash;
     private LayoutInflater mInflater;
     private Drawable mDrawable;
     private boolean mDialogShown;
-
     private View.OnClickListener mOnClickListener;
     private SwipeRefreshLayout mSwipeLayout;
     private ContentLoadingView mLoadingView;
     private HiProgressDialog mProgressDialog;
-
-    private final RvAdapter mAdapter = new RvAdapter();
-    private final List<String> mRemoving = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -244,7 +240,8 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
             @Override
             protected void onProgressUpdate(Integer... values) {
                 super.onProgressUpdate(values);
-                if (!Utils.isDestroyed(getActivity()) && mProgressDialog != null && mProgressDialog.isShowing()) {
+                if (getActivity() != null && !getActivity().isDestroyed() && !getActivity().isFinishing()
+                        && mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.setMessage(" 正在处理... (" + values[0] + "/" + values[1] + ")");
                 }
             }
@@ -295,7 +292,7 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
 
             @Override
             protected void onPostExecute(String message) {
-                if (!Utils.isDestroyed(getActivity())) {
+                if (getActivity() != null && !getActivity().isDestroyed() && !getActivity().isFinishing()) {
                     mProgressDialog.dismiss();
                     refresh();
                 }

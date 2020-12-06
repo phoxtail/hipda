@@ -28,12 +28,11 @@ public class ThreadDetailJob extends BaseJob {
 
     private final Context mCtx;
     private final String mTid;
-    private String mAuthorId;
     private final String mGotoPostId;
     private final int mPage;
     private final int mFetchType;
-
     private final ThreadDetailEvent mEvent;
+    private String mAuthorId;
 
     public ThreadDetailJob(Context context, String sessionId, String tid, String authorId, String gotoPostId, int page, int fetchType, int loadingPosition) {
         super(sessionId);

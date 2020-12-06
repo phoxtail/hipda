@@ -82,11 +82,12 @@ public class ThreadListFragment extends BaseFragment
     public static final String ARG_FID_KEY = "fid";
     private final static int MIN_TREADS_IN_PAGE = 10;
     private final int[] mFidHolder = new int[1];
+    private final List<ThreadBean> mThreadBeans = new ArrayList<>();
+    private final ThreadListEventCallback mEventCallback = new ThreadListEventCallback();
     private Context mCtx;
     private int mForumId = 0;
     private int mPage = 1;
     private ThreadListAdapter mThreadListAdapter;
-    private final List<ThreadBean> mThreadBeans = new ArrayList<>();
     private XRecyclerView mRecyclerView;
     private boolean mLoading = false;
     private HiProgressDialog postProgressDialog;
@@ -95,7 +96,6 @@ public class ThreadListFragment extends BaseFragment
     private int mFirstVisibleItem = 0;
     private boolean mDataReceived = false;
     private MenuItem mForumTypeMenuItem;
-    private final ThreadListEventCallback mEventCallback = new ThreadListEventCallback();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

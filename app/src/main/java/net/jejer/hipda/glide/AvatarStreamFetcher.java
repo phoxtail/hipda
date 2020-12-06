@@ -27,9 +27,8 @@ import okhttp3.ResponseBody;
  */
 public class AvatarStreamFetcher implements DataFetcher<InputStream> {
     private final OkHttpClient client;
-    private ResponseBody responseBody;
-
     private final String stringUrl;
+    private ResponseBody responseBody;
 
     public AvatarStreamFetcher(OkHttpClient client, AvatarModel model) {
         this.client = client;

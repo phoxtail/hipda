@@ -39,7 +39,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
-import net.jejer.hipda.emoji.EmojiEditText;
 
 import net.jejer.hipda.BuildConfig;
 import net.jejer.hipda.R;
@@ -54,6 +53,7 @@ import net.jejer.hipda.bean.PostBean;
 import net.jejer.hipda.cache.ThreadDetailCache;
 import net.jejer.hipda.db.ContentDao;
 import net.jejer.hipda.db.HistoryDao;
+import net.jejer.hipda.emoji.EmojiEditText;
 import net.jejer.hipda.job.EventCallback;
 import net.jejer.hipda.job.JobMgr;
 import net.jejer.hipda.job.PostEvent;
@@ -117,7 +117,8 @@ public class ThreadDetailFragment extends BaseFragment {
     public static final int POSITION_NORMAL = 0;
     public static final int POSITION_HEADER = 1;
     public static final int POSITION_FOOTER = 2;
-
+    private final ThreadDetailCache mCache = new ThreadDetailCache();
+    private final ThreadDetailEventCallback mEventCallback = new ThreadDetailEventCallback();
     private Context mCtx;
     private String mTid;
     private String mGotoPostId;
@@ -127,43 +128,21 @@ public class ThreadDetailFragment extends BaseFragment {
     private XRecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private ThreadDetailAdapter mDetailAdapter;
-    private final ThreadDetailCache mCache = new ThreadDetailCache();
     private List<DetailBean> mDetailBeans = new ArrayList<>();
-
     private int mCurrentPage = 1;
     private int mMaxPage = 0;
     private int mGoToPage = 1;
     private int mMaxPostInPage = HiSettingsHelper.getInstance().getMaxPostsInPage();    // user can configure max posts per page in forum setting
     private int mGotoFloor = -1;    // actual floor number in thread, start from 1
-
     private View mQuickReply;
     private EmojiEditText mEtReply;
     private CountdownButton mCountdownButton;
-
     private DetailBean mQuickReplyToPost;
     private int mQuickReplyMode;
     private String mHighlightPostId;
     private String mPendingScrollPostId;
     private int mPostViewTop = -1;
     private int mPostViewHeight = -1;
-
-    private Animation mBlinkAnim;
-
-    private boolean mDataReceived = false;
-    private boolean mLoading = false;
-    private boolean mHeaderLoading = false;
-    private boolean mFooterLoading = false;
-
-    private HiProgressDialog postProgressDialog;
-    private ContentLoadingView mLoadingView;
-    private final ThreadDetailEventCallback mEventCallback = new ThreadDetailEventCallback();
-    private MenuItem mShowAllMenuItem;
-
-    private boolean mHistorySaved = false;
-    private int mPendingBlinkFloor;
-
-    private SimpleGridMenu mGridMenu;
-
     private final View.OnLayoutChangeListener mOnLayoutChangeListener = new View.OnLayoutChangeListener() {
         @Override
         public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -173,6 +152,17 @@ public class ThreadDetailFragment extends BaseFragment {
             }
         }
     };
+    private Animation mBlinkAnim;
+    private boolean mDataReceived = false;
+    private boolean mLoading = false;
+    private boolean mHeaderLoading = false;
+    private boolean mFooterLoading = false;
+    private HiProgressDialog postProgressDialog;
+    private ContentLoadingView mLoadingView;
+    private MenuItem mShowAllMenuItem;
+    private boolean mHistorySaved = false;
+    private int mPendingBlinkFloor;
+    private SimpleGridMenu mGridMenu;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

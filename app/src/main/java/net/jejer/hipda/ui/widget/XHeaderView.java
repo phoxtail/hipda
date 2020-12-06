@@ -23,11 +23,10 @@ public class XHeaderView extends RelativeLayout {
     public final static int STATE_LOADING = 1;
     public final static int STATE_READY = 2;
     public final static int STATE_ERROR = 4;
-
-    private int mState = STATE_HIDDEN;
     private final View mLayout;
     private final ProgressBar mProgressBar;
     private final TextView mTitle;
+    private int mState = STATE_HIDDEN;
 
     public XHeaderView(Context context) {
         this(context, null);

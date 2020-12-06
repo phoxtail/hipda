@@ -27,10 +27,9 @@ import okhttp3.ResponseBody;
 public class ImageStreamFetcher implements DataFetcher<InputStream> {
     private final OkHttpClient client;
     private final GlideUrl url;
+    private final String stringUrl;
     private InputStream stream;
     private ResponseBody responseBody;
-
-    private final String stringUrl;
 
     public ImageStreamFetcher(OkHttpClient client, GlideUrl url) {
         this.client = client;

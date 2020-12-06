@@ -37,11 +37,11 @@ public class GlideHelper {
 
     final static long AVATAR_CACHE_MILLS = 3 * 24 * 60 * 60 * 1000;
     final static long AVATAR_404_CACHE_MILLS = 24 * 60 * 60 * 1000;
+    private static final Map<String, String> AVATAR_CACHE_KEYS = new HashMap<>();
     public static File SYSTEM_AVATAR_FILE;
     public static File DEFAULT_AVATAR_FILE;
     private static File AVATAR_CACHE_DIR;
     private static Drawable DEFAULT_USER_ICON;
-    private static final Map<String, String> AVATAR_CACHE_KEYS = new HashMap<>();
 
     public static void loadAvatar(BaseFragment fragment, ImageView view, String avatarUrl) {
         if (isOkToLoad(fragment)) {
@@ -108,7 +108,7 @@ public class GlideHelper {
 
     public static boolean isOkToLoad(Context activity) {
         if (activity instanceof Activity) {
-            return !Utils.isDestroyed((Activity) activity);
+            return !((Activity) activity).isDestroyed() && !((Activity) activity).isFinishing();
         }
         return true;
     }

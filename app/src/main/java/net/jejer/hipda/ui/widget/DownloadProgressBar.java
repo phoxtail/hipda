@@ -76,15 +76,17 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
     private static final int DEF_PROGRESS_WIDTH = 8;
     private static final int DEF_PROGRESS_MARGIN = 5;
     private static final int DEF_PROGRESS_INDETERMINATE_WIDTH = 90;
-
+    private final Paint mBgPaint;
+    private final RectF mBgRect;
+    private final Paint mProgressPaint;
+    private final RectF mProgressRect;
+    private final List<DownloadProgressBar.OnClickListener> mClickListeners;
     private Drawable mIdleIcon;
     private Drawable mCancelIcon;
     private Drawable mFinishIcon;
     private Drawable mErrorIcon;
-
     private boolean mCancelable;
     private boolean mHideOnFinish;
-
     private int mIdleIconWidth;
     private int mIdleIconHeight;
     private int mCancelIconWidth;
@@ -93,37 +95,25 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
     private int mFinishIconHeight;
     private int mErrorIconWidth;
     private int mErrorIconHeight;
-
     private int mCurrState;
     private int mMaxProgress;
     private int mCurrProgress;
-
-    private final Paint mBgPaint;
-    private final RectF mBgRect;
-
     private int mIdleBgColor;
     private int mFinishBgColor;
     private int mErrorBgColor;
     private int mIndeterminateBgColor;
     private int mDeterminateBgColor;
-
     private Drawable mIdleBgDrawable;
     private Drawable mFinishBgDrawable;
     private Drawable mErrorBgDrawable;
     private Drawable mIndeterminateBgDrawable;
     private Drawable mDeterminateBgDrawable;
-
     private ValueAnimator mIndeterminateAnimator;
     private int mCurrIndeterminateBarPos;
     private int mProgressIndeterminateSweepAngle;
-
     private int mProgressDeterminateColor;
     private int mProgressIndeterminateColor;
     private int mProgressMargin;
-    private final Paint mProgressPaint;
-    private final RectF mProgressRect;
-
-    private final List<DownloadProgressBar.OnClickListener> mClickListeners;
 
     public DownloadProgressBar(Context context) {
         this(context, null);

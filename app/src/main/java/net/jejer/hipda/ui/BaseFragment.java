@@ -26,16 +26,16 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
+
+import net.jejer.hipda.R;
+import net.jejer.hipda.async.PostSmsAsyncTask;
+import net.jejer.hipda.emoji.Emoji;
 import net.jejer.hipda.emoji.EmojiEditText;
 import net.jejer.hipda.emoji.EmojiPopup;
-import net.jejer.hipda.emoji.Emoji;
 import net.jejer.hipda.emoji.OnEmojiClickedListener;
 import net.jejer.hipda.emoji.OnEmojiPopupDismissListener;
 import net.jejer.hipda.emoji.OnEmojiPopupShownListener;
 import net.jejer.hipda.emoji.OnSoftKeyboardCloseListener;
-
-import net.jejer.hipda.R;
-import net.jejer.hipda.async.PostSmsAsyncTask;
 import net.jejer.hipda.ui.widget.OnSingleClickListener;
 import net.jejer.hipda.utils.UIUtils;
 import net.jejer.hipda.utils.Utils;

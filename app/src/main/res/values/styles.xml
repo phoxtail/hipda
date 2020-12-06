@@ -2,7 +2,7 @@
 
     <style name="ThemeLightBase" parent="MaterialDrawerTheme.Light"></style>
 
-    <style name="ThemeDarkBase" parent="MaterialDrawerTheme"></style>
+    <style name="ThemeDarkBase" parent="MaterialDrawerTheme" />
 
     <style name="ThemeLight" parent="ThemeLightBase">
 

@@ -8,9 +8,9 @@ import net.jejer.hipda.utils.Constants;
  */
 public class GlideImageEvent {
 
-    private int mStatus = -1;
     private final String mUrl;
     private final int mProgress;
+    private int mStatus = -1;
     private String mMessage;
 
     public GlideImageEvent(String url, int progress, int status) {

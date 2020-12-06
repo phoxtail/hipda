@@ -60,21 +60,17 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
 
     public static final String ARG_USERNAME = "USERNAME";
     public static final String ARG_UID = "UID";
-
+    private final List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
     private String mUid;
     private String mUsername;
     private String mAvatarUrl;
     private String mFormHash;
-
     private ImageView mAvatarView;
     private TextView mDetailView;
     private TextView mUsernameView;
     private TextView mOnlineView;
-
     private XRecyclerView mRecyclerView;
     private SimpleListAdapter mSimpleListAdapter;
-    private final List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
-
     private Button mButton;
 
     private boolean isShowThreads;

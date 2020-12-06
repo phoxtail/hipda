@@ -33,16 +33,14 @@ public class PostHelper {
     public static final int MODE_QUICK_DELETE = 6;
     private static final long POST_DELAY_IN_SECS = 30;
     private static long LAST_POST_TIME = 0;
-    private boolean ERR_502_TMP_FIXED = false;
-
     private final int mMode;
+    private final Context mCtx;
+    private final PostBean mPostArg;
+    private boolean ERR_502_TMP_FIXED = false;
     private String mResult;
     private int mStatus = Constants.STATUS_FAIL;
     private DetailListBean mDetailListBean;
-    private final Context mCtx;
     private PrePostInfoBean mInfo;
-    private final PostBean mPostArg;
-
     private String mTid;
     private String mTitle;
     private int mFloor;

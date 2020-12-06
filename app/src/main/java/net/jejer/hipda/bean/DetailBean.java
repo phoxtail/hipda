@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class DetailBean {
+    private final Collection<ContentImg> mImages = new ArrayList<>();
     private String mAuthor;
     private String mUid;
     private String mAvatarUrl;
@@ -17,7 +18,6 @@ public class DetailBean {
     private Contents mContents;
     private int mPage;
     private boolean mWarned;
-    private final Collection<ContentImg> mImages = new ArrayList<>();
     private boolean mSelectMode;
     private boolean mHighlightMode;
 

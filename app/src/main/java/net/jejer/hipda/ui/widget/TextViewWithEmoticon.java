@@ -17,10 +17,9 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 
-import net.jejer.hipda.emoji.EmojiHandler;
-
 import net.jejer.hipda.bean.DetailBean;
 import net.jejer.hipda.cache.SmallImages;
+import net.jejer.hipda.emoji.EmojiHandler;
 import net.jejer.hipda.ui.BaseFragment;
 import net.jejer.hipda.ui.FragmentArgs;
 import net.jejer.hipda.ui.FragmentUtils;
@@ -36,9 +35,6 @@ public class TextViewWithEmoticon extends AppCompatTextView {
     private static final long MIN_CLICK_INTERVAL = 600;
     private static final int TRIM_LENGTH = 80;
     private final Context mCtx;
-    private BaseFragment mFragment;
-    private boolean mTrim;
-    private long mLastClickTime;
     private final Html.ImageGetter imageGetter = new Html.ImageGetter() {
         public Drawable getDrawable(String src) {
             Drawable icon = null;
@@ -61,6 +57,9 @@ public class TextViewWithEmoticon extends AppCompatTextView {
             return icon;
         }
     };
+    private BaseFragment mFragment;
+    private boolean mTrim;
+    private long mLastClickTime;
 
     public TextViewWithEmoticon(Context context) {
         super(context);

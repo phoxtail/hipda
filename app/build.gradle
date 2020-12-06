@@ -9,7 +9,7 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion as int
+    compileSdkVersion 29
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -18,8 +18,8 @@ android {
 
     defaultConfig {
         applicationId "net.jejer.hipda.ng"
-        minSdkVersion rootProject.ext.minSdkVersion as int
-        targetSdkVersion rootProject.ext.targetSdkVersion as int
+        minSdkVersion 25
+        targetSdkVersion 29
         multiDexEnabled true
     }
 

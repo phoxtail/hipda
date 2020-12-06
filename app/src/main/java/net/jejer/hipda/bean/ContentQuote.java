@@ -7,12 +7,12 @@ import net.jejer.hipda.utils.Utils;
 
 public class ContentQuote extends ContentAbs {
     private final String mQuote;
+    private final String postId;
+    private final String tid;
     private String author;
     private String to;
     private String time;
     private String text;
-    private final String postId;
-    private final String tid;
 
     public ContentQuote(String postText, String authorAndTime, String tid, String postId) {
         this.postId = postId;
