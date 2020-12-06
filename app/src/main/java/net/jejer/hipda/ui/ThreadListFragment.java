@@ -86,7 +86,7 @@ public class ThreadListFragment extends BaseFragment
     private int mForumId = 0;
     private int mPage = 1;
     private ThreadListAdapter mThreadListAdapter;
-    private List<ThreadBean> mThreadBeans = new ArrayList<>();
+    private final List<ThreadBean> mThreadBeans = new ArrayList<>();
     private XRecyclerView mRecyclerView;
     private boolean mLoading = false;
     private HiProgressDialog postProgressDialog;
@@ -95,7 +95,7 @@ public class ThreadListFragment extends BaseFragment
     private int mFirstVisibleItem = 0;
     private boolean mDataReceived = false;
     private MenuItem mForumTypeMenuItem;
-    private ThreadListEventCallback mEventCallback = new ThreadListEventCallback();
+    private final ThreadListEventCallback mEventCallback = new ThreadListEventCallback();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

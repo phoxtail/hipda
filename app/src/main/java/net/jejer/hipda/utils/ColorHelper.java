@@ -19,19 +19,19 @@ public class ColorHelper {
 
     private final static int DAY_REF_COLOR = Color.parseColor("#ffffff");
     private final static int NIGHT_REF_COLOR = Color.parseColor("#000000");
-    private static HashMap<Integer, Integer> COLOR_IDS = new HashMap<>();
+    private static final HashMap<Integer, Integer> COLOR_IDS = new HashMap<>();
 
     public static void clear() {
         COLOR_IDS.clear();
     }
 
     public static int getColorIdByAttr(Context ctx, int attrId) {
-        if (COLOR_IDS.containsKey(attrId))
-            return COLOR_IDS.get(attrId);
+        Integer colorId = COLOR_IDS.get(attrId);
+        if (colorId == null ) {
+            colorId = getColor(ctx, attrId);
+            COLOR_IDS.put(attrId, colorId);
+        }
 
-        int colorId = getColor(ctx, attrId);
-
-        COLOR_IDS.put(attrId, colorId);
         return colorId;
     }
 
@@ -49,10 +49,6 @@ public class ColorHelper {
 
     public static int getColorPrimary(Context ctx) {
         return getColorIdByAttr(ctx, R.attr.colorPrimary);
-    }
-
-    public static int getColorPrimaryDark(Context ctx) {
-        return getColorIdByAttr(ctx, R.attr.colorPrimaryDark);
     }
 
     public static int getListBackgroundColor(Context ctx) {

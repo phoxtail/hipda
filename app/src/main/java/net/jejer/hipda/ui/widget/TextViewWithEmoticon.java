@@ -34,12 +34,12 @@ import net.jejer.hipda.utils.Utils;
 
 public class TextViewWithEmoticon extends AppCompatTextView {
     private static final long MIN_CLICK_INTERVAL = 600;
-    private static int TRIM_LENGTH = 80;
-    private Context mCtx;
+    private static final int TRIM_LENGTH = 80;
+    private final Context mCtx;
     private BaseFragment mFragment;
     private boolean mTrim;
     private long mLastClickTime;
-    private Html.ImageGetter imageGetter = new Html.ImageGetter() {
+    private final Html.ImageGetter imageGetter = new Html.ImageGetter() {
         public Drawable getDrawable(String src) {
             Drawable icon = null;
             src = Utils.nullToText(src);

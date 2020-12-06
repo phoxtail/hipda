@@ -26,9 +26,9 @@ import net.jejer.hipda.utils.Utils;
 
 public class SimpleListAdapter extends BaseRvAdapter<SimpleListItemBean> {
 
-    private LayoutInflater mInflater;
-    private BaseFragment mFragment;
-    private int mType;
+    private final LayoutInflater mInflater;
+    private final BaseFragment mFragment;
+    private final int mType;
 
     public SimpleListAdapter(BaseFragment fragment, int type, RecyclerItemClickListener itemClickListener) {
         mInflater = LayoutInflater.from(fragment.getActivity());

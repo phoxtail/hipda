@@ -6,7 +6,7 @@ package net.jejer.hipda.cache;
  */
 public class ImageContainer {
 
-    private static LRUCache<String, ImageInfo> IMAGES = new LRUCache<>(1024);
+    private static final LRUCache<String, ImageInfo> IMAGES = new LRUCache<>(1024);
 
     public static void markImageReady(String url, ImageInfo imageInfo) {
         IMAGES.put(url, imageInfo);

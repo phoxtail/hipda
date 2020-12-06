@@ -42,13 +42,13 @@ public class UploadImgHelper {
     private int mMaxImageFileSize = 800 * 1024;
     private int mMaxPixels = 2560 * 2560;
 
-    private UploadImgListener mListener;
+    private final UploadImgListener mListener;
 
-    private String mUid;
-    private String mHash;
-    private Context mCtx;
-    private Uri[] mUris;
-    private boolean mOriginal;
+    private final String mUid;
+    private final String mHash;
+    private final Context mCtx;
+    private final Uri[] mUris;
+    private final boolean mOriginal;
 
     private String mMessage = "";
     private String mDetail = "";

@@ -32,7 +32,7 @@ public class OkHttpUrlLoader implements ModelLoader<GlideUrl, InputStream> {
     }
 
     public static class Factory implements ModelLoaderFactory<GlideUrl, InputStream> {
-        private OkHttpClient client;
+        private final OkHttpClient client;
 
         Factory(OkHttpClient client) {
             this.client = client;

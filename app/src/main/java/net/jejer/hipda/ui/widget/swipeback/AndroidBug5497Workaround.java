@@ -12,12 +12,12 @@ import android.widget.FrameLayout;
  */
 
 public class AndroidBug5497Workaround {
-    private View mChildOfContent;
+    private final View mChildOfContent;
     private int usableHeightPrevious;
-    private FrameLayout.LayoutParams frameLayoutParams;
+    private final FrameLayout.LayoutParams frameLayoutParams;
     private int contentHeight;
     private boolean isFirst = true;
-    private int statusBarHeight;
+    private final int statusBarHeight;
 
     private AndroidBug5497Workaround(Activity activity) {
 

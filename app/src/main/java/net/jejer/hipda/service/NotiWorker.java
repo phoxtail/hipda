@@ -16,13 +16,14 @@ import net.jejer.hipda.okhttp.OkHttpHelper;
 import net.jejer.hipda.ui.HiApplication;
 import net.jejer.hipda.utils.Logger;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by GreenSkinMonster on 2019-03-16.
  */
 public class NotiWorker extends Worker {
-
+    private static WeakReference<Context> mContext;
     private final static String WORK_NAME = "noti_work";
     private final static int NOTI_REPEAT_MINUTTE = 15;
 
@@ -32,6 +33,7 @@ public class NotiWorker extends Worker {
      */
     public NotiWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
         super(appContext, workerParams);
+        mContext = new WeakReference<>(appContext);
     }
 
     public static void scheduleOrCancelWork() {
@@ -45,10 +47,11 @@ public class NotiWorker extends Worker {
                     .Builder(NotiWorker.class, NOTI_REPEAT_MINUTTE, TimeUnit.MINUTES)
                     .setConstraints(constraints)
                     .build();
-            WorkManager.getInstance()
+
+            WorkManager.getInstance(mContext.get())
                     .enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request);
         } else {
-            WorkManager.getInstance().cancelUniqueWork(WORK_NAME);
+            WorkManager.getInstance(mContext.get()).cancelUniqueWork(WORK_NAME);
         }
     }
 

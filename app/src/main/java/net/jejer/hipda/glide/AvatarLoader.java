@@ -8,6 +8,8 @@ import com.bumptech.glide.load.model.ModelLoaderFactory;
 import com.bumptech.glide.load.model.MultiModelLoaderFactory;
 import com.bumptech.glide.signature.ObjectKey;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.InputStream;
 
 import okhttp3.OkHttpClient;
@@ -31,7 +33,7 @@ public class AvatarLoader implements ModelLoader<AvatarModel, InputStream> {
     }
 
     public static class Factory implements ModelLoaderFactory<AvatarModel, InputStream> {
-        private OkHttpClient client;
+        private final OkHttpClient client;
 
         Factory(OkHttpClient client) {
             this.client = client;
@@ -39,7 +41,7 @@ public class AvatarLoader implements ModelLoader<AvatarModel, InputStream> {
 
         @NonNull
         @Override
-        public ModelLoader<AvatarModel, InputStream> build(MultiModelLoaderFactory factories) {
+        public ModelLoader<AvatarModel, InputStream> build(@NotNull MultiModelLoaderFactory factories) {
             return new AvatarLoader(client);
         }
 
@@ -47,5 +49,4 @@ public class AvatarLoader implements ModelLoader<AvatarModel, InputStream> {
         public void teardown() {
         }
     }
-
 }

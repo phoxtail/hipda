@@ -98,8 +98,8 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
     private int mMaxProgress;
     private int mCurrProgress;
 
-    private Paint mBgPaint;
-    private RectF mBgRect;
+    private final Paint mBgPaint;
+    private final RectF mBgRect;
 
     private int mIdleBgColor;
     private int mFinishBgColor;
@@ -120,10 +120,10 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
     private int mProgressDeterminateColor;
     private int mProgressIndeterminateColor;
     private int mProgressMargin;
-    private Paint mProgressPaint;
-    private RectF mProgressRect;
+    private final Paint mProgressPaint;
+    private final RectF mProgressRect;
 
-    private List<DownloadProgressBar.OnClickListener> mClickListeners;
+    private final List<DownloadProgressBar.OnClickListener> mClickListeners;
 
     public DownloadProgressBar(Context context) {
         this(context, null);

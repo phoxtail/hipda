@@ -20,10 +20,10 @@ public class PrePostInfoBean {
     private String mNoticeAuthor;
     private String mNoticeAuthorMsg;
     private String mNoticeTrimStr;
-    private List<String> mAttaches = new ArrayList<>(0);
-    private List<String> mNewAttaches = new ArrayList<>(0);
-    private List<String> mDeleteAttaches = new ArrayList<>(0);
-    private List<String> mAllImages = new ArrayList<>(0);
+    private final List<String> mAttaches = new ArrayList<>(0);
+    private final List<String> mNewAttaches = new ArrayList<>(0);
+    private final List<String> mDeleteAttaches = new ArrayList<>(0);
+    private final List<String> mAllImages = new ArrayList<>(0);
     private Map<String, String> mTypeValues = new LinkedHashMap<>();
     private boolean mDeleteable;
 

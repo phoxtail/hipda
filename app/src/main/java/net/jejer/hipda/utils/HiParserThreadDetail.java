@@ -399,10 +399,7 @@ public class HiParserThreadDetail {
             return false;
         } else if (contentN.nodeName().equals("p")) {    // paragraph
             Element pE = (Element) contentN;
-            if (pE.hasClass("imgtitle")) {
-                return false;
-            }
-            return true;
+            return !pE.hasClass("imgtitle");
         } else if (contentN.nodeName().equals("img")) {
             parseImageElement((Element) contentN, content);
             return false;
@@ -424,10 +421,7 @@ public class HiParserThreadDetail {
                     isInternalAttach = true;
                 }
             }
-            if (isInternalAttach) {
-                return false;
-            }
-            return true;
+            return !isInternalAttach;
         } else if (contentN.nodeName().equals("a")) {
             Element aE = (Element) contentN;
             String text = aE.text();
@@ -463,7 +457,8 @@ public class HiParserThreadDetail {
             if (divE.hasClass("t_attach")) {
                 // remove div.t_attach
                 return false;
-            } else if (divE.hasClass("quote")) {
+            } else // remove div.attach_popup
+                if (divE.hasClass("quote")) {
                 String tid = "";
                 String postId = "";
                 Elements redirectES = divE.select("a");
@@ -488,11 +483,7 @@ public class HiParserThreadDetail {
                 //only keep line break, text with styles, links
                 content.addQuote(Utils.clean(divE.html()), authorAndTime, tid, postId);
                 return false;
-            } else if (divE.hasClass("attach_popup")) {
-                // remove div.attach_popup
-                return false;
-            }
-            return true;
+            } else return !divE.hasClass("attach_popup");
         } else if (contentN.nodeName().equals("table")) {
             return true;
         } else if (contentN.nodeName().equals("tbody")) {    //Groups the body content in a table

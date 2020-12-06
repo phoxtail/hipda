@@ -110,7 +110,7 @@ public class PostFragment extends BaseFragment {
     private ImageButton mIbEmojiSwitch;
     private int mContentPosition = -1;
 
-    private PrePostAsyncTask.PrePostListener mPrePostListener = new PrePostListener();
+    private final PrePostAsyncTask.PrePostListener mPrePostListener = new PrePostListener();
     private PrePostInfoBean mPrePostInfo;
     private PrePostAsyncTask mPrePostAsyncTask;
     private Snackbar mSnackbar;
@@ -125,7 +125,7 @@ public class PostFragment extends BaseFragment {
     private GridImageAdapter mImageAdapter;
     private HiProgressDialog mProgressDialog;
     private boolean mImageUploading = false;
-    private Map<Uri, UploadImage> mUploadImages = new LinkedHashMap<>();
+    private final Map<Uri, UploadImage> mUploadImages = new LinkedHashMap<>();
     private long mLastSavedTime = -1;
     private boolean mDeleteMode = false;
 

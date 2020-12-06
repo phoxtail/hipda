@@ -43,13 +43,13 @@ public class SimpleListJob extends BaseJob {
     public static final int TYPE_HISTORIES = 9;
     public static final int TYPE_NEW_POSTS = 10;
 
-    private Context mCtx;
-    private int mType;
+    private final Context mCtx;
+    private final int mType;
     private int mPage = 1;
     private String mExtra = "";
     private SearchBean mSearchBean;
 
-    private SimpleListEvent mEvent;
+    private final SimpleListEvent mEvent;
 
     public SimpleListJob(Context context, String sessionId, int type, int page, String extra) {
         super(sessionId);

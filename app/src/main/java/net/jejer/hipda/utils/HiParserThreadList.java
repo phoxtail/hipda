@@ -199,8 +199,8 @@ public class HiParserThreadList {
 
     public static class parseNotifyRunnable implements Runnable {
 
-        private Document mDoc;
-        private Context mCtx;
+        private final Document mDoc;
+        private final Context mCtx;
 
         public parseNotifyRunnable(Context context, Document doc) {
             mDoc = doc;

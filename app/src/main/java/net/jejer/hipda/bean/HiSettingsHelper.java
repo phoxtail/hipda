@@ -107,8 +107,8 @@ public class HiSettingsHelper {
     public static final String IMAGE_POLICY_THUMB = "prefer_thumb";
     public static final String IMAGE_POLICY_ORIGINAL = "prefer_original";
     private static boolean mMobileNetwork;
-    private Context mCtx;
-    private SharedPreferences mSharedPref;
+    private final Context mCtx;
+    private final SharedPreferences mSharedPref;
     private String mUsername = "";
     private String mPassword = "";
     private String mSecQuestion = "";
@@ -367,8 +367,7 @@ public class HiSettingsHelper {
 
     public void setSortByPostTime(int fid, boolean sortByPostTime) {
         if (sortByPostTime) {
-            if (!mSortByPostTimeByForum.contains(fid + ""))
-                mSortByPostTimeByForum.add(fid + "");
+            mSortByPostTimeByForum.add(fid + "");
         } else {
             mSortByPostTimeByForum.remove(fid + "");
         }

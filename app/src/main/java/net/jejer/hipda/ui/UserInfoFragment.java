@@ -73,7 +73,7 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
 
     private XRecyclerView mRecyclerView;
     private SimpleListAdapter mSimpleListAdapter;
-    private List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
+    private final List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
 
     private Button mButton;
 

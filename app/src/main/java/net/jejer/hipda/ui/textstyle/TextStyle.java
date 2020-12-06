@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by GreenSkinMonster on 2015-04-22.
  */
 public class TextStyle {
-    private static Map<String, String> COLORS = new HashMap<>();
+    private static final Map<String, String> COLORS = new HashMap<>();
 
     static {
 

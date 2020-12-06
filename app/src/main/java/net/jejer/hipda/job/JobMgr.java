@@ -18,8 +18,8 @@ public class JobMgr {
     public final static int PRIORITY_MIDIUM = 6;
     public final static int PRIORITY_LOW = 3;
 
-    private JobManager jobManager;
-    private JobManager glideJobManager;
+    private final JobManager jobManager;
+    private final JobManager glideJobManager;
 
     private JobMgr() {
         CustomLogger logger = new CustomLogger() {

@@ -17,7 +17,7 @@ public class DetailBean {
     private Contents mContents;
     private int mPage;
     private boolean mWarned;
-    private Collection<ContentImg> mImages = new ArrayList<>();
+    private final Collection<ContentImg> mImages = new ArrayList<>();
     private boolean mSelectMode;
     private boolean mHighlightMode;
 
@@ -142,7 +142,7 @@ public class DetailBean {
     }
 
     public class Contents {
-        private ArrayList<ContentAbs> list;
+        private final ArrayList<ContentAbs> list;
         private int lastTextIdx;
         private Boolean newString;
 

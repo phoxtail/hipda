@@ -34,9 +34,9 @@ import java.util.concurrent.ExecutionException;
  */
 public class GlideImageJob extends BaseJob {
 
-    private String mUrl;
-    private RequestManager mRequestManager;
-    private boolean mNetworkFetch;
+    private final String mUrl;
+    private final RequestManager mRequestManager;
+    private final boolean mNetworkFetch;
 
     public GlideImageJob(String url, int priority, String tag, boolean networkFetch) {
         super(new Params(priority)

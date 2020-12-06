@@ -12,7 +12,7 @@ import net.jejer.hipda.ui.widget.ThreadItemLayout;
 
 public class ThreadListAdapter extends BaseRvAdapter<ThreadBean> {
 
-    private RequestManager mGlide;
+    private final RequestManager mGlide;
 
     public ThreadListAdapter(RequestManager glide, RecyclerItemClickListener listener) {
         mGlide = glide;

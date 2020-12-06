@@ -16,11 +16,11 @@ import java.util.Collection;
  */
 public class ImageUploadJob extends BaseJob implements UploadImgHelper.UploadImgListener {
 
-    private String mUid;
-    private String mHash;
-    private Uri[] mUris;
-    private boolean mOriginal;
-    private Collection<ImageUploadEvent> mHoldEvents = new ArrayList<>();
+    private final String mUid;
+    private final String mHash;
+    private final Uri[] mUris;
+    private final boolean mOriginal;
+    private final Collection<ImageUploadEvent> mHoldEvents = new ArrayList<>();
 
     public ImageUploadJob(String sessionId, String uid, String hash, Uri[] uris, boolean original) {
         super(sessionId);

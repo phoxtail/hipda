@@ -8,7 +8,7 @@ import android.util.SparseArray;
  */
 public class TextStyleHolder {
 
-    private SparseArray<TextStyle> textStyles = new SparseArray<>();
+    private final SparseArray<TextStyle> textStyles = new SparseArray<>();
 
     public void addLevel(int level) {
         if (textStyles.get(level - 1) != null)

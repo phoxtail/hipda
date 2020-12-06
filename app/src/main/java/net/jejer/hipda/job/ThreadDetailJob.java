@@ -26,14 +26,14 @@ public class ThreadDetailJob extends BaseJob {
     public final static String FIND_AUTHOR_ID = "-1";
     private final static int MIN_JOB_TIME_MS = 150;
 
-    private Context mCtx;
-    private String mTid;
+    private final Context mCtx;
+    private final String mTid;
     private String mAuthorId;
-    private String mGotoPostId;
-    private int mPage;
-    private int mFetchType;
+    private final String mGotoPostId;
+    private final int mPage;
+    private final int mFetchType;
 
-    private ThreadDetailEvent mEvent;
+    private final ThreadDetailEvent mEvent;
 
     public ThreadDetailJob(Context context, String sessionId, String tid, String authorId, String gotoPostId, int page, int fetchType, int loadingPosition) {
         super(sessionId);

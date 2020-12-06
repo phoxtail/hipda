@@ -4,7 +4,7 @@ package net.jejer.hipda.glide;
  * Created by GreenSkinMonster on 2019-02-28.
  */
 public class AvatarModel {
-    private String mUrl;
+    private final String mUrl;
 
     public AvatarModel(String url) {
         mUrl = url;

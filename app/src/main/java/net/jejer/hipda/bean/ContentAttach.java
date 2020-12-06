@@ -5,9 +5,9 @@ import android.text.TextUtils;
 import net.jejer.hipda.utils.HiUtils;
 
 public class ContentAttach extends ContentAbs {
-    private String mUrl;
-    private String mTitle;
-    private String mDesc;
+    private final String mUrl;
+    private final String mTitle;
+    private final String mDesc;
 
     public ContentAttach(String url, String title, String desc) {
         mUrl = url;

@@ -36,7 +36,7 @@ public class FavoriteHelper {
     private final static String FAVORITES_CACHE_KEY = "favorites";
     private final static String ATTENTION_CACHE_KEY = "attention";
 
-    private SharedPreferences mCachePref;
+    private final SharedPreferences mCachePref;
 
     private Set<String> mFavoritesCache;
     private Set<String> mAttentionCache;
@@ -166,11 +166,9 @@ public class FavoriteHelper {
     public void addToCahce(String item, Set<String> tids) {
         for (String tid : tids) {
             if (TYPE_FAVORITE.equals(item)) {
-                if (!mFavoritesCache.contains(tid))
-                    mFavoritesCache.add(tid);
+                mFavoritesCache.add(tid);
             } else if (TYPE_ATTENTION.equals(item)) {
-                if (!mAttentionCache.contains(tid))
-                    mAttentionCache.add(tid);
+                mAttentionCache.add(tid);
             }
         }
         if (TYPE_FAVORITE.equals(item)) {

@@ -17,12 +17,12 @@ public class ContentImg extends ContentAbs implements Parcelable {
             return new ContentImg[size];
         }
     };
-    private String mUrl;
-    private String mThumbUrl;
+    private final String mUrl;
+    private final String mThumbUrl;
     private String mAuthor;
     private int mFloor;
     private int mIndexInPage;
-    private long mFileSize;
+    private final long mFileSize;
 
     public ContentImg(String url, long fileSize, String thumbUrl) {
         mUrl = url;

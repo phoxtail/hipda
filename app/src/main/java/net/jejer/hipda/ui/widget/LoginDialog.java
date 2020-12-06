@@ -26,7 +26,7 @@ import net.jejer.hipda.utils.UIUtils;
  */
 public class LoginDialog extends Dialog {
 
-    private Context mCtx;
+    private final Context mCtx;
     private HiProgressDialog progressDialog;
 
     public LoginDialog(Context context) {

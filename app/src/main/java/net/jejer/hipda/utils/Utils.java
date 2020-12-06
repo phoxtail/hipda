@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -371,10 +372,7 @@ public class Utils {
 
     public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     public static boolean isFromGooglePlay(Context context) {
@@ -434,7 +432,7 @@ public class Utils {
             match = false;
             for (String blank : blanks) {
                 if (s.length() > cutIndex + blank.length()
-                        && s.substring(cutIndex, cutIndex + blank.length()).equals(blank)) {
+                        && s.startsWith(blank, cutIndex)) {
                     cutIndex += blank.length();
                     match = true;
                     break;
@@ -563,7 +561,7 @@ public class Utils {
 
     public static String md5(String content) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         byte[] hash;
-        hash = MessageDigest.getInstance("MD5").digest(content.getBytes("UTF-8"));
+        hash = MessageDigest.getInstance("MD5").digest(content.getBytes(StandardCharsets.UTF_8));
 
         StringBuilder hex = new StringBuilder(hash.length * 2);
         for (byte b : hash) {

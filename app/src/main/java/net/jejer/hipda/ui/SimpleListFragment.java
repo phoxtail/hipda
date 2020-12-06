@@ -62,12 +62,12 @@ public class SimpleListFragment extends BaseFragment
 
     private XRecyclerView mRecyclerView;
     private SimpleListAdapter mSimpleListAdapter;
-    private List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
+    private final List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
     private String mSearchId = "";
     private SwipeRefreshLayout mSwipeLayout;
     private ContentLoadingView mLoadingView;
     private HiProgressDialog mSmsPostProgressDialog;
-    private SimpleListEventCallback mEventCallback = new SimpleListEventCallback();
+    private final SimpleListEventCallback mEventCallback = new SimpleListEventCallback();
 
     private int mPage = 1;
     private boolean mInloading = false;

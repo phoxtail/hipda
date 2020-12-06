@@ -30,8 +30,8 @@ import okhttp3.Request;
  */
 public class UpdateHelper {
 
-    private Activity mCtx;
-    private boolean mSilent;
+    private final Activity mCtx;
+    private final boolean mSilent;
 
     private HiProgressDialog pd;
 

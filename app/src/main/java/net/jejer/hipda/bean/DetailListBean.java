@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DetailListBean {
-    private List<DetailBean> mDetailBeans;
+    private final List<DetailBean> mDetailBeans;
     private int mLastPage = 1;
     private int mPage = 0;
     private String mTitle;
     private int mFid;
     private String mTid;
-    private HashMap<String, DetailBean> mPostIdBeans;
+    private final HashMap<String, DetailBean> mPostIdBeans;
     private int mImagesCount = 0;
 
     public DetailListBean() {

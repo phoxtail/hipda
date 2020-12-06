@@ -13,7 +13,7 @@ import net.jejer.hipda.bean.HiSettingsHelper;
  */
 public class TimePickerListener extends OnPreferenceClickListener {
 
-    private String mDefaultValue;
+    private final String mDefaultValue;
 
     TimePickerListener(String defaultValue) {
         mDefaultValue = defaultValue;
@@ -47,7 +47,7 @@ public class TimePickerListener extends OnPreferenceClickListener {
             public void onClick(DialogInterface dialogInterface, int i) {
                 int hour = timePicker.getCurrentHour();
                 int minute = timePicker.getCurrentMinute();
-                String hourMinute = (hour < 10 ? "0" : "") + String.valueOf(hour) + ":" + (minute < 10 ? "0" : "") + String.valueOf(minute);
+                String hourMinute = (hour < 10 ? "0" : "") + hour + ":" + (minute < 10 ? "0" : "") + minute;
                 HiSettingsHelper.getInstance().setStringValue(preference.getKey(), hourMinute);
                 preference.setSummary(hourMinute);
             }

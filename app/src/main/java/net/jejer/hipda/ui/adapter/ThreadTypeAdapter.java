@@ -17,8 +17,8 @@ import java.util.Map;
  */
 public class ThreadTypeAdapter extends BaseAdapter {
 
-    private Activity mContext;
-    private Map<String, String> mTypes;
+    private final Activity mContext;
+    private final Map<String, String> mTypes;
 
 
     public ThreadTypeAdapter(Activity activity, Map<String, String> types) {

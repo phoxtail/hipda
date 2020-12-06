@@ -4,7 +4,7 @@ import net.jejer.hipda.utils.Utils;
 
 public class ContentText extends ContentAbs {
 
-    private StringBuilder mSb;
+    private final StringBuilder mSb;
 
     public ContentText(String text) {
         mSb = new StringBuilder();

@@ -578,7 +578,7 @@ public class MainFrameActivity extends BaseActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_CODE_STORAGE: {
                 // If request is cancelled, the result arrays are empty.

@@ -25,8 +25,8 @@ public class FilePickerListener extends OnPreferenceClickListener implements Dia
     public final static int SAVE_DIR = 1;
 
     private Preference mPreference;
-    private Activity mActivity;
-    private int mType;
+    private final Activity mActivity;
+    private final int mType;
 
     FilePickerListener(Activity activity, int type) {
         mType = type;

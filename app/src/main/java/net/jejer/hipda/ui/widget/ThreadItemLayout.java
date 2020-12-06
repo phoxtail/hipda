@@ -24,15 +24,15 @@ import net.jejer.hipda.utils.Utils;
  */
 public class ThreadItemLayout extends ConstraintLayout {
 
-    private ImageView mAvatar;
-    private TextView mTvAuthor;
-    private TextView mTvThreadType;
-    private TextView mTvTitle;
-    private TextView mTvReplyCounter;
-    private TextView mTvCreateTime;
-    private ImageView mTvImageIndicator;
+    private final ImageView mAvatar;
+    private final TextView mTvAuthor;
+    private final TextView mTvThreadType;
+    private final TextView mTvTitle;
+    private final TextView mTvReplyCounter;
+    private final TextView mTvCreateTime;
+    private final ImageView mTvImageIndicator;
 
-    private RequestManager mGlide;
+    private final RequestManager mGlide;
 
     public ThreadItemLayout(Context context, RequestManager glide) {
         super(context, null, 0);

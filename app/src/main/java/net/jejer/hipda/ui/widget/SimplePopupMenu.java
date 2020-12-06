@@ -23,12 +23,12 @@ import java.util.List;
 
 public class SimplePopupMenu {
 
-    private Context mContext;
-    private LayoutInflater mInflater;
+    private final Context mContext;
+    private final LayoutInflater mInflater;
 
-    private LinkedHashMap<String, String> mActions = new LinkedHashMap<>();
-    private LinkedHashMap<String, AdapterView.OnItemClickListener> mListeners = new LinkedHashMap<>();
-    private List<String> mActionKeys = new ArrayList<>();
+    private final LinkedHashMap<String, String> mActions = new LinkedHashMap<>();
+    private final LinkedHashMap<String, AdapterView.OnItemClickListener> mListeners = new LinkedHashMap<>();
+    private final List<String> mActionKeys = new ArrayList<>();
 
     public SimplePopupMenu(Context context) {
         mContext = context;

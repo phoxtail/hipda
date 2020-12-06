@@ -64,8 +64,8 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
     private ContentLoadingView mLoadingView;
     private HiProgressDialog mProgressDialog;
 
-    private RvAdapter mAdapter = new RvAdapter();
-    private List<String> mRemoving = new ArrayList<>();
+    private final RvAdapter mAdapter = new RvAdapter();
+    private final List<String> mRemoving = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

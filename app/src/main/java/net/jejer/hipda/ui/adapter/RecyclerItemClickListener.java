@@ -19,10 +19,10 @@ public class RecyclerItemClickListener implements View.OnTouchListener {
 
     private static final long MIN_CLICK_INTERVAL = 600;
 
-    private OnItemClickListener mListener;
+    private final OnItemClickListener mListener;
     private View mChildView;
     private long mLastClickTime;
-    private GestureDetectorCompat mGestureDetector;
+    private final GestureDetectorCompat mGestureDetector;
 
     public RecyclerItemClickListener(Context context, OnItemClickListener listener) {
         mListener = listener;

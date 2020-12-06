@@ -31,9 +31,9 @@ import net.jejer.hipda.utils.Utils;
 
 public class SmsAdapter extends BaseRvAdapter<SimpleListItemBean> {
 
-    private View.OnClickListener mAvatarListener;
-    private LayoutInflater mInflater;
-    private SmsFragment mFragment;
+    private final View.OnClickListener mAvatarListener;
+    private final LayoutInflater mInflater;
+    private final SmsFragment mFragment;
 
     public SmsAdapter(SmsFragment fragment, View.OnClickListener avatarListener, RecyclerItemClickListener itemClickListener) {
         mAvatarListener = avatarListener;

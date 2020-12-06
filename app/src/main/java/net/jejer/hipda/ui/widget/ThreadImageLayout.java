@@ -34,12 +34,12 @@ import java.util.ArrayList;
  */
 public class ThreadImageLayout extends BaseImageLayout {
 
-    private Activity mActivity;
-    private TextView mTextView;
+    private final Activity mActivity;
+    private final TextView mTextView;
 
-    private boolean mIsThumb;
-    private int mImageIndex;
-    private ArrayList<ContentImg> mImages;
+    private final boolean mIsThumb;
+    private final int mImageIndex;
+    private final ArrayList<ContentImg> mImages;
 
     public ThreadImageLayout(Activity activity, ContentImg contentImg, ArrayList<ContentImg> images, boolean isThumb) {
         super(activity);

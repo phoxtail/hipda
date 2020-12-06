@@ -8,7 +8,7 @@ import net.jejer.hipda.utils.Utils;
 
 public class SignatureContainer {
 
-    private static LRUCache<String, String> SIGS = new LRUCache<>(128);
+    private static final LRUCache<String, String> SIGS = new LRUCache<>(128);
 
     public static void putSignature(String uid, String signature) {
         SIGS.put(uid, signature);

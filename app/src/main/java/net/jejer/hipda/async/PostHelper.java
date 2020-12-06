@@ -35,13 +35,13 @@ public class PostHelper {
     private static long LAST_POST_TIME = 0;
     private boolean ERR_502_TMP_FIXED = false;
 
-    private int mMode;
+    private final int mMode;
     private String mResult;
     private int mStatus = Constants.STATUS_FAIL;
     private DetailListBean mDetailListBean;
-    private Context mCtx;
+    private final Context mCtx;
     private PrePostInfoBean mInfo;
-    private PostBean mPostArg;
+    private final PostBean mPostArg;
 
     private String mTid;
     private String mTitle;

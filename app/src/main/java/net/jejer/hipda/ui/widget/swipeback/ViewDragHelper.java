@@ -123,7 +123,7 @@ public class ViewDragHelper {
     private float mMinVelocity;
     private int mEdgeSize;
     private int mTrackingEdges;
-    private ScrollerCompat mScroller;
+    private final ScrollerCompat mScroller;
     private View mCapturedView;
     private final Runnable mSetIdleRunnable = new Runnable() {
         public void run() {

@@ -23,9 +23,9 @@ import java.util.Map;
 
 public class PrePostAsyncTask extends AsyncTask<PostBean, Void, PrePostInfoBean> {
 
-    private PrePostListener mListener;
-    private Context mCtx;
-    private int mMode;
+    private final PrePostListener mListener;
+    private final Context mCtx;
+    private final int mMode;
     private String mMessage;
 
     public PrePostAsyncTask(Context ctx, PrePostListener listener, int mode) {

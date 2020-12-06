@@ -29,7 +29,7 @@ public class PersistentCookieStore {
 
     private final Map<String, ConcurrentHashMap<String, Cookie>> cookies;
     private final SharedPreferences cookiePrefs;
-    private String persistentDomain;
+    private final String persistentDomain;
 
     public PersistentCookieStore(Context context, String domain) {
         cookiePrefs = context.getSharedPreferences(COOKIE_PREFS, 0);

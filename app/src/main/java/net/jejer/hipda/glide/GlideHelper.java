@@ -41,7 +41,7 @@ public class GlideHelper {
     public static File DEFAULT_AVATAR_FILE;
     private static File AVATAR_CACHE_DIR;
     private static Drawable DEFAULT_USER_ICON;
-    private static Map<String, String> AVATAR_CACHE_KEYS = new HashMap<>();
+    private static final Map<String, String> AVATAR_CACHE_KEYS = new HashMap<>();
 
     public static void loadAvatar(BaseFragment fragment, ImageView view, String avatarUrl) {
         if (isOkToLoad(fragment)) {

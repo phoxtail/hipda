@@ -70,10 +70,10 @@ public class OkHttpHelper {
         public void onResponse(String response) {
         }
     };
-    private OkHttpClient mClient;
-    private PersistentCookieStore mCookiestore;
-    private CookieJar mCookieJar;
-    private Handler handler;
+    private final OkHttpClient mClient;
+    private final PersistentCookieStore mCookiestore;
+    private final CookieJar mCookieJar;
+    private final Handler handler;
 
     private OkHttpHelper() {
         mCookiestore = new PersistentCookieStore(HiApplication.getAppContext(), HiUtils.CookieDomain);

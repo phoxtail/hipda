@@ -17,7 +17,7 @@ import net.jejer.hipda.bean.HiSettingsHelper;
  */
 
 public class SimpleDivider extends RecyclerView.ItemDecoration {
-    private Drawable mDivider;
+    private final Drawable mDivider;
 
     public SimpleDivider(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

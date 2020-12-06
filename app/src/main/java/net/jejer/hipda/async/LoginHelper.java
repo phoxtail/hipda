@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class LoginHelper {
 
-    private Context mCtx;
+    private final Context mCtx;
 
     private String mErrorMsg = "";
 
@@ -149,7 +149,7 @@ public class LoginHelper {
             return pass;
         try {
             return Utils.md5(pass.replace("\\", "\\\\")
-                    .replace("'", "\'")
+                    .replace("'", "'")
                     .replace("\"", "\\\""));
         } catch (Exception e) {
             return pass;

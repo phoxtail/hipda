@@ -30,8 +30,8 @@ import java.util.List;
 
 public class ForumSelectListener extends OnPreferenceClickListener {
 
-    private Context mContext;
-    private LayoutInflater mInflater;
+    private final Context mContext;
+    private final LayoutInflater mInflater;
     private List<ForumStatus> mForumSelctions;
     private View.OnClickListener mOnClickListener;
 

@@ -30,7 +30,7 @@ public class ThreadImageDecoder implements ResourceDecoder<InputStream, Bitmap> 
     private final static int MAX_WIDTH = getMaxWidth();
     private final static int MAX_HEIGHT = 2 * Utils.getScreenHeight();
 
-    private ImageInfo mImageInfo;
+    private final ImageInfo mImageInfo;
 
     public ThreadImageDecoder(ImageInfo imageInfo) {
         mImageInfo = imageInfo;

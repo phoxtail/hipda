@@ -1,11 +1,11 @@
 package net.jejer.hipda.bean;
 
 public class ContentGoToFloor extends ContentAbs {
-    private String text;
-    private int floor;
-    private String author;
-    private String postId;
-    private String tid;
+    private final String text;
+    private final int floor;
+    private final String author;
+    private final String postId;
+    private final String tid;
 
     public ContentGoToFloor(String text, String tid, String postId, int floor, String author) {
         this.text = text;

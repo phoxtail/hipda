@@ -67,7 +67,7 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
     private String mAuthor;
     private String mUid;
     private SmsAdapter mSmsAdapter;
-    private List<SimpleListItemBean> mSmsBeans = new ArrayList<>();
+    private final List<SimpleListItemBean> mSmsBeans = new ArrayList<>();
     private XRecyclerView mRecyclerView;
 
     private EmojiEditText mEtSms;
@@ -75,7 +75,7 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
     private CountdownButton mCountdownButton;
 
     private ContentLoadingView mLoadingView;
-    private SmsEventCallback mEventCallback = new SmsEventCallback();
+    private final SmsEventCallback mEventCallback = new SmsEventCallback();
     private boolean mSending = false;
 
     @Override

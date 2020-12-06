@@ -30,7 +30,7 @@ public class ImageStreamFetcher implements DataFetcher<InputStream> {
     private InputStream stream;
     private ResponseBody responseBody;
 
-    private String stringUrl;
+    private final String stringUrl;
 
     public ImageStreamFetcher(OkHttpClient client, GlideUrl url) {
         this.client = client;

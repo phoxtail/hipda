@@ -127,7 +127,7 @@ public class ThreadDetailFragment extends BaseFragment {
     private XRecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private ThreadDetailAdapter mDetailAdapter;
-    private ThreadDetailCache mCache = new ThreadDetailCache();
+    private final ThreadDetailCache mCache = new ThreadDetailCache();
     private List<DetailBean> mDetailBeans = new ArrayList<>();
 
     private int mCurrentPage = 1;
@@ -156,7 +156,7 @@ public class ThreadDetailFragment extends BaseFragment {
 
     private HiProgressDialog postProgressDialog;
     private ContentLoadingView mLoadingView;
-    private ThreadDetailEventCallback mEventCallback = new ThreadDetailEventCallback();
+    private final ThreadDetailEventCallback mEventCallback = new ThreadDetailEventCallback();
     private MenuItem mShowAllMenuItem;
 
     private boolean mHistorySaved = false;
@@ -164,7 +164,7 @@ public class ThreadDetailFragment extends BaseFragment {
 
     private SimpleGridMenu mGridMenu;
 
-    private View.OnLayoutChangeListener mOnLayoutChangeListener = new View.OnLayoutChangeListener() {
+    private final View.OnLayoutChangeListener mOnLayoutChangeListener = new View.OnLayoutChangeListener() {
         @Override
         public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
             if (oldTop - top > Utils.dpToPx(96)) {
@@ -397,11 +397,7 @@ public class ThreadDetailFragment extends BaseFragment {
         }
 
         if (mShowAllMenuItem != null) {
-            if (TextUtils.isEmpty(mAuthorId)) {
-                mShowAllMenuItem.setVisible(false);
-            } else {
-                mShowAllMenuItem.setVisible(true);
-            }
+            mShowAllMenuItem.setVisible(!TextUtils.isEmpty(mAuthorId));
         }
     }
 
@@ -829,7 +825,7 @@ public class ThreadDetailFragment extends BaseFragment {
         btnNextPage.setImageDrawable(new IconicsDrawable(getActivity(), FontAwesome.Icon.faw_step_forward).sizeDp(24).color(ColorHelper.getColorAccent(getActivity())));
         btnPreviousPage.setImageDrawable(new IconicsDrawable(getActivity(), FontAwesome.Icon.faw_step_backward).sizeDp(24).color(ColorHelper.getColorAccent(getActivity())));
 
-        tvPage.setText("第 " + String.valueOf(mGoToPage) + " / " + (mMaxPage) + " 页");
+        tvPage.setText("第 " + mGoToPage + " / " + (mMaxPage) + " 页");
 
         btnPageBottom.setOnClickListener(new OnSingleClickListener() {
             @Override
@@ -855,7 +851,7 @@ public class ThreadDetailFragment extends BaseFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mGoToPage = progress + 1; //start from 0
-                tvPage.setText("第 " + String.valueOf(mGoToPage) + " / " + (mMaxPage) + " 页");
+                tvPage.setText("第 " + mGoToPage + " / " + (mMaxPage) + " 页");
             }
 
             @Override

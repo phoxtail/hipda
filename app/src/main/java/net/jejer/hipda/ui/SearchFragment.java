@@ -83,7 +83,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
     private final int mType = SimpleListJob.TYPE_SEARCH;
     private XRecyclerView mRecyclerView;
     private SimpleListAdapter mSimpleListAdapter;
-    private List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
+    private final List<SimpleListItemBean> mSimpleListItemBeans = new ArrayList<>();
     private SwipeRefreshLayout mSwipeLayout;
     private ContentLoadingView mLoadingView;
 
@@ -98,7 +98,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
     private KeyValueArrayAdapter mSpAdapter;
     private SearchHistoryAdapter mHistoryAdapter;
 
-    private SimpleListEventCallback mEventCallback = new SimpleListEventCallback();
+    private final SimpleListEventCallback mEventCallback = new SimpleListEventCallback();
 
     private boolean mSearchFilterAnimating;
 
@@ -112,7 +112,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
     private Drawable mIconDrawable;
     private Drawable mIbDrawable;
 
-    private TextView.OnEditorActionListener mSearchEditorActionListener = new TextView.OnEditorActionListener() {
+    private final TextView.OnEditorActionListener mSearchEditorActionListener = new TextView.OnEditorActionListener() {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             final boolean isEnterEvent = event != null
@@ -120,6 +120,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
             final boolean isEnterUpEvent = isEnterEvent && event.getAction() == KeyEvent.ACTION_UP;
             final boolean isEnterDownEvent = isEnterEvent && event.getAction() == KeyEvent.ACTION_DOWN;
 
+            // Capture this event to receive ACTION_UP
             if (actionId == EditorInfo.IME_ACTION_SEARCH
                     || actionId == EditorInfo.IME_ACTION_DONE
                     || isEnterUpEvent) {
@@ -128,12 +129,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
                     startSearch();
                 }
                 return true;
-            } else if (isEnterDownEvent) {
-                // Capture this event to receive ACTION_UP
-                return true;
-            } else {
-                return false;
-            }
+            } else return isEnterDownEvent;
         }
     };
 
@@ -383,8 +379,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
         if (TextUtils.isEmpty(searchBean.getDescription()))
             return;
         SearchBean bean = searchBean.newCopy();
-        if (mQueries.contains(bean))
-            mQueries.remove(bean);
+        mQueries.remove(bean);
         mQueries.add(0, bean);
         while (mQueries.size() > MAX_HISTORY) {
             mQueries.remove(mQueries.size() - 1);
@@ -655,7 +650,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
 
     private class SearchHistoryAdapter extends BaseRvAdapter<SearchBean> {
 
-        private LayoutInflater mInflater;
+        private final LayoutInflater mInflater;
 
         SearchHistoryAdapter(Context context, RecyclerItemClickListener itemClickListener) {
             mInflater = LayoutInflater.from(context);

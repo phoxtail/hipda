@@ -29,7 +29,7 @@ public class AvatarStreamFetcher implements DataFetcher<InputStream> {
     private final OkHttpClient client;
     private ResponseBody responseBody;
 
-    private String stringUrl;
+    private final String stringUrl;
 
     public AvatarStreamFetcher(OkHttpClient client, AvatarModel model) {
         this.client = client;

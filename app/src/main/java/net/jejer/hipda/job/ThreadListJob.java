@@ -22,11 +22,11 @@ import org.jsoup.nodes.Document;
 
 public class ThreadListJob extends BaseJob {
 
-    private Context mCtx;
-    private int mForumId;
-    private int mPage;
+    private final Context mCtx;
+    private final int mForumId;
+    private final int mPage;
 
-    private ThreadListEvent mEvent;
+    private final ThreadListEvent mEvent;
 
     public ThreadListJob(Context context, String sessionId, int forumId, int page) {
         super(sessionId);

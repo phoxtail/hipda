@@ -45,14 +45,14 @@ import java.util.List;
 
 public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
 
-    private Context mCtx;
-    private LayoutInflater mInflater;
-    private Button.OnClickListener mGoToFloorListener;
-    private View.OnClickListener mAvatarListener;
-    private View.OnClickListener mWarningListener;
-    private ThreadDetailFragment mDetailFragment;
-    private int mBackgroundResource;
-    private int mBackgroundColor;
+    private final Context mCtx;
+    private final LayoutInflater mInflater;
+    private final Button.OnClickListener mGoToFloorListener;
+    private final View.OnClickListener mAvatarListener;
+    private final View.OnClickListener mWarningListener;
+    private final ThreadDetailFragment mDetailFragment;
+    private final int mBackgroundResource;
+    private final int mBackgroundColor;
 
     public ThreadDetailAdapter(Context context,
                                ThreadDetailFragment detailFragment,
@@ -198,14 +198,10 @@ public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
                     String thumbUrl = contentImg.getThumbUrl();
                     String fullUrl = contentImg.getContent();
                     boolean mIsThumb;
-                    if (HiSettingsHelper.IMAGE_POLICY_ORIGINAL.equals(policy)
-                            || TextUtils.isEmpty(thumbUrl)
-                            || fullUrl.equals(thumbUrl)
-                            || ImageContainer.getImageInfo(fullUrl).isSuccess()) {
-                        mIsThumb = false;
-                    } else {
-                        mIsThumb = true;
-                    }
+                    mIsThumb = !HiSettingsHelper.IMAGE_POLICY_ORIGINAL.equals(policy)
+                            && !TextUtils.isEmpty(thumbUrl)
+                            && !fullUrl.equals(thumbUrl)
+                            && !ImageContainer.getImageInfo(fullUrl).isSuccess();
 
                     ThreadImageLayout threadImageLayout = new ThreadImageLayout(mDetailFragment.getActivity(), contentImg, mDetailFragment.getImagesInPage(detail.getPage()), mIsThumb);
 

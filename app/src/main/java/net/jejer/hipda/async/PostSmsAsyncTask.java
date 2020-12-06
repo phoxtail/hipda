@@ -25,15 +25,15 @@ public class PostSmsAsyncTask extends AsyncTask<String, Void, Void> {
 
     private static final long SMS_DELAY_IN_SECS = 15;
     private static long LAST_SMS_TIME = 0;
-    private Context mCtx;
-    private String mUid;
-    private String mUsername;
+    private final Context mCtx;
+    private final String mUid;
+    private final String mUsername;
 
     private String mFormhash;
     private int mStatus = Constants.STATUS_FAIL;
     private String mResult = "";
-    private SmsPostListener mPostListenerCallback;
-    private AlertDialog mDialog;
+    private final SmsPostListener mPostListenerCallback;
+    private final AlertDialog mDialog;
 
     public PostSmsAsyncTask(Context ctx, String uid, String username, SmsPostListener postListener, AlertDialog dialog) {
         mCtx = ctx;

@@ -74,7 +74,7 @@ public class SwipeBackLayout extends FrameLayout {
      * Threshold of scroll, we will close the activity, when scrollPercent over
      * this value;
      */
-    private float mScrollThreshold = DEFAULT_SCROLL_THRESHOLD;
+    private final float mScrollThreshold = DEFAULT_SCROLL_THRESHOLD;
 
     private Activity mActivity;
 
@@ -82,7 +82,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     private View mContentView;
 
-    private ViewDragHelper mDragHelper;
+    private final ViewDragHelper mDragHelper;
 
     private float mScrollPercent;
 
@@ -107,7 +107,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     private boolean mInLayout;
 
-    private Rect mTmpRect = new Rect();
+    private final Rect mTmpRect = new Rect();
 
     /**
      * Edge being dragged

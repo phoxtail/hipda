@@ -6,13 +6,13 @@ import net.jejer.hipda.utils.HtmlCompat;
 import net.jejer.hipda.utils.Utils;
 
 public class ContentQuote extends ContentAbs {
-    private String mQuote;
+    private final String mQuote;
     private String author;
     private String to;
     private String time;
     private String text;
-    private String postId;
-    private String tid;
+    private final String postId;
+    private final String tid;
 
     public ContentQuote(String postText, String authorAndTime, String tid, String postId) {
         this.postId = postId;

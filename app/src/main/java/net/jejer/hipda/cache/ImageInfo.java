@@ -19,7 +19,7 @@ public class ImageInfo {
     private final static int MAX_VIEW_WIDTH = Utils.getScreenWidth()
             - 2 * (int) HiApplication.getAppContext().getResources().getDimension(R.dimen.thread_detail_padding);
     private final static int MAX_VIEW_HEIGHT = (int) (Utils.getScreenHeight() * 1.2);
-    private String mUrl;
+    private final String mUrl;
     private int mWidth;
     private int mHeight;
     private String mPath;

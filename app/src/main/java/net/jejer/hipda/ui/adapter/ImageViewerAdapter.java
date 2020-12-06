@@ -23,8 +23,8 @@ import java.util.List;
  */
 public class ImageViewerAdapter extends PagerAdapter {
 
-    private List<ContentImg> mImages;
-    private Activity mActivity;
+    private final List<ContentImg> mImages;
+    private final Activity mActivity;
 
     private boolean mFirstShow = true;
 

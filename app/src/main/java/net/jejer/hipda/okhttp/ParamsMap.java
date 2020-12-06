@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class ParamsMap {
 
-    private Map<String, List<String>> params = new HashMap<>();
+    private final Map<String, List<String>> params = new HashMap<>();
 
     public void put(String key, String value) {
         if (!params.containsKey(key))

@@ -25,9 +25,9 @@ public class XFooterView extends RelativeLayout {
     public final static int STATE_END = 3;
     public final static int STATE_ERROR = 4;
 
-    private View mLayout;
-    private ProgressBar mProgressBar;
-    private TextView mHintView;
+    private final View mLayout;
+    private final ProgressBar mProgressBar;
+    private final TextView mHintView;
 
     private int mState = STATE_HIDDEN;
 
