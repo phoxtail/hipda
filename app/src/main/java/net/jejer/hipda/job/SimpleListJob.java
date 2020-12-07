@@ -114,7 +114,7 @@ public class SimpleListJob extends BaseJob {
             for (int i = 0; i < OkHttpHelper.MAX_RETRY_TIMES; i++) {
                 try {
                     String resp = fetchSimpleList(mType);
-                    if (!LoginHelper.checkLoggedin(mCtx, resp)) {
+                    if (LoginHelper.checkLoggedOut(mCtx, resp)) {
                         int status = new LoginHelper(mCtx).login();
                         if (status == Constants.STATUS_FAIL_ABORT) {
                             eventStatus = Constants.STATUS_FAIL_RELOGIN;

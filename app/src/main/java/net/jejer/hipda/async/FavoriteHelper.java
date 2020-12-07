@@ -1,6 +1,5 @@
 package net.jejer.hipda.async;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
@@ -8,16 +7,12 @@ import net.jejer.hipda.okhttp.OkHttpHelper;
 import net.jejer.hipda.okhttp.ParamsMap;
 import net.jejer.hipda.ui.HiApplication;
 import net.jejer.hipda.utils.HiUtils;
-import net.jejer.hipda.utils.Logger;
 import net.jejer.hipda.utils.UIUtils;
-import net.jejer.hipda.utils.Utils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.parser.Parser;
-import org.jsoup.select.Elements;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +25,6 @@ public class FavoriteHelper {
     public final static String TYPE_FAVORITE = "favorites";
     public final static String TYPE_ATTENTION = "attention";
 
-    private final static int MAX_CACHE_PAGE = 3;
     private final static String FAV_CACHE_PREFS = "FavCachePrefsFile";
 
     private final static String FAVORITES_CACHE_KEY = "favorites";
@@ -38,99 +32,17 @@ public class FavoriteHelper {
 
     private final SharedPreferences mCachePref;
 
-    private Set<String> mFavoritesCache;
-    private Set<String> mAttentionCache;
+    private final Set<String> mFavoritesCache;
+    private final Set<String> mAttentionCache;
 
     private FavoriteHelper() {
         mCachePref = HiApplication.getAppContext().getSharedPreferences(FAV_CACHE_PREFS, 0);
-        mFavoritesCache = mCachePref.getStringSet(FAVORITES_CACHE_KEY, new HashSet<String>());
-        mAttentionCache = mCachePref.getStringSet(ATTENTION_CACHE_KEY, new HashSet<String>());
+        mFavoritesCache = mCachePref.getStringSet(FAVORITES_CACHE_KEY, new HashSet<>());
+        mAttentionCache = mCachePref.getStringSet(ATTENTION_CACHE_KEY, new HashSet<>());
     }
 
     public static FavoriteHelper getInstance() {
         return SingletonHolder.INSTANCE;
-    }
-
-    public void fetchMyFavorites() {
-        Set<String> favTids = new HashSet<>();
-        for (int i = 1; i <= MAX_CACHE_PAGE; i++) {
-            ParseResult result = fetchMyFavorites(TYPE_FAVORITE, i);
-            if (result.error)
-                return;
-            if (result.tids == null || result.tids.size() == 0)
-                break;
-            favTids.addAll(result.tids);
-            if (i + 1 > result.lastPage)
-                break;
-        }
-        mFavoritesCache = favTids;
-        SharedPreferences.Editor editor = mCachePref.edit();
-        editor.remove(FAVORITES_CACHE_KEY).apply();
-        editor.putStringSet(FAVORITES_CACHE_KEY, mFavoritesCache).apply();
-    }
-
-    public void fetchMyAttention() {
-        Set<String> attTids = new HashSet<>();
-        for (int i = 1; i <= MAX_CACHE_PAGE; i++) {
-            ParseResult result = fetchMyFavorites(TYPE_ATTENTION, i);
-            if (result.error)
-                return;
-            if (result.tids == null || result.tids.size() == 0)
-                break;
-            attTids.addAll(result.tids);
-            if (i + 1 > result.lastPage)
-                break;
-        }
-        mAttentionCache = attTids;
-        SharedPreferences.Editor editor = mCachePref.edit();
-        editor.remove(ATTENTION_CACHE_KEY).apply();
-        editor.putStringSet(ATTENTION_CACHE_KEY, mAttentionCache).apply();
-    }
-
-    private ParseResult fetchMyFavorites(String item, int page) {
-        ParseResult result = new ParseResult();
-        if (page <= 1) page = 1;
-
-        String url = HiUtils.FavoritesUrl.replace("{item}", item);
-        if (page > 1)
-            url += "&page=" + page;
-
-        try {
-            String response = OkHttpHelper.getInstance().get(url);
-            Document doc = Jsoup.parse(response);
-            int last_page = 1;
-            //if this is the last page, page number is in <strong>
-            Elements divPageES = doc.select("div.pages");
-            if (divPageES.size() > 0) {
-                Element divPage = divPageES.first();
-                Elements pagesES = divPage.select("div.pages a");
-                pagesES.addAll(divPage.select("div.pages strong"));
-                if (pagesES.size() > 0) {
-                    for (Node n : pagesES) {
-                        int tmp = Utils.getIntFromString(((Element) n).text());
-                        if (tmp > last_page) {
-                            last_page = tmp;
-                        }
-                    }
-                }
-            }
-            result.lastPage = last_page;
-
-            //get favories tid
-            Set<String> tids = new HashSet<>();
-            Elements checkboxes = doc.select("input.checkbox[name=delete[]]");
-            for (Node n : checkboxes) {
-                String tid = n.attr("value");
-                if (HiUtils.isValidId(tid)) {
-                    tids.add(tid);
-                }
-            }
-            result.tids = tids;
-        } catch (Exception e) {
-            Logger.e(e);
-            result.error = true;
-        }
-        return result;
     }
 
     public void addToCahce(String item, String tid) {
@@ -194,7 +106,7 @@ public class FavoriteHelper {
         return mAttentionCache.contains(tid);
     }
 
-    public void addFavorite(final Context ctx, final String item, final String tid) {
+    public void addFavorite(final String item, final String tid) {
         if (TextUtils.isEmpty(item) || TextUtils.isEmpty(tid)) {
             UIUtils.toast("参数错误");
             return;
@@ -223,7 +135,7 @@ public class FavoriteHelper {
         });
     }
 
-    public void removeFavorite(final Context ctx, final String item, final String tid) {
+    public void removeFavorite(final String item, final String tid) {
         if (TextUtils.isEmpty(item) || TextUtils.isEmpty(tid)) {
             UIUtils.toast("参数错误");
             return;
@@ -252,7 +164,7 @@ public class FavoriteHelper {
         });
     }
 
-    public void deleteFavorite(final Context ctx, final String formhash, final String item, final String tid) {
+    public void deleteFavorite(final String formhash, final String item, final String tid) {
         if (TextUtils.isEmpty(item) || TextUtils.isEmpty(tid) || TextUtils.isEmpty(formhash)) {
             UIUtils.toast("参数错误");
             return;
@@ -291,11 +203,4 @@ public class FavoriteHelper {
     private static class SingletonHolder {
         public static final FavoriteHelper INSTANCE = new FavoriteHelper();
     }
-
-    private class ParseResult {
-        Set<String> tids;
-        int lastPage = 1;
-        boolean error = false;
-    }
-
 }

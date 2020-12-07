@@ -477,15 +477,15 @@ public class ThreadDetailFragment extends BaseFragment {
                 return true;
             case R.id.action_add_favorite:
                 if (FavoriteHelper.getInstance().isInFavorite(mTid))
-                    FavoriteHelper.getInstance().removeFavorite(mCtx, FavoriteHelper.TYPE_FAVORITE, mTid);
+                    FavoriteHelper.getInstance().removeFavorite(FavoriteHelper.TYPE_FAVORITE, mTid);
                 else
-                    FavoriteHelper.getInstance().addFavorite(mCtx, FavoriteHelper.TYPE_FAVORITE, mTid);
+                    FavoriteHelper.getInstance().addFavorite(FavoriteHelper.TYPE_FAVORITE, mTid);
                 return true;
             case R.id.action_add_attention:
                 if (FavoriteHelper.getInstance().isInAttention(mTid))
-                    FavoriteHelper.getInstance().removeFavorite(mCtx, FavoriteHelper.TYPE_ATTENTION, mTid);
+                    FavoriteHelper.getInstance().removeFavorite(FavoriteHelper.TYPE_ATTENTION, mTid);
                 else
-                    FavoriteHelper.getInstance().addFavorite(mCtx, FavoriteHelper.TYPE_ATTENTION, mTid);
+                    FavoriteHelper.getInstance().addFavorite(FavoriteHelper.TYPE_ATTENTION, mTid);
                 return true;
             case R.id.action_show_all:
                 cancelAuthorOnlyMode();

@@ -43,7 +43,6 @@ public class PostHelper {
     private PrePostInfoBean mInfo;
     private String mTid;
     private String mTitle;
-    private int mFloor;
 
     public PostHelper(Context ctx, int mode, PrePostInfoBean info, PostBean postArg) {
         mCtx = ctx;
@@ -77,8 +76,6 @@ public class PostHelper {
             mInfo = new PrePostAsyncTask(mCtx, null, mMode).doInBackground(postBean);
         }
 
-        mFloor = floor;
-
         replyText = replaceToTags(replyText);
 
         if (mMode != MODE_EDIT_POST) {
@@ -111,7 +108,7 @@ public class PostHelper {
         }
 
         postBean.setSubject(mTitle);
-        postBean.setFloor(mFloor);
+        postBean.setFloor(floor);
         postBean.setTid(mTid);
 
         postBean.setMessage(mResult);

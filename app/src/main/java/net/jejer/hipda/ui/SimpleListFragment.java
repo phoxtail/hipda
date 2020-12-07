@@ -261,7 +261,7 @@ public class SimpleListFragment extends BaseFragment
         popupMenu.add("cancel", "取消收藏", new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FavoriteHelper.getInstance().deleteFavorite(getActivity(), mFormhash, FavoriteHelper.TYPE_FAVORITE, item.getTid());
+                FavoriteHelper.getInstance().deleteFavorite(mFormhash, FavoriteHelper.TYPE_FAVORITE, item.getTid());
                 removeItem(item);
             }
         });
@@ -279,7 +279,7 @@ public class SimpleListFragment extends BaseFragment
         popupMenu.add("cancel", "取消关注", new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FavoriteHelper.getInstance().deleteFavorite(getActivity(), mFormhash, FavoriteHelper.TYPE_ATTENTION, item.getTid());
+                FavoriteHelper.getInstance().deleteFavorite(mFormhash, FavoriteHelper.TYPE_ATTENTION, item.getTid());
                 removeItem(item);
             }
         });

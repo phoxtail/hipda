@@ -41,5 +41,4 @@ public class FileDownTask extends AsyncTask<String, Void, Void> {
         }
         return null;
     }
-
 }

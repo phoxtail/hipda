@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -35,18 +34,14 @@ public class UpdateHelper {
 
     private HiProgressDialog pd;
 
-    private String checkUrl = "";
-    private String downloadUrl = "";
+    private final String checkUrl;
+    private final String downloadUrl;
 
     public UpdateHelper(Activity ctx, boolean isSilent) {
         mCtx = ctx;
         mSilent = isSilent;
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            checkUrl = "https://coding.net/u/GreenSkinMonster/p/hipda/git/raw/master/hipda-ng.md";
-        } else {
-            checkUrl = "https://coding.net/u/GreenSkinMonster/p/hipda/git/raw/master/hipda-ng-v5.md";
-        }
+        checkUrl = "https://coding.net/u/GreenSkinMonster/p/hipda/git/raw/master/hipda-ng-v5.md";
         downloadUrl = "https://coding.net/u/GreenSkinMonster/p/hipda/git/raw/master/releases/hipda-ng-release-{version}.apk";
     }
 

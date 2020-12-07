@@ -56,13 +56,13 @@ public class PostSmsAsyncTask extends AsyncTask<String, Void, Void> {
 
         // fetch a new page and parse formhash
         String rsp_str = "";
-        Boolean done = false;
+        boolean done = false;
         int retry = 0;
         do {
             try {
                 rsp_str = getInstance().get((HiUtils.SMSPreparePostUrl + mUid));
                 if (!TextUtils.isEmpty(rsp_str)) {
-                    if (!LoginHelper.checkLoggedin(mCtx, rsp_str)) {
+                    if (LoginHelper.checkLoggedOut(mCtx, rsp_str)) {
                         int status = new LoginHelper(mCtx).login();
                         if (status == Constants.STATUS_FAIL_ABORT) {
                             break;
@@ -93,7 +93,7 @@ public class PostSmsAsyncTask extends AsyncTask<String, Void, Void> {
         return null;
     }
 
-    private String doPost(String content) {
+    private void doPost(String content) {
 
         String url;
         if (!TextUtils.isEmpty(mUid))
@@ -109,7 +109,7 @@ public class PostSmsAsyncTask extends AsyncTask<String, Void, Void> {
         if (TextUtils.isEmpty(mUid))
             params.put("msgto", mUsername);
 
-        String response = null;
+        String response;
         try {
             response = getInstance().post(url, params);
 
@@ -138,7 +138,6 @@ public class PostSmsAsyncTask extends AsyncTask<String, Void, Void> {
             Logger.e(e);
             mResult = "短消息发送失败 :  " + getErrorMessage(e);
         }
-        return response;
     }
 
     @Override

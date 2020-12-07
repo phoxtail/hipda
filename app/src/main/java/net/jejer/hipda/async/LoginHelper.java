@@ -31,11 +31,11 @@ public class LoginHelper {
         mCtx = ctx;
     }
 
-    public static boolean checkLoggedin(Context context, String mRsp) {
+    public static boolean checkLoggedOut(Context context, String mRsp) {
         boolean loggedIn = !mRsp.contains(context.getString(R.string.not_login));
         if (!loggedIn)
             logout();
-        return loggedIn;
+        return !loggedIn;
     }
 
     public static boolean isLoggedIn() {
@@ -45,7 +45,7 @@ public class LoginHelper {
     public static void logout() {
         OkHttpHelper.getInstance().clearCookies();
         FavoriteHelper.getInstance().clearAll();
-        HiSettingsHelper.getInstance().setBlacklists(new ArrayList<String>());
+        HiSettingsHelper.getInstance().setBlacklists(new ArrayList<>());
     }
 
     public int login() {

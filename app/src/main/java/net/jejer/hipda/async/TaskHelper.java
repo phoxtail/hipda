@@ -26,8 +26,6 @@ import java.util.Map;
  */
 public class TaskHelper {
 
-    private static final String SETTING_URL = "https://coding.net/u/GreenSkinMonster/p/hipda/git/raw/master/hipda.json";
-
     public static void runDailyTask(boolean force) {
         String millis = HiSettingsHelper.getInstance()
                 .getStringValue(HiSettingsHelper.PERF_LAST_TASK_TIME, "0");
@@ -39,15 +37,12 @@ public class TaskHelper {
             }
         }
         if (force || last == null || System.currentTimeMillis() > last.getTime() + 24 * 60 * 60 * 1000) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ContentDao.cleanup();
-                    HistoryDao.cleanup();
-                    Utils.cleanPictures();
-                    //FavoriteHelper.getInstance().fetchMyFavorites();
-                    //FavoriteHelper.getInstance().fetchMyAttention();
-                }
+            new Thread(() -> {
+                ContentDao.cleanup();
+                HistoryDao.cleanup();
+                Utils.cleanPictures();
+                //FavoriteHelper.getInstance().fetchMyFavorites();
+                //FavoriteHelper.getInstance().fetchMyAttention();
             }).start();
             HiSettingsHelper.getInstance()
                     .setStringValue(HiSettingsHelper.PERF_LAST_TASK_TIME, System.currentTimeMillis() + "");
@@ -111,7 +106,6 @@ public class TaskHelper {
                 }
             }.execute();
         }
-
     }
 
     private static void updateSetting() throws Exception {
@@ -126,26 +120,4 @@ public class TaskHelper {
         HiUtils.updateBaseUrls();
         HiSettingsHelper.getInstance().setLongValue(HiSettingsHelper.PERF_IMAGE_HOST_UPDATE_TIME, System.currentTimeMillis());
     }
-
-    private static void updateCustSetting() throws Exception {
-        String response = OkHttpHelper.getInstance().get(SETTING_URL);
-        Gson gson = new Gson();
-        Type stringStringMap = new TypeToken<Map<String, String>>() {
-        }.getType();
-        Map<String, String> map = gson.fromJson(response, stringStringMap);
-        String protocol = map.get("protocol");
-        String imageHost = map.get("image_host");
-
-        if (!TextUtils.isEmpty(protocol) && !TextUtils.isEmpty(imageHost)) {
-            if ("https".equals(protocol)) {
-                HiSettingsHelper.getInstance().setForumServer(HiUtils.ForumServerSsl);
-            } else {
-                HiSettingsHelper.getInstance().setForumServer(HiUtils.ForumServer);
-            }
-            HiSettingsHelper.getInstance().setImageHost(imageHost);
-            HiUtils.updateBaseUrls();
-        }
-        HiSettingsHelper.getInstance().setLongValue(HiSettingsHelper.PERF_IMAGE_HOST_UPDATE_TIME, System.currentTimeMillis());
-    }
-
 }

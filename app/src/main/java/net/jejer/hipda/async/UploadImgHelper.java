@@ -49,8 +49,6 @@ public class UploadImgHelper {
     private String mMessage = "";
     private String mDetail = "";
     private Bitmap mThumb;
-    private int mTotal;
-    private int mCurrent;
     private String mCurrentFileName = "";
 
     public UploadImgHelper(Context ctx, UploadImgListener v, String uid, String hash, Uri[] uris, boolean original) {
@@ -97,11 +95,11 @@ public class UploadImgHelper {
         post_param.put("uid", mUid);
         post_param.put("hash", mHash);
 
-        mTotal = mUris.length;
+        int mTotal = mUris.length;
 
         int i = 0;
         for (Uri uri : mUris) {
-            mCurrent = i++;
+            int mCurrent = i++;
             mListener.updateProgress(mTotal, mCurrent, -1);
             String imgId = uploadImage(HiUtils.UploadImgUrl, post_param, uri);
             mListener.itemComplete(uri, mTotal, mCurrent, mCurrentFileName, mMessage, mDetail, imgId, mThumb);
@@ -129,7 +127,7 @@ public class UploadImgHelper {
         }
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd_HHmm", Locale.US);
         String fileName = "Hi_" + formatter.format(new Date()) + "." + Utils.getImageFileSuffix(imageFileInfo.getMime());
-        RequestBody requestBody = RequestBody.create(MediaType.parse(imageFileInfo.getMime()), avatar.toByteArray());
+        RequestBody requestBody = RequestBody.create(avatar.toByteArray(), MediaType.parse(imageFileInfo.getMime()));
         builder.addFormDataPart("Filedata", fileName, requestBody);
 
         Request request = new Request.Builder()
@@ -204,7 +202,6 @@ public class UploadImgHelper {
         ByteArrayOutputStream avatar = new ByteArrayOutputStream();
         bitmap.compress(CompressFormat.JPEG, MAX_QUALITY, avatar);
         bitmap.recycle();
-        bitmap = null;
 
         ByteArrayInputStream isBm = new ByteArrayInputStream(avatar.toByteArray());
         BitmapFactory.Options opts = new BitmapFactory.Options();
@@ -266,7 +263,6 @@ public class UploadImgHelper {
 
         mThumb = ThumbnailUtils.extractThumbnail(newBitmap, THUMB_SIZE, THUMB_SIZE);
         newBitmap.recycle();
-        newBitmap = null;
 
         return avatar;
     }
