@@ -7,7 +7,6 @@ import com.mikepenz.iconics.typeface.IIcon;
 import com.mikepenz.materialdrawer.holder.BadgeStyle;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import net.jejer.hipda.R;
 
@@ -16,7 +15,7 @@ import net.jejer.hipda.R;
  */
 public class DrawerHelper {
 
-    public static IDrawerItem getPrimaryMenuItem(DrawerItem drawerItem) {
+    public static PrimaryDrawerItem getPrimaryMenuItem(DrawerItem drawerItem) {
         PrimaryDrawerItem primaryDrawerItem = new PrimaryDrawerItem()
                 .withName(drawerItem.name)
                 .withIdentifier(drawerItem.id)
@@ -31,7 +30,7 @@ public class DrawerHelper {
         return primaryDrawerItem;
     }
 
-    public static IDrawerItem getSecondaryMenuItem(DrawerItem drawerItem) {
+    public static SecondaryDrawerItem getSecondaryMenuItem(DrawerItem drawerItem) {
         SecondaryDrawerItem secondaryDrawerItem = new SecondaryDrawerItem()
                 .withName(drawerItem.name)
                 .withIdentifier(drawerItem.id)
@@ -62,7 +61,7 @@ public class DrawerHelper {
         public final IIcon icon;
         public final boolean withBadge;
 
-        DrawerItem(int id, int name, IIcon icon, boolean withBadge) {
+        DrawerItem(int id, int name, IIcon icon, @SuppressWarnings("SameParameterValue") boolean withBadge) {
             this.id = id;
             this.name = name;
             this.icon = icon;
@@ -73,8 +72,7 @@ public class DrawerHelper {
             this.id = id;
             this.name = name;
             this.icon = icon;
-            withBadge = false;
+            this.withBadge = false;
         }
     }
-
 }

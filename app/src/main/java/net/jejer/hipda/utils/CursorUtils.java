@@ -1,15 +1,14 @@
 package net.jejer.hipda.utils;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+
+import androidx.exifinterface.media.ExifInterface;
 
 import java.io.File;
 
@@ -21,17 +20,8 @@ public class CursorUtils {
 
     public static ImageFileInfo getImageFileInfo(Context context, Uri uri) {
         ImageFileInfo result;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || uri.toString().startsWith("content://media")) {
-            result = getImageInfo_API11to18(context, uri);
-            if (result == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                result = getImageInfo_API19(context, uri);
-            }
-        } else {
-            result = getImageInfo_API19(context, uri);
-            if (result == null) {
-                result = getImageInfo_API11to18(context, uri);
-            }
-        }
+
+        result = getImageInfo(context, uri);
         if (result == null || TextUtils.isEmpty(result.getFilePath()))
             return new ImageFileInfo();
 
@@ -81,10 +71,14 @@ public class CursorUtils {
         return orientation;
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private static ImageFileInfo getImageInfo_API19(Context context, Uri uri) {
+    private static ImageFileInfo getImageInfo(Context context, Uri uri) {
         ImageFileInfo result = new ImageFileInfo();
-        String[] column = {MediaStore.Images.Media.DATA, MediaStore.Images.ImageColumns.ORIENTATION};
+        String[] column;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            column = new String[]{MediaStore.Images.Media._ID, MediaStore.Images.ImageColumns.ORIENTATION};
+        } else {
+            column = new String[]{MediaStore.Images.Media.DATA};
+        }
 
         Cursor cursor = null;
         try {
@@ -112,34 +106,5 @@ public class CursorUtils {
         }
         return result;
     }
-
-
-    private static ImageFileInfo getImageInfo_API11to18(Context context, Uri contentUri) {
-        ImageFileInfo result = new ImageFileInfo();
-        String[] column = {MediaStore.Images.Media.DATA, MediaStore.Images.ImageColumns.ORIENTATION};
-
-        Cursor cursor = null;
-        try {
-            cursor = context.getContentResolver().query(contentUri, null, null, null, null);
-
-            int pathIndex = cursor.getColumnIndexOrThrow(column[0]);
-            int orientationIndex = cursor.getColumnIndexOrThrow(column[1]);
-
-            if (cursor.moveToFirst()) {
-                if (pathIndex >= 0)
-                    result.setFilePath(cursor.getString(pathIndex));
-                if (orientationIndex >= 0)
-                    result.setOrientation(cursor.getInt(orientationIndex));
-            }
-        } catch (Exception e) {
-            Logger.e(e);
-            return null;
-        } finally {
-            if (cursor != null)
-                cursor.close();
-        }
-        return result;
-    }
-
 }
 

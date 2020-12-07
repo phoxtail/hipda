@@ -19,39 +19,9 @@ public class Logger {
             Log.v(TAG, buildMessage(msg));
     }
 
-    public static void v(String msg, Throwable thr) {
-        if (isDebug())
-            Log.v(TAG, buildMessage(msg), thr);
-    }
-
-    public static void d(String msg) {
-        if (isDebug())
-            Log.d(TAG, buildMessage(msg));
-    }
-
     public static void d(String msg, Throwable thr) {
         if (isDebug())
             Log.d(TAG, buildMessage(msg), thr);
-    }
-
-    public static void i(String msg) {
-        Log.i(TAG, buildMessage(msg));
-    }
-
-    public static void i(String msg, Throwable thr) {
-        Log.i(TAG, buildMessage(msg), thr);
-    }
-
-    public static void w(String msg) {
-        Log.w(TAG, buildMessage(msg));
-    }
-
-    public static void w(String msg, Throwable thr) {
-        Log.w(TAG, buildMessage(msg), thr);
-    }
-
-    public static void w(Throwable thr) {
-        Log.w(TAG, buildMessage("warining"), thr);
     }
 
     public static void e(String msg) {
@@ -77,5 +47,4 @@ public class Logger {
     public static boolean isDebug() {
         return BuildConfig.DEBUG;
     }
-
 }

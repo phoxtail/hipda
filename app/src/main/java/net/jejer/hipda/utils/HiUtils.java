@@ -93,7 +93,6 @@ public class HiUtils {
     public static String SMSPostByUid;
     public static String SMSPostByUsername;
     public static String ThreadNotifyUrl;
-    public static String CheckSMS;
     public static String NewSMS;
     public static String ClearSMS;
     public static String UploadImgUrl;
@@ -148,7 +147,6 @@ public class HiUtils {
         SMSPostByUid = BaseUrl + "pm.php?action=send&pmsubmit=yes&infloat=yes&inajax=1&uid={uid}";
         SMSPostByUsername = BaseUrl + "pm.php?action=send&pmsubmit=yes&infloat=yes&inajax=1";
         ThreadNotifyUrl = BaseUrl + "notice.php";
-        CheckSMS = BaseUrl + "pm.php?checknewpm";
         NewSMS = BaseUrl + "pm.php?filter=newpm";
         ClearSMS = BaseUrl + "pm.php?action=del&uid={uid}&filter=privatepm";
         UploadImgUrl = BaseUrl + "misc.php?action=swfupload&operation=upload&simple=1&type=image";
@@ -204,12 +202,11 @@ public class HiUtils {
             return "";
 
         String fullUid = AVATAR_BASE.substring(0, AVATAR_BASE.length() - uid.length()) + uid;
-        String url = AvatarBaseUrl
+        return AvatarBaseUrl
                 + fullUid.substring(0, 3) + "/"
                 + fullUid.substring(3, 5) + "/"
                 + fullUid.substring(5, 7) + "/"
                 + fullUid.substring(7, 9) + HiUtils.AvatarSuffix;
-        return url;
     }
 
     public static int getThemeValue(Context context, String theme, int primaryColor) {

@@ -63,7 +63,7 @@ public class HiParserThreadList {
 
             thread.setTid(idNum);
             // is stick thread or normal thread
-            Boolean isStick = idType.startsWith("stickthread");
+            boolean isStick = idType.startsWith("stickthread");
             thread.setIsStick(isStick);
 
             if (isStick && !HiSettingsHelper.getInstance().isShowStickThreads()) {

@@ -3,11 +3,9 @@ package net.jejer.hipda.utils;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -35,33 +33,23 @@ public final class DownloadManagerResolver {
     /**
      * Resolve whether the DownloadManager is enable in current devices.
      *
-     * @param context
+     * @param context context
      * @return true if DownloadManager is enable,false otherwise.
      */
     private static boolean resolveEnable(Context context) {
         int state = context.getPackageManager()
                 .getApplicationEnabledSetting(DOWNLOAD_MANAGER_PACKAGE_NAME);
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            return !(state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED ||
-                    state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
-                    || state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED);
-        } else {
-            return !(state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED ||
-                    state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER);
-        }
+        return !(state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED ||
+                state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
+                || state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED);
     }
 
     @SuppressLint("RestrictedApi")
     private static AlertDialog createDialog(final Context context) {
         return new AlertDialog.Builder(context)
                 .setMessage("下载管理器已停用，请启用")
-                .setPositiveButton(context.getResources().getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        enableDownloadManager(context);
-                    }
-                })
+                .setPositiveButton(context.getResources().getString(android.R.string.ok), (dialog, which) -> enableDownloadManager(context))
                 .setCancelable(false)
                 .create();
     }

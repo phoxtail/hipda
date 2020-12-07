@@ -18,6 +18,7 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class HiParser {
 
     public static SimpleListBean parseSimpleList(Context ctx, int type, Document doc, boolean isFullTextSearch) {
@@ -47,7 +48,6 @@ public class HiParser {
             case SimpleListJob.TYPE_SEARCH_USER_THREADS:
                 return parseSearch(doc);
             case SimpleListJob.TYPE_FAVORITES:
-                return parseFavorites(doc);
             case SimpleListJob.TYPE_ATTENTION:
                 return parseFavorites(doc);
         }
@@ -165,7 +165,7 @@ public class HiParser {
 
         Elements trES = tableES.first().select("tr");
 
-        SimpleListItemBean item = null;
+        SimpleListItemBean item;
         //first tr is title, skip
         for (int i = 1; i < trES.size(); ++i) {
             Element trE = trES.get(i);
@@ -367,14 +367,14 @@ public class HiParser {
 
     private static SimpleListItemBean parseNotifyThread(Element root) {
         SimpleListItemBean item = new SimpleListItemBean();
-        String info = "";
+        StringBuilder info = new StringBuilder();
 
         Elements aES = root.select("a");
         for (Element a : aES) {
             String href = a.attr("href");
             if (href.contains("space.php")) {
                 // get replied usernames
-                info += a.text() + " ";
+                info.append(a.text()).append(" ");
             } else if (href.contains("redirect.php?")) {
                 // Thread Name and TID and PID
                 item.setTitle(a.text());
@@ -392,12 +392,12 @@ public class HiParser {
         item.setTime(emES.first().text());
 
         if (root.text().contains("回复了您关注的主题"))
-            info += "回复了您关注的主题";
+            info.append("回复了您关注的主题");
         else
-            info += "回复了您的帖子 ";
+            info.append("回复了您的帖子 ");
 
         item.setNew(true);
-        item.setInfo(info);
+        item.setInfo(info.toString());
         return item;
     }
 

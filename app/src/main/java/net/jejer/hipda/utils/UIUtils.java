@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -13,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -49,36 +47,26 @@ import java.io.File;
  */
 public class UIUtils {
 
-    public static void infoSnack(View view, CharSequence message) {
-        if (view != null) {
-            makeSnack(view, message, null, Snackbar.LENGTH_SHORT, Color.WHITE)
-                    .show();
-        }
-    }
-
     public static void errorSnack(View view, CharSequence message, CharSequence detail) {
         if (view != null) {
-            makeSnack(view, message, detail, Snackbar.LENGTH_LONG,
+            makeSnack(view, message, detail,
                     ContextCompat.getColor(HiApplication.getAppContext(),
                             R.color.md_yellow_500))
                     .show();
         }
     }
 
-    private static Snackbar makeSnack(final View view, final CharSequence message, final CharSequence detail, int length, int textColor) {
-        final Snackbar snackbar = Snackbar.make(view, message, length);
+    private static Snackbar makeSnack(final View view, final CharSequence message, final CharSequence detail, int textColor) {
+        final Snackbar snackbar = Snackbar.make(view, message, com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG);
         setSnackbarMessageTextColor(snackbar, textColor);
 
         if (!TextUtils.isEmpty(detail)) {
-            snackbar.setAction("详情", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    UIUtils.showMessageDialog(view.getContext(),
-                            "详细信息",
-                            message + "\n" + detail, true);
-                    snackbar.dismiss();
+            snackbar.setAction("详情", v -> {
+                UIUtils.showMessageDialog(view.getContext(),
+                        "详细信息",
+                        message + "\n" + detail, true);
+                snackbar.dismiss();
 
-                }
             });
         }
         return snackbar;
@@ -95,10 +83,10 @@ public class UIUtils {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        final TextView tvTitle = (TextView) viewLayout.findViewById(R.id.tv_dialog_title);
+        final TextView tvTitle = viewLayout.findViewById(R.id.tv_dialog_title);
         tvTitle.setText(message);
 
-        final TextView textView = (TextView) viewLayout.findViewById(R.id.tv_dialog_content);
+        final TextView textView = viewLayout.findViewById(R.id.tv_dialog_content);
         textView.setText(detail);
         UIUtils.setLineSpacing(textView);
 
@@ -111,13 +99,10 @@ public class UIUtils {
         builder.setPositiveButton(context.getResources().getString(R.string.action_close), null);
         if (copyable) {
             builder.setNeutralButton(context.getResources().getString(R.string.action_copy),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                            ClipData clip = ClipData.newPlainText("COPY FROM HiPDA", detail);
-                            clipboard.setPrimaryClip(clip);
-                        }
+                    (dialogInterface, i) -> {
+                        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("COPY FROM HiPDA", detail);
+                        clipboard.setPrimaryClip(clip);
                     });
         }
         AlertDialog dialog = builder.create();
@@ -232,14 +217,10 @@ public class UIUtils {
             Utils.copy(new File(imageInfo.getPath()), destFile);
 
             Uri uri;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                uri = FileProvider.getUriForFile(
-                        activity,
-                        BuildConfig.APPLICATION_ID + ".provider",
-                        destFile);
-            } else {
-                uri = Uri.fromFile(destFile);
-            }
+            uri = FileProvider.getUriForFile(
+                    activity,
+                    BuildConfig.APPLICATION_ID + ".provider",
+                    destFile);
 
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType(imageInfo.getMime());
@@ -288,23 +269,16 @@ public class UIUtils {
             View snackbarView = snackbar.getView();
             ((TextView) snackbarView.findViewById(R.id.snackbar_text)).setTextColor(Color.WHITE);
 
-            snackbar.setAction("查看", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    try {
-                        Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_VIEW);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            Uri contentUri = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", destFile);
-                            intent.setDataAndType(contentUri, imageInfo.getMime());
-                        } else {
-                            intent.setDataAndType(Uri.fromFile(destFile), imageInfo.getMime());
-                        }
-                        activity.startActivity(intent);
-                    } catch (Exception e) {
-                        errorSnack(view, "打开文件发生错误", "请尝试将保存路径设置到内置存储\n" + e.getMessage());
-                    }
+            snackbar.setAction("查看", view1 -> {
+                try {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    Uri contentUri = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", destFile);
+                    intent.setDataAndType(contentUri, imageInfo.getMime());
+                    activity.startActivity(intent);
+                } catch (Exception e) {
+                    errorSnack(view1, "打开文件发生错误", "请尝试将保存路径设置到内置存储\n" + e.getMessage());
                 }
             });
             snackbar.show();

@@ -23,6 +23,7 @@ import org.jsoup.select.Elements;
 
 import java.util.regex.Matcher;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class HiParserThreadDetail {
 
     public static String getThreadAuthorId(Document doc) {
@@ -84,12 +85,12 @@ public class HiParserThreadDetail {
             details.setTitle(title);
         }
 
-        //Title, only avaliable in first page
+        //Title, only available in first page
         if (TextUtils.isEmpty(details.getTitle())) {
-            Elements threadtitleES = doc.select("div#threadtitle");
-            if (threadtitleES.size() > 0) {
-                threadtitleES.select("a").remove();
-                details.setTitle(threadtitleES.first().text());
+            Elements threadTitleES = doc.select("div#threadtitle");
+            if (threadTitleES.size() > 0) {
+                threadTitleES.select("a").remove();
+                details.setTitle(threadTitleES.first().text());
             }
         }
 
@@ -121,11 +122,11 @@ public class HiParserThreadDetail {
             detail.setTimePost(time);
 
             //floor
-            Elements postinfoAES = postE.select("table tbody tr td.postcontent div.postinfo strong a em");
-            if (postinfoAES.size() == 0) {
+            Elements postInfoAES = postE.select("table tbody tr td.postcontent div.postinfo strong a em");
+            if (postInfoAES.size() == 0) {
                 continue;
             }
-            String floor = postinfoAES.first().text();
+            String floor = postInfoAES.first().text();
             detail.setFloor(Utils.parseInt(floor));
 
             //warning
@@ -328,205 +329,214 @@ public class HiParserThreadDetail {
             }
         }
 
-        if (contentN.nodeName().equals("i")    //text in an alternate voice or mood
-                || contentN.nodeName().equals("u")    //text that should be stylistically different from normal text
-                || contentN.nodeName().equals("em")    //text emphasized
-                || contentN.nodeName().equals("strike")    //text strikethrough
-                || contentN.nodeName().equals("ol")    //ordered list
-                || contentN.nodeName().equals("ul")    //unordered list
-                || contentN.nodeName().equals("hr")   //a thematic change in the content(h line)
-                || contentN.nodeName().equals("blockquote")) {
-            textStyles.addStyle(level, contentN.nodeName());
-            //continue parse child node
-            return true;
-        } else if (contentN.nodeName().equals("strong")) {
-            String tmp = ((Element) contentN).text();
-            String postId = "";
-            String tid = "";
-            Elements floorLink = ((Element) contentN).select("a[href]");
-            if (floorLink.size() > 0) {
-                postId = Utils.getMiddleString(floorLink.first().attr("href"), "pid=", "&");
-                tid = Utils.getMiddleString(floorLink.first().attr("href"), "ptid=", "&");
-            }
-            if (tmp.startsWith("回复 ") && tmp.contains("#")) {
-                int floor = Utils.getIntFromString(tmp.substring(0, tmp.indexOf("#")));
-                String author = tmp.substring(tmp.lastIndexOf("#") + 1).trim();
-                if (!TextUtils.isEmpty(author) && HiUtils.isValidId(postId) && floor > 0) {
-                    content.addGoToFloor(tmp, tid, postId, floor, author);
-                    return false;
+        switch (contentN.nodeName()) {
+            case "i":
+            case "u":
+            case "em":
+            case "strike":
+            case "ol":
+            case "ul":
+            case "hr":
+            case "blockquote":
+                textStyles.addStyle(level, contentN.nodeName());
+                //continue parse child node
+                return true;
+            case "strong": {
+                String tmp = ((Element) contentN).text();
+                String postId = "";
+                String tid = "";
+                Elements floorLink = ((Element) contentN).select("a[href]");
+                if (floorLink.size() > 0) {
+                    postId = Utils.getMiddleString(floorLink.first().attr("href"), "pid=", "&");
+                    tid = Utils.getMiddleString(floorLink.first().attr("href"), "ptid=", "&");
                 }
-            }
-            textStyles.addStyle(level, contentN.nodeName());
-            return true;
-        } else if (contentN.nodeName().equals("#text")) {
-            //replace  < >  to &lt; &gt; , or they will become to unsupported tag
-            String text = ((TextNode) contentN).text()
-                    .replace("<", "&lt;")
-                    .replace(">", "&gt;");
-
-            TextStyle ts = null;
-            if (textStyles.getTextStyle(level - 1) != null)
-                ts = textStyles.getTextStyle(level - 1).newInstance();
-
-            Matcher matcher = Utils.URL_PATTERN.matcher(text);
-
-            int lastPos = 0;
-            while (matcher.find()) {
-                String t = text.substring(lastPos, matcher.start());
-                String url = text.substring(matcher.start(), matcher.end());
-
-                if (!TextUtils.isEmpty(t.trim())) {
-                    content.addText(t, ts);
-                }
-                if (url.contains("@") && !url.contains("/")) {
-                    content.addEmail(url);
-                } else {
-                    content.addLink(url, url);
-                }
-                lastPos = matcher.end();
-            }
-            if (lastPos < text.length()) {
-                String t = text.substring(lastPos);
-                if (!TextUtils.isEmpty(t.trim())) {
-                    content.addText(t, ts);
-                }
-            }
-            return false;
-        } else if (contentN.nodeName().equals("li")) {    // list item
-            return true;
-        } else if (contentN.nodeName().equals("br")) {    // single line break
-            content.addText("<br>");
-            return false;
-        } else if (contentN.nodeName().equals("p")) {    // paragraph
-            Element pE = (Element) contentN;
-            return !pE.hasClass("imgtitle");
-        } else if (contentN.nodeName().equals("img")) {
-            parseImageElement((Element) contentN, content);
-            return false;
-        } else if (contentN.nodeName().equals("span")) {    // a section in a document
-            Elements attachAES = ((Element) contentN).select("a");
-            Boolean isInternalAttach = false;
-            for (int attIdx = 0; attIdx < attachAES.size(); attIdx++) {
-                Element attachAE = attachAES.get(attIdx);
-                //it is an attachment and not an image attachment
-                if (attachAE.attr("href").contains("attachment.php?")
-                        && !attachAE.attr("href").contains("nothumb=")) {
-                    String desc = "";
-                    Node sibNode = contentN.nextSibling();
-                    if (sibNode != null && sibNode.nodeName().equals("#text")) {
-                        desc = sibNode.toString();
-                        sibNode.remove();
+                if (tmp.startsWith("回复 ") && tmp.contains("#")) {
+                    int floor = Utils.getIntFromString(tmp.substring(0, tmp.indexOf("#")));
+                    String author = tmp.substring(tmp.lastIndexOf("#") + 1).trim();
+                    if (!TextUtils.isEmpty(author) && HiUtils.isValidId(postId) && floor > 0) {
+                        content.addGoToFloor(tmp, tid, postId, floor, author);
+                        return false;
                     }
-                    content.addAttach(attachAE.attr("href"), attachAE.text(), desc);
-                    isInternalAttach = true;
                 }
-            }
-            return !isInternalAttach;
-        } else if (contentN.nodeName().equals("a")) {
-            Element aE = (Element) contentN;
-            String text = aE.text();
-            String url = aE.attr("href");
-            if (aE.childNodeSize() > 0 && aE.childNode(0).nodeName().equals("img")) {
-                if (!url.startsWith("javascript:"))
-                    content.addLink(url, url);
+                textStyles.addStyle(level, contentN.nodeName());
                 return true;
             }
+            case "#text": {
+                //replace  < >  to &lt; &gt; , or they will become to unsupported tag
+                String text = ((TextNode) contentN).text()
+                        .replace("<", "&lt;")
+                        .replace(">", "&gt;");
 
-            if (aE.childNodeSize() > 0 && aE.childNode(0).nodeName().equals("font") &&
-                    aE.childNode(0).attr("size").equals("1")) {
-                content.addAppMark(text, url);
-                return false;
-            }
+                TextStyle ts = null;
+                if (textStyles.getTextStyle(level - 1) != null)
+                    ts = textStyles.getTextStyle(level - 1).newInstance();
 
-            if (url.startsWith("attachment.php?")) {
-                content.addAttach(url, text, null);
-                return false;
-            }
+                Matcher matcher = Utils.URL_PATTERN.matcher(text);
 
-            content.addLink(text, url);
-            //rare case, link tag contains images
-            Elements imgEs = aE.select("img");
-            if (imgEs.size() > 0) {
-                for (int i = 0; i < imgEs.size(); i++) {
-                    parseImageElement(imgEs.get(i), content);
+                int lastPos = 0;
+                while (matcher.find()) {
+                    String t = text.substring(lastPos, matcher.start());
+                    String url = text.substring(matcher.start(), matcher.end());
+
+                    if (!TextUtils.isEmpty(t.trim())) {
+                        content.addText(t, ts);
+                    }
+                    if (url.contains("@") && !url.contains("/")) {
+                        content.addEmail(url);
+                    } else {
+                        content.addLink(url, url);
+                    }
+                    lastPos = matcher.end();
                 }
-            }
-            return false;
-        } else if (contentN.nodeName().equals("div")) {    // a section in a document
-            Element divE = (Element) contentN;
-            if (divE.hasClass("t_attach")) {
-                // remove div.t_attach
+                if (lastPos < text.length()) {
+                    String t = text.substring(lastPos);
+                    if (!TextUtils.isEmpty(t.trim())) {
+                        content.addText(t, ts);
+                    }
+                }
                 return false;
-            } else // remove div.attach_popup
-                if (divE.hasClass("quote")) {
-                    String tid = "";
-                    String postId = "";
-                    Elements redirectES = divE.select("a");
-                    for (Element element : redirectES) {
-                        String href = Utils.nullToText(element.attr("href"));
-                        if (href.contains("redirect.php?goto=findpost")) {
-                            postId = Utils.getMiddleString(href, "pid=", "&");
-                            tid = Utils.getMiddleString(href, "ptid=", "&");
-                            break;
+            }
+            case "li":     // list item
+                return true;
+            case "br":     // single line break
+                content.addText("<br>");
+                return false;
+            case "p":     // paragraph
+                Element pE = (Element) contentN;
+                return !pE.hasClass("imgtitle");
+            case "img":
+                parseImageElement((Element) contentN, content);
+                return false;
+            case "span": {
+                Elements attachAES = ((Element) contentN).select("a");
+                boolean isInternalAttach = false;
+                for (int attIdx = 0; attIdx < attachAES.size(); attIdx++) {
+                    Element attachAE = attachAES.get(attIdx);
+                    //it is an attachment and not an image attachment
+                    if (attachAE.attr("href").contains("attachment.php?")
+                            && !attachAE.attr("href").contains("nothumb=")) {
+                        String desc = "";
+                        Node sibNode = contentN.nextSibling();
+                        if (sibNode != null && sibNode.nodeName().equals("#text")) {
+                            desc = sibNode.toString();
+                            sibNode.remove();
                         }
+                        content.addAttach(attachAE.attr("href"), attachAE.text(), desc);
+                        isInternalAttach = true;
                     }
-                    Elements postEls = divE.select("font[size=2]");
-                    String authorAndTime = "";
-                    if (postEls.size() > 0) {
-                        authorAndTime = postEls.first().text();
-                        postEls.first().remove();
-                    }
-
-                    //remove hidden elements
-                    divE.select("[style*=display][style*=none]").remove();
-
-                    //only keep line break, text with styles, links
-                    content.addQuote(Utils.clean(divE.html()), authorAndTime, tid, postId);
-                    return false;
-                } else return !divE.hasClass("attach_popup");
-        } else if (contentN.nodeName().equals("table")) {
-            return true;
-        } else if (contentN.nodeName().equals("tbody")) {    //Groups the body content in a table
-            return true;
-        } else if (contentN.nodeName().equals("tr")) {    //a row in a table
-            content.addText("<br>");
-            return true;
-        } else if (contentN.nodeName().equals("td")) {    //a cell in a table
-            content.addText(" ");
-            return true;
-        } else if (contentN.nodeName().equals("dl")) {    //a description list
-            return true;
-        } else if (contentN.nodeName().equals("dt")) {    //a term/name in a description list
-            return true;
-        } else if (contentN.nodeName().equals("dd")) {    //a description/value of a term in a description list
-            return true;
-        } else if (contentN.nodeName().equals("script") || contentN.nodeName().equals("#data")) {
-            // video
-            String html = contentN.toString();
-            String url = Utils.getMiddleString(html, "'src', '", "'");
-            if (url.startsWith("http://player.youku.com/player.php")) {
-                //http://player.youku.com/player.php/sid/XNzIyMTUxMzEy.html/v.swf
-                //http://v.youku.com/v_show/id_XNzIyMTUxMzEy.html
-                url = Utils.getMiddleString(url, "sid/", "/v.swf");
-                url = "http://v.youku.com/v_show/id_" + url;
-                if (!url.endsWith(".html")) {
-                    url = url + ".html";
                 }
-                content.addLink("YouKu视频自动转换手机通道 " + url, url);
-            } else if (url.startsWith("http")) {
-                content.addLink("FLASH VIDEO,手机可能不支持 " + url, url);
+                return !isInternalAttach;
             }
-            return false;
-        } else {
-            if (HiSettingsHelper.getInstance().isErrorReportMode()
-                    && !"#comment".equals(contentN.nodeName())) {
-                content.addNotice("[[ERROR:UNPARSED TAG:" + contentN.nodeName() + ":" + contentN.toString() + "]]");
-                Logger.e("[[ERROR:UNPARSED TAG:" + contentN.nodeName() + "]]");
+            case "a": {
+                Element aE = (Element) contentN;
+                String text = aE.text();
+                String url = aE.attr("href");
+                if (aE.childNodeSize() > 0 && aE.childNode(0).nodeName().equals("img")) {
+                    if (!url.startsWith("javascript:"))
+                        content.addLink(url, url);
+                    return true;
+                }
+
+                if (aE.childNodeSize() > 0 && aE.childNode(0).nodeName().equals("font") &&
+                        aE.childNode(0).attr("size").equals("1")) {
+                    content.addAppMark(text, url);
+                    return false;
+                }
+
+                if (url.startsWith("attachment.php?")) {
+                    content.addAttach(url, text, null);
+                    return false;
+                }
+
+                content.addLink(text, url);
+                //rare case, link tag contains images
+                Elements imgEs = aE.select("img");
+                if (imgEs.size() > 0) {
+                    for (int i = 0; i < imgEs.size(); i++) {
+                        parseImageElement(imgEs.get(i), content);
+                    }
+                }
+                return false;
             }
-            return false;
+            case "div": {
+                Element divE = (Element) contentN;
+                if (divE.hasClass("t_attach")) {
+                    // remove div.t_attach
+                    return false;
+                } else // remove div.attach_popup
+                    if (divE.hasClass("quote")) {
+                        String tid = "";
+                        String postId = "";
+                        Elements redirectES = divE.select("a");
+                        for (Element element : redirectES) {
+                            String href = Utils.nullToText(element.attr("href"));
+                            if (href.contains("redirect.php?goto=findpost")) {
+                                postId = Utils.getMiddleString(href, "pid=", "&");
+                                tid = Utils.getMiddleString(href, "ptid=", "&");
+                                break;
+                            }
+                        }
+                        Elements postEls = divE.select("font[size=2]");
+                        String authorAndTime = "";
+                        if (postEls.size() > 0) {
+                            authorAndTime = postEls.first().text();
+                            postEls.first().remove();
+                        }
+
+                        //remove hidden elements
+                        divE.select("[style*=display][style*=none]").remove();
+
+                        //only keep line break, text with styles, links
+                        content.addQuote(Utils.clean(divE.html()), authorAndTime, tid, postId);
+                        return false;
+                    } else return !divE.hasClass("attach_popup");
+            }
+            case "table":
+                return true;
+            case "tbody":     //Groups the body content in a table
+                return true;
+            case "tr":     //a row in a table
+                content.addText("<br>");
+                return true;
+            case "td":     //a cell in a table
+                content.addText(" ");
+                return true;
+            case "dl":     //a description list
+                return true;
+            case "dt":     //a term/name in a description list
+                return true;
+            case "dd":     //a description/value of a term in a description list
+                return true;
+            case "script":
+            case "#data": {
+                // video
+                String html = contentN.toString();
+                String url = Utils.getMiddleString(html, "'src', '", "'");
+                if (url.startsWith("http://player.youku.com/player.php")) {
+                    //http://player.youku.com/player.php/sid/XNzIyMTUxMzEy.html/v.swf
+                    //http://v.youku.com/v_show/id_XNzIyMTUxMzEy.html
+                    url = Utils.getMiddleString(url, "sid/", "/v.swf");
+                    url = "http://v.youku.com/v_show/id_" + url;
+                    if (!url.endsWith(".html")) {
+                        url = url + ".html";
+                    }
+                    content.addLink("YouKu视频自动转换手机通道 " + url, url);
+                } else if (url.startsWith("http")) {
+                    content.addLink("FLASH VIDEO,手机可能不支持 " + url, url);
+                }
+                return false;
+            }
+            default:
+                if (HiSettingsHelper.getInstance().isErrorReportMode()
+                        && !"#comment".equals(contentN.nodeName())) {
+                    content.addNotice("[[ERROR:UNPARSED TAG:" + contentN.nodeName() + ":" + contentN.toString() + "]]");
+                    Logger.e("[[ERROR:UNPARSED TAG:" + contentN.nodeName() + "]]");
+                }
+                return false;
         }
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
     private static void parseImageElement(Element e, Contents content) {
         String src = getAbsoluteUrl(e.attr("src"));
         String id = e.attr("id");
