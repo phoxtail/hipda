@@ -16,18 +16,10 @@ public class ParamsMap {
 
     public void put(String key, String value) {
         if (!params.containsKey(key))
-            params.put(key, new ArrayList<String>());
+            params.put(key, new ArrayList<>());
         params.get(key).add(value);
     }
 
-
-    public List<String> get(String key) {
-        return params.get(key);
-    }
-
-    public Set<String> keySet() {
-        return params.keySet();
-    }
 
     public Set<Map.Entry<String, List<String>>> entrySet() {
         return params.entrySet();

@@ -23,12 +23,7 @@ public class HistoryDao {
     public synchronized static void saveHistoryInBackground(
             final String tid, final String fid, final String title,
             final String uid, final String username, final String postTime) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                saveHistory(tid, fid, title, uid, username, postTime);
-            }
-        });
+        new Handler().post(() -> saveHistory(tid, fid, title, uid, username, postTime));
     }
 
     private synchronized static void saveHistory(
@@ -79,33 +74,24 @@ public class HistoryDao {
     }
 
     public synchronized static void cleanup() {
-        SQLiteDatabase db = null;
-        try {
-            db = HistoryDBHelper.getHelper().getWritableDatabase();
+        try (SQLiteDatabase db = HistoryDBHelper.getHelper().getWritableDatabase()) {
             db.execSQL("delete from " + HistoryDBHelper.TABLE_NAME
                     + " where tid not in " +
                     "(select tid from " + HistoryDBHelper.TABLE_NAME
                     + " order by visit_time desc limit " + MAX_SIZE + ")");
         } catch (Exception e) {
             Logger.e(e);
-        } finally {
-            if (db != null)
-                db.close();
         }
     }
 
     public static List<History> getHistories() {
         List<History> histories = new ArrayList<>();
-        SQLiteDatabase db = null;
-        Cursor cursor = null;
 
-        try {
-            db = HistoryDBHelper.getHelper().getReadableDatabase();
-            cursor = db.rawQuery(
-                    "select * from " + HistoryDBHelper.TABLE_NAME +
-                            " where title is not null and title<>''" +
-                            " order by visit_time desc limit " + MAX_SIZE,
-                    null);
+        try (SQLiteDatabase db = HistoryDBHelper.getHelper().getReadableDatabase(); Cursor cursor = db.rawQuery(
+                "select * from " + HistoryDBHelper.TABLE_NAME +
+                        " where title is not null and title<>''" +
+                        " order by visit_time desc limit " + MAX_SIZE,
+                null)) {
 
             while (cursor.moveToNext()) {
                 String tid = Utils.nullToText(cursor.getString(cursor.getColumnIndex("tid")));
@@ -114,7 +100,6 @@ public class HistoryDao {
                 String uid = Utils.nullToText(cursor.getString(cursor.getColumnIndex("uid")));
                 String username = Utils.nullToText(cursor.getString(cursor.getColumnIndex("username")));
                 String post_time = Utils.nullToText(cursor.getString(cursor.getColumnIndex("post_time")));
-                long visit_time = cursor.getLong(cursor.getColumnIndex("visit_time"));
 
                 //remove time info, only keep date
                 if (post_time.contains("-") && post_time.contains(" "))
@@ -127,17 +112,11 @@ public class HistoryDao {
                 history.setUid(uid);
                 history.setUsername(username);
                 history.setPostTime(post_time);
-                history.setVisitTime(visit_time);
 
                 histories.add(history);
             }
         } catch (Exception e) {
             Logger.e(e);
-        } finally {
-            if (cursor != null)
-                cursor.close();
-            if (db != null)
-                db.close();
         }
 
         return histories;

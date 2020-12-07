@@ -36,8 +36,6 @@ public class ThreadListJob extends BaseJob {
 
         mEvent = new ThreadListEvent();
         mEvent.mSessionId = mSessionId;
-        mEvent.mForumId = forumId;
-        mEvent.mPage = page;
     }
 
     @Override
@@ -47,7 +45,7 @@ public class ThreadListJob extends BaseJob {
     }
 
     @Override
-    public void onRun() throws Throwable {
+    public void onRun() {
         ThreadListBean data = null;
         int eventStatus = Constants.STATUS_SUCCESS;
         String eventMessage = "";

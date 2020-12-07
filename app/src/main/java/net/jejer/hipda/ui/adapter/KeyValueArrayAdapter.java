@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Key and Value Array Adapter
@@ -31,64 +31,6 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
     private String[] entries;
     private String[] entryValues;
 
-    /**
-     * @param context
-     * @param resource
-     * @param textViewResourceId
-     * @param objects
-     */
-    public KeyValueArrayAdapter(final Context context, final int resource,
-                                final int textViewResourceId,
-                                final KeyValue[] objects) {
-        super(context, resource, textViewResourceId, objects);
-    }
-
-    /**
-     * @param context
-     * @param resource
-     * @param textViewResourceId
-     * @param objects
-     */
-    public KeyValueArrayAdapter(final Context context, final int resource,
-                                final int textViewResourceId,
-                                final List<KeyValue> objects) {
-        super(context, resource, textViewResourceId, objects);
-    }
-
-    /**
-     * @param context
-     * @param resource
-     * @param textViewResourceId
-     */
-    public KeyValueArrayAdapter(final Context context, final int resource,
-                                final int textViewResourceId) {
-        super(context, resource, textViewResourceId);
-    }
-
-    /**
-     * @param context
-     * @param textViewResourceId
-     * @param objects
-     */
-    public KeyValueArrayAdapter(final Context context, final int textViewResourceId,
-                                final KeyValue[] objects) {
-        super(context, textViewResourceId, objects);
-    }
-
-    /**
-     * @param context
-     * @param textViewResourceId
-     * @param objects
-     */
-    public KeyValueArrayAdapter(final Context context, final int textViewResourceId,
-                                final List<KeyValue> objects) {
-        super(context, textViewResourceId, objects);
-    }
-
-    /**
-     * @param context
-     * @param textViewResourceId
-     */
     public KeyValueArrayAdapter(final Context context, final int textViewResourceId) {
         super(context, textViewResourceId);
     }
@@ -96,8 +38,9 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
     /**
      * Change the string value of the TextView with the value of the KeyValue.
      */
+    @NotNull
     @Override
-    public View getView(final int position, final View convertView, final ViewGroup parent) {
+    public View getView(final int position, final View convertView, @NotNull final ViewGroup parent) {
         final TextView view = (TextView) super.getView(position, convertView, parent);
 
         view.setText(getItem(position).value);
@@ -108,7 +51,7 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
      * Change the string value of the TextView with the value of the KeyValue.
      */
     @Override
-    public View getDropDownView(final int position, final View convertView, final ViewGroup parent) {
+    public View getDropDownView(final int position, final View convertView, @NotNull final ViewGroup parent) {
         final TextView view = (TextView) super.getDropDownView(position, convertView, parent);
 
         view.setText(getItem(position).value);
@@ -117,9 +60,6 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
 
     /**
      * Set the specified Collection at the array.
-     *
-     * @param keys
-     * @param vaules
      */
     public void setKeyValue(final String[] keys, final String[] vaules) {
         if (keys.length != vaules.length) {
@@ -134,20 +74,6 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
 
     /**
      * Set the specified Collection at the array.
-     *
-     * @param keysVaules
-     */
-    public void setKeyValue(final String[][] keysVaules) {
-        final int N = keysVaules.length;
-        for (int i = 0; i < N; i++) {
-            add(new KeyValue(keysVaules[i][0], keysVaules[i][1]));
-        }
-    }
-
-    /**
-     * Set the specified Collection at the array.
-     *
-     * @param entries
      */
     public void setEntries(final String[] entries) {
         this.entries = entries;
@@ -158,8 +84,6 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
 
     /**
      * Set the specified Collection at the array.
-     *
-     * @param entryValues
      */
     public void setEntryValues(final String[] entryValues) {
         this.entryValues = entryValues;
@@ -169,40 +93,14 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
     }
 
     /**
-     * Get the value of the KeyValue with the specified position in the data set.
-     *
-     * @param position
-     * @return
-     */
-    public String getValue(final int position) {
-        return getItem(position).value;
-    }
-
-    /**
      * Get the key of the KeyValue with the specified position in the data set.
-     *
-     * @param position
-     * @return
      */
     public String getKey(final int position) {
         return getItem(position).key;
     }
 
     /**
-     * Get the entry of the KeyValue with the specified position in the data set.
-     *
-     * @param position
-     * @return
-     */
-    public String getEntry(final int position) {
-        return getValue(position);
-    }
-
-    /**
      * Get the entry value of the KeyValue with the specified position in the data set.
-     *
-     * @param position
-     * @return
      */
     public String getEntryValue(final int position) {
         return getKey(position);
@@ -211,20 +109,14 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
     /**
      * Key and Value
      */
-    public class KeyValue {
+    public static class KeyValue {
         public String key;
         public String value;
 
-        /**
-         * @param key
-         * @param value
-         */
         public KeyValue(final String key, final String value) {
             super();
             this.key = key;
             this.value = value;
         }
-
     }
-
 }

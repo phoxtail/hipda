@@ -30,7 +30,6 @@ public class ThreadDetailJob extends BaseJob {
     private final String mTid;
     private final String mGotoPostId;
     private final int mPage;
-    private final int mFetchType;
     private final ThreadDetailEvent mEvent;
     private String mAuthorId;
 
@@ -41,12 +40,10 @@ public class ThreadDetailJob extends BaseJob {
         mAuthorId = authorId;
         mGotoPostId = gotoPostId;
         mPage = page;
-        mFetchType = fetchType;
 
         mEvent = new ThreadDetailEvent();
         mEvent.mSessionId = mSessionId;
         mEvent.mFetchType = fetchType;
-        mEvent.mPage = page;
         mEvent.mLoadingPosition = loadingPosition;
     }
 

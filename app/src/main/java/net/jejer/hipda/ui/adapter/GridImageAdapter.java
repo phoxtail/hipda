@@ -42,7 +42,7 @@ public class GridImageAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        UploadImage image = mImages.toArray(new UploadImage[mImages.size()])[position];
+        UploadImage image = mImages.toArray(new UploadImage[0])[position];
         View squareLayout;
         if (convertView == null) {
             LayoutInflater inflater = mContext.getLayoutInflater();
@@ -56,5 +56,4 @@ public class GridImageAdapter extends BaseAdapter {
         squareLayout.setTag(image.getImgId());
         return squareLayout;
     }
-
 }

@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 
 import net.jejer.hipda.R;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +38,7 @@ final class EmojiArrayAdapter extends ArrayAdapter<Emoji> {
     }
 
     @Override
-    public View getView(final int position, final View convertView, final ViewGroup parent) {
+    public View getView(final int position, final View convertView, @NotNull final ViewGroup parent) {
         View view = convertView;
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.emoji_text_view, parent, false);
@@ -51,13 +53,10 @@ final class EmojiArrayAdapter extends ArrayAdapter<Emoji> {
         holder.emoji = emoji;
         holder.icon.setText(emoji.getEmoji());
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                if (onEmojiClickedListener != null) {
-                    final ViewHolder tag = (ViewHolder) v.getTag();
-                    onEmojiClickedListener.onEmojiClicked(tag.emoji);
-                }
+        view.setOnClickListener(v -> {
+            if (onEmojiClickedListener != null) {
+                final ViewHolder tag = (ViewHolder) v.getTag();
+                onEmojiClickedListener.onEmojiClicked(tag.emoji);
             }
         });
 

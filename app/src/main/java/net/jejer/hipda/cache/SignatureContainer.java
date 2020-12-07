@@ -17,6 +17,4 @@ public class SignatureContainer {
     public static String getSignature(String uid) {
         return Utils.nullToText(SIGS.get(uid));
     }
-
-
 }

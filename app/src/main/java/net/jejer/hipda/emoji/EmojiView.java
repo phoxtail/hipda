@@ -58,12 +58,9 @@ final class EmojiView extends FrameLayout implements ViewPager.OnPageChangeListe
 
         handleOnClicks(emojisPager);
 
-        findViewById(R.id.emojis_backspace).setOnTouchListener(new RepeatListener(INITIAL_INTERVAL, NORMAL_INTERVAL, new OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                if (onEmojiBackspaceClickListener != null) {
-                    onEmojiBackspaceClickListener.onEmojiBackspaceClicked(view);
-                }
+        findViewById(R.id.emojis_backspace).setOnTouchListener(new RepeatListener(INITIAL_INTERVAL, NORMAL_INTERVAL, view -> {
+            if (onEmojiBackspaceClickListener != null) {
+                onEmojiBackspaceClickListener.onEmojiBackspaceClicked(view);
             }
         }));
 
@@ -79,12 +76,7 @@ final class EmojiView extends FrameLayout implements ViewPager.OnPageChangeListe
     private void handleOnClicks(final ViewPager emojisPager) {
         for (int i = 0; i < emojiTabs.length; i++) {
             final int position = i;
-            emojiTabs[i].setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    emojisPager.setCurrentItem(position);
-                }
-            });
+            emojiTabs[i].setOnClickListener(v -> emojisPager.setCurrentItem(position));
         }
     }
 

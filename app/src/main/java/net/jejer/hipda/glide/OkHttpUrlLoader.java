@@ -9,6 +9,8 @@ import com.bumptech.glide.load.model.ModelLoaderFactory;
 import com.bumptech.glide.load.model.MultiModelLoaderFactory;
 import com.bumptech.glide.signature.ObjectKey;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.InputStream;
 
 import okhttp3.OkHttpClient;
@@ -27,7 +29,7 @@ public class OkHttpUrlLoader implements ModelLoader<GlideUrl, InputStream> {
     }
 
     @Override
-    public boolean handles(GlideUrl model) {
+    public boolean handles(@NotNull GlideUrl model) {
         return true;
     }
 
@@ -40,7 +42,7 @@ public class OkHttpUrlLoader implements ModelLoader<GlideUrl, InputStream> {
 
         @NonNull
         @Override
-        public ModelLoader<GlideUrl, InputStream> build(MultiModelLoaderFactory factories) {
+        public ModelLoader<GlideUrl, InputStream> build(@NotNull MultiModelLoaderFactory factories) {
             return new OkHttpUrlLoader(client);
         }
 
@@ -48,5 +50,4 @@ public class OkHttpUrlLoader implements ModelLoader<GlideUrl, InputStream> {
         public void teardown() {
         }
     }
-
 }

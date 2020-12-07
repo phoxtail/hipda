@@ -36,5 +36,4 @@ public abstract class EventCallback<T extends BaseEvent> {
                 break;
         }
     }
-
 }

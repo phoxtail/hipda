@@ -5,9 +5,10 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +20,7 @@ final class RecentEmojiManager implements RecentEmoji {
     private static final String EMOJI_DELIMITER = "~";
     private static final String RECENT_EMOJIS = "recent-emojis";
     private static final int EMOJI_GUESS_SIZE = 5;
-    private static final int MAX_RECENTS = 30;
+    private static final int MAX_RECENT = 30;
 
     @NonNull
     private final Context context;
@@ -84,12 +85,7 @@ final class RecentEmojiManager implements RecentEmoji {
     }
 
     private static class EmojiList implements Iterable<Data> {
-        private static final Comparator<Data> COMPARATOR = new Comparator<Data>() {
-            @Override
-            public int compare(final Data lhs, final Data rhs) {
-                return Long.valueOf(rhs.timestamp).compareTo(lhs.timestamp);
-            }
-        };
+        private static final Comparator<Data> COMPARATOR = (lhs, rhs) -> Long.compare(rhs.timestamp, lhs.timestamp);
 
         @NonNull
         private final List<Data> emojis;
@@ -115,13 +111,13 @@ final class RecentEmojiManager implements RecentEmoji {
 
             emojis.add(0, new Data(emoji, timestamp));
 
-            if (emojis.size() > MAX_RECENTS) {
-                emojis.remove(MAX_RECENTS);
+            if (emojis.size() > MAX_RECENT) {
+                emojis.remove(MAX_RECENT);
             }
         }
 
         Collection<Emoji> getEmojis() {
-            Collections.sort(emojis, COMPARATOR);
+            emojis.sort(COMPARATOR);
 
             final Collection<Emoji> sortedEmojis = new ArrayList<>(emojis.size());
 
@@ -136,6 +132,7 @@ final class RecentEmojiManager implements RecentEmoji {
             return emojis.size();
         }
 
+        @NotNull
         @Override
         public Iterator<Data> iterator() {
             return emojis.iterator();

@@ -46,7 +46,7 @@ public class SimpleListJob extends BaseJob {
     private final Context mCtx;
     private final int mType;
     private final SimpleListEvent mEvent;
-    private int mPage = 1;
+    private final int mPage;
     private String mExtra = "";
     private SearchBean mSearchBean;
 
@@ -59,9 +59,6 @@ public class SimpleListJob extends BaseJob {
 
         mEvent = new SimpleListEvent();
         mEvent.mSessionId = mSessionId;
-        mEvent.mPage = page;
-        mEvent.mType = mType;
-        mEvent.mExtra = mExtra;
     }
 
     public SimpleListJob(Context context, String sessionId, int type, int page, SearchBean searchBean) {
@@ -73,9 +70,6 @@ public class SimpleListJob extends BaseJob {
 
         mEvent = new SimpleListEvent();
         mEvent.mSessionId = mSessionId;
-        mEvent.mPage = page;
-        mEvent.mType = mType;
-        mEvent.mExtra = mExtra;
     }
 
     @Override
@@ -85,7 +79,7 @@ public class SimpleListJob extends BaseJob {
     }
 
     @Override
-    public void onRun() throws Throwable {
+    public void onRun() {
         SimpleListBean data = null;
 
         int eventStatus = Constants.STATUS_SUCCESS;

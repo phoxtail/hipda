@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -137,12 +136,7 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
         mDetailView.setTextSize(HiSettingsHelper.getInstance().getPostTextSize());
 
         //to avoid click through this view
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
+        view.setOnTouchListener((v, event) -> true);
 
         mRecyclerView = (XRecyclerView) view.findViewById(R.id.rv_search_threads);
         mRecyclerView.setHasFixedSize(true);

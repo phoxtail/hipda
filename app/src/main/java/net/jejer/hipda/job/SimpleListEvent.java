@@ -7,8 +7,5 @@ import net.jejer.hipda.bean.SimpleListBean;
  */
 public class SimpleListEvent extends BaseEvent {
     public SimpleListBean mData;
-    public int mType;
-    public String mExtra;
-    public int mPage;
     public String mFormhash;
 }

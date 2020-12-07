@@ -102,7 +102,7 @@ public class GlideHelper {
         AVATAR_CACHE_KEYS.put(url, System.currentTimeMillis() + "");
     }
 
-    public static void clearAvatarFiles() throws Exception {
+    public static void clearAvatarFiles() {
         AVATAR_CACHE_DIR.delete();
     }
 

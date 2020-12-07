@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.security.MessageDigest;
 
 /**
@@ -26,7 +28,7 @@ public class GifTransformation extends BitmapTransformation {
     }
 
     @Override
-    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+    protected Bitmap transform(@NotNull BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
         int resultWidth = GIF_DECODE_WIDTH;
         Bitmap result = toTransform.copy(Bitmap.Config.ARGB_8888, true);
 

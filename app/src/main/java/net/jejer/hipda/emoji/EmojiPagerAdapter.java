@@ -6,6 +6,8 @@ import android.widget.FrameLayout;
 
 import androidx.viewpager.widget.PagerAdapter;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 final class EmojiPagerAdapter extends PagerAdapter {
@@ -20,6 +22,7 @@ final class EmojiPagerAdapter extends PagerAdapter {
         return views.size();
     }
 
+    @NotNull
     @Override
     public Object instantiateItem(final ViewGroup pager, final int position) {
         final View view = views.get(position);
@@ -28,12 +31,12 @@ final class EmojiPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(final ViewGroup pager, final int position, final Object view) {
+    public void destroyItem(final ViewGroup pager, final int position, @NotNull final Object view) {
         pager.removeView((View) view);
     }
 
     @Override
-    public boolean isViewFromObject(final View view, final Object object) {
+    public boolean isViewFromObject(final View view, @NotNull final Object object) {
         return view.equals(object);
     }
 }

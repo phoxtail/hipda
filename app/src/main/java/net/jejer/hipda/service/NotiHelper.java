@@ -202,9 +202,8 @@ public class NotiHelper {
         String sound = HiSettingsHelper.getInstance().getStringValue(HiSettingsHelper.PERF_NOTI_SOUND, "");
         if (!TextUtils.isEmpty(sound))
             builder.setSound(Uri.parse(sound));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            builder.setPriority(Notification.PRIORITY_HIGH)
-                    .setVibrate(new long[0]);
+        builder.setPriority(Notification.PRIORITY_HIGH)
+                .setVibrate(new long[0]);
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, builder.build());

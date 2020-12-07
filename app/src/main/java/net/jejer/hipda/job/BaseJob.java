@@ -7,6 +7,8 @@ import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Created by GreenSkinMonster on 2016-03-28.
  */
@@ -15,7 +17,7 @@ public abstract class BaseJob extends Job {
     protected String mSessionId;
 
     public BaseJob(String sessionId) {
-        this(sessionId, JobMgr.PRIORITY_MIDIUM);
+        this(sessionId, JobMgr.PRIORITY_MEDIUM);
     }
 
     public BaseJob(String sessionId, int priority) {
@@ -35,7 +37,7 @@ public abstract class BaseJob extends Job {
     }
 
     @Override
-    protected RetryConstraint shouldReRunOnThrowable(Throwable throwable,
+    protected RetryConstraint shouldReRunOnThrowable(@NotNull Throwable throwable,
                                                      int runCount,
                                                      int maxRunCount) {
         return RetryConstraint.CANCEL;

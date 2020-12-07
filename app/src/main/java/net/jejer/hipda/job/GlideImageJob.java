@@ -1,9 +1,9 @@
 package net.jejer.hipda.job;
 
 import android.graphics.BitmapFactory;
-import android.media.ExifInterface;
 
 import androidx.annotation.Nullable;
+import androidx.exifinterface.media.ExifInterface;
 
 import com.birbit.android.jobqueue.CancelReason;
 import com.birbit.android.jobqueue.Params;
@@ -56,7 +56,7 @@ public class GlideImageJob extends BaseJob {
     }
 
     @Override
-    public void onRun() throws Throwable {
+    public void onRun() {
         ImageInfo imageInfo = ImageContainer.getImageInfo(mUrl);
         try {
             mRequestManager
@@ -108,8 +108,7 @@ public class GlideImageJob extends BaseJob {
 
             //Returns null, sizes are in the options variable
             BitmapFactory.decodeFile(cacheFile.getPath(), options);
-            int width = options.outWidth;
-            int height = options.outHeight;
+
             String mime = Utils.nullToText(options.outMimeType);
 
             int orientation = 0;
@@ -124,10 +123,15 @@ public class GlideImageJob extends BaseJob {
                 }
             }
 
+            int width;
+            int height;
             if (orientation == ExifInterface.ORIENTATION_ROTATE_90
                     || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
                 width = options.outHeight;
                 height = options.outWidth;
+            } else {
+                width = options.outWidth;
+                height = options.outHeight;
             }
 
             imageInfo.setStatus(ImageInfo.SUCCESS);
@@ -136,7 +140,6 @@ public class GlideImageJob extends BaseJob {
             imageInfo.setWidth(width);
             imageInfo.setHeight(height);
             imageInfo.setMime(mime);
-            imageInfo.setFileSize(cacheFile.length());
             if (orientation > 0)
                 imageInfo.setOrientation(orientation);
             ImageContainer.markImageReady(mUrl, imageInfo);

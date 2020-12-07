@@ -45,7 +45,7 @@ public class PersistentCookieStore {
                     Cookie decodedCookie = decodeCookie(encodedCookie);
                     if (decodedCookie != null) {
                         if (!cookies.containsKey(entry.getKey())) {
-                            cookies.put(entry.getKey(), new ConcurrentHashMap<String, Cookie>());
+                            cookies.put(entry.getKey(), new ConcurrentHashMap<>());
                         }
                         cookies.get(entry.getKey()).put(name, decodedCookie);
                     }
@@ -73,7 +73,7 @@ public class PersistentCookieStore {
                 remove(url, cookie);
             } else {
                 if (!cookies.containsKey(host)) {
-                    cookies.put(host, new ConcurrentHashMap<String, Cookie>());
+                    cookies.put(host, new ConcurrentHashMap<>());
                 }
                 cookies.get(host).put(name, cookie);
                 if (matchDomainPolicy(host)) {
@@ -85,7 +85,7 @@ public class PersistentCookieStore {
             }
         } else {
             if (!cookies.containsKey(host)) {
-                cookies.put(host, new ConcurrentHashMap<String, Cookie>());
+                cookies.put(host, new ConcurrentHashMap<>());
             }
             cookies.get(host).put(name, cookie);
             removeFromPrefs(url, cookie);
@@ -99,22 +99,18 @@ public class PersistentCookieStore {
         return ret;
     }
 
-    public boolean removeAll() {
+    public void removeAll() {
         cookies.clear();
         SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
         prefsWriter.clear();
         prefsWriter.apply();
-        return true;
     }
 
-    public boolean remove(HttpUrl url, Cookie cookie) {
+    public void remove(HttpUrl url, Cookie cookie) {
         String name = getCookieToken(cookie);
         if (cookies.containsKey(url.host()) && cookies.get(url.host()).containsKey(name)) {
             cookies.get(url.host()).remove(name);
             removeFromPrefs(url, cookie);
-            return true;
-        } else {
-            return false;
         }
     }
 

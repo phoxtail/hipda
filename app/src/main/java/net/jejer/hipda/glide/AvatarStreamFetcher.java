@@ -9,6 +9,8 @@ import com.bumptech.glide.load.data.DataFetcher;
 import net.jejer.hipda.utils.HiUtils;
 import net.jejer.hipda.utils.Logger;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,13 +50,13 @@ public class AvatarStreamFetcher implements DataFetcher<InputStream> {
     }
 
     @Override
-    public void loadData(Priority priority, DataCallback<? super InputStream> callback) {
+    public void loadData(@NotNull Priority priority, @NotNull DataCallback<? super InputStream> callback) {
         try {
             File f = GlideHelper.getAvatarFile(stringUrl);
             if (f == null) {
                 throw new IOException("cannot get avatar file");
             }
-            if (refetch(f)) {
+            if (fetch(f)) {
                 if (!f.exists() || f.delete()) {
                     Request request = getRequest();
                     Response response = client.newCall(request).execute();
@@ -85,13 +87,8 @@ public class AvatarStreamFetcher implements DataFetcher<InputStream> {
     }
 
     private void saveAvatar(Response response, File f) {
-        InputStream is = response.body().byteStream();
-        BufferedInputStream input = null;
-        OutputStream output = null;
 
-        try {
-            input = new BufferedInputStream(is);
-            output = new FileOutputStream(f);
+        try (InputStream is = response.body().byteStream(); BufferedInputStream input = new BufferedInputStream(is); OutputStream output = new FileOutputStream(f)) {
             int count;
             byte[] data = new byte[4096];
             while ((count = input.read(data)) != -1) {
@@ -101,13 +98,6 @@ public class AvatarStreamFetcher implements DataFetcher<InputStream> {
         } catch (Exception e) {
             if (f.exists())
                 f.delete();
-        } finally {
-            try {
-                if (input != null) input.close();
-                if (output != null) output.close();
-                if (is != null) is.close();
-            } catch (Exception ignored) {
-            }
         }
     }
 
@@ -122,7 +112,7 @@ public class AvatarStreamFetcher implements DataFetcher<InputStream> {
         return requestBuilder.build();
     }
 
-    private boolean refetch(File f) {
+    private boolean fetch(File f) {
         //cache avatar for 3 days, cache not found avatar for 1 day
         return !f.exists()
                 || (f.length() > 0 && f.lastModified() < System.currentTimeMillis() - GlideHelper.AVATAR_CACHE_MILLS)

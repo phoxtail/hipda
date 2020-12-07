@@ -32,10 +32,10 @@ public class EmojiEditText extends AppCompatEditText {
         if (attrs == null) {
             emojiSize = (int) getTextSize();
         } else {
-            final TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.emoji);
+            final TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.EmojiEditText);
 
             try {
-                emojiSize = (int) a.getDimension(R.styleable.emoji_emojiSize, getTextSize());
+                emojiSize = (int) a.getDimension(R.styleable.EmojiEditText_emojiSize, getTextSize());
             } finally {
                 a.recycle();
             }
@@ -47,10 +47,6 @@ public class EmojiEditText extends AppCompatEditText {
     @Override
     protected void onTextChanged(final CharSequence text, final int start, final int lengthBefore, final int lengthAfter) {
         EmojiHandler.addEmojis(getContext(), getText(), emojiSize);
-    }
-
-    public void setEmojiSize(final int pixels) {
-        emojiSize = pixels;
     }
 
     public void backspace() {

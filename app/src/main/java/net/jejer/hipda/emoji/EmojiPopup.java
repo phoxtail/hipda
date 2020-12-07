@@ -87,36 +87,30 @@ public final class EmojiPopup {
     @Nullable
     private OnEmojiPopupDismissListener onEmojiPopupDismissListener;
 
-    private EmojiPopup(final View rootView, final EmojiEditText emojiEditText, @Nullable final RecentEmoji recent) {
+    private EmojiPopup(final View rootView, final EmojiEditText emojiEditText) {
         this.context = rootView.getContext();
         this.rootView = rootView;
         this.emojiEditText = emojiEditText;
-        this.recentEmoji = recent != null ? recent : new RecentEmojiManager(context);
+        this.recentEmoji = null != null ? null : new RecentEmojiManager(context);
         this.keyBoardHeight = getPreferences().getInt(PREF_KEYBOARD_HEIGHT, 0);
 
         popupWindow = new PopupWindow(context);
         popupWindow.setBackgroundDrawable(new BitmapDrawable(context.getResources(), (Bitmap) null)); // To avoid borders & overdraw
 
-        final EmojiView emojiView = new EmojiView(context, new OnEmojiClickedListener() {
-            @Override
-            public void onEmojiClicked(final Emoji emoji) {
-                emojiEditText.input(emoji);
-                recentEmoji.addEmoji(emoji);
+        final EmojiView emojiView = new EmojiView(context, emoji -> {
+            emojiEditText.input(emoji);
+            recentEmoji.addEmoji(emoji);
 
-                if (onEmojiClickedListener != null) {
-                    onEmojiClickedListener.onEmojiClicked(emoji);
-                }
+            if (onEmojiClickedListener != null) {
+                onEmojiClickedListener.onEmojiClicked(emoji);
             }
         }, this.recentEmoji);
 
-        emojiView.setOnEmojiBackspaceClickListener(new OnEmojiBackspaceClickListener() {
-            @Override
-            public void onEmojiBackspaceClicked(final View v) {
-                emojiEditText.backspace();
+        emojiView.setOnEmojiBackspaceClickListener(v -> {
+            emojiEditText.backspace();
 
-                if (onEmojiBackspaceClickListener != null) {
-                    onEmojiBackspaceClickListener.onEmojiBackspaceClicked(v);
-                }
+            if (onEmojiBackspaceClickListener != null) {
+                onEmojiBackspaceClickListener.onEmojiBackspaceClicked(v);
             }
         });
 
@@ -124,12 +118,9 @@ public final class EmojiPopup {
         popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         popupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight((int) context.getResources().getDimension(R.dimen.emoji_keyboard_height));
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                if (onEmojiPopupDismissListener != null) {
-                    onEmojiPopupDismissListener.onEmojiPopupDismiss();
-                }
+        popupWindow.setOnDismissListener(() -> {
+            if (onEmojiPopupDismissListener != null) {
+                onEmojiPopupDismissListener.onEmojiPopupDismiss();
             }
         });
 
@@ -181,17 +172,12 @@ public final class EmojiPopup {
     }
 
     private int getUsableScreenHeight() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            final DisplayMetrics metrics = new DisplayMetrics();
+        final DisplayMetrics metrics = new DisplayMetrics();
 
-            final WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            windowManager.getDefaultDisplay().getMetrics(metrics);
+        final WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
 
-            return metrics.heightPixels;
-
-        } else {
-            return rootView.getRootView().getHeight();
-        }
+        return metrics.heightPixels;
     }
 
     private SharedPreferences getPreferences() {
@@ -207,12 +193,7 @@ public final class EmojiPopup {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void removeListener() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            //noinspection deprecation
-            rootView.getViewTreeObserver().removeGlobalOnLayoutListener(onGlobalLayoutListener);
-        } else {
-            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
-        }
+        rootView.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
         isListenerAttached = false;
     }
 
@@ -232,15 +213,9 @@ public final class EmojiPopup {
         @Nullable
         private OnSoftKeyboardCloseListener onSoftKeyboardCloseListener;
         @Nullable
-        private OnSoftKeyboardOpenListener onSoftKeyboardOpenListener;
-        @Nullable
-        private OnEmojiBackspaceClickListener onEmojiBackspaceClickListener;
-        @Nullable
         private OnEmojiClickedListener onEmojiClickedListener;
         @Nullable
         private OnEmojiPopupDismissListener onEmojiPopupDismissListener;
-        @Nullable
-        private RecentEmoji recentEmoji;
 
         private Builder(final View rootView) {
             this.rootView = rootView;
@@ -264,11 +239,6 @@ public final class EmojiPopup {
             return this;
         }
 
-        public Builder setOnSoftKeyboardOpenListener(@Nullable final OnSoftKeyboardOpenListener listener) {
-            this.onSoftKeyboardOpenListener = listener;
-            return this;
-        }
-
         public Builder setOnEmojiPopupShownListener(@Nullable final OnEmojiPopupShownListener listener) {
             this.onEmojiPopupShownListener = listener;
             return this;
@@ -279,31 +249,15 @@ public final class EmojiPopup {
             return this;
         }
 
-        public Builder setOnEmojiBackspaceClickListener(@Nullable final OnEmojiBackspaceClickListener listener) {
-            this.onEmojiBackspaceClickListener = listener;
-            return this;
-        }
-
-        /**
-         * allows you to pass your own implementation of recent emojis. If not provided the default one ({@link RecentEmojiManager} will be used
-         *
-         * @since 0.2.0
-         */
-        public Builder setRecentEmoji(@Nullable final RecentEmoji recent) {
-            this.recentEmoji = recent;
-            return this;
-        }
-
         public EmojiPopup build(final EmojiEditText emojiEditText) {
-            final EmojiPopup emojiPopup = new EmojiPopup(rootView, emojiEditText, recentEmoji);
+            final EmojiPopup emojiPopup = new EmojiPopup(rootView, emojiEditText);
             emojiPopup.onSoftKeyboardCloseListener = onSoftKeyboardCloseListener;
             emojiPopup.onEmojiClickedListener = onEmojiClickedListener;
-            emojiPopup.onSoftKeyboardOpenListener = onSoftKeyboardOpenListener;
+            emojiPopup.onSoftKeyboardOpenListener = null;
             emojiPopup.onEmojiPopupShownListener = onEmojiPopupShownListener;
             emojiPopup.onEmojiPopupDismissListener = onEmojiPopupDismissListener;
-            emojiPopup.onEmojiBackspaceClickListener = onEmojiBackspaceClickListener;
+            emojiPopup.onEmojiBackspaceClickListener = null;
             return emojiPopup;
         }
     }
-
 }

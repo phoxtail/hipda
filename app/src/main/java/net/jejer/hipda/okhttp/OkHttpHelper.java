@@ -18,14 +18,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -71,25 +68,24 @@ public class OkHttpHelper {
         }
     };
     private final OkHttpClient mClient;
-    private final PersistentCookieStore mCookiestore;
-    private final CookieJar mCookieJar;
+    private final PersistentCookieStore mCookieStore;
     private final Handler handler;
 
     private OkHttpHelper() {
-        mCookiestore = new PersistentCookieStore(HiApplication.getAppContext(), HiUtils.CookieDomain);
-        mCookieJar = new CookieJar() {
+        mCookieStore = new PersistentCookieStore(HiApplication.getAppContext(), HiUtils.CookieDomain);
+        CookieJar mCookieJar = new CookieJar() {
             @Override
             public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
                 if (cookies != null && cookies.size() > 0) {
                     for (Cookie item : cookies) {
-                        mCookiestore.add(url, item);
+                        mCookieStore.add(url, item);
                     }
                 }
             }
 
             @Override
             public List<Cookie> loadForRequest(HttpUrl url) {
-                return mCookiestore.get(url);
+                return mCookieStore.get(url);
             }
         };
         Cache cache = new Cache(Glide.getPhotoCacheDir(HiApplication.getAppContext(), CACHE_DIR_NAME), 10 * 1024 * 1024);
@@ -116,11 +112,11 @@ public class OkHttpHelper {
         try {
             X509TrustManager trustManager = new X509TrustManager() {
                 @Override
-                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                 }
 
                 @Override
-                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                 }
 
                 @Override
@@ -132,12 +128,7 @@ public class OkHttpHelper {
             sslContext.init(null, new TrustManager[]{trustManager}, null);
             builder.sslSocketFactory(sslContext.getSocketFactory(),
                     trustManager);
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
+            builder.hostnameVerifier((hostname, session) -> true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -175,9 +166,9 @@ public class OkHttpHelper {
         } else if (e instanceof SocketTimeoutException) {
             msg = "请求超时";
         } else if (e instanceof IOException) {
-            String emsg = e.getMessage();
-            if (emsg != null && emsg.contains(ERROR_CODE_PREFIX)) {
-                errCode = Utils.parseInt(Utils.getMiddleString(emsg, ERROR_CODE_PREFIX, ",").trim());
+            String error = e.getMessage();
+            if (error != null && error.contains(ERROR_CODE_PREFIX)) {
+                errCode = Utils.parseInt(Utils.getMiddleString(error, ERROR_CODE_PREFIX, ",").trim());
                 if (errCode > 0)
                     msg = "错误代码 (" + errCode + ")";
             }
@@ -203,7 +194,7 @@ public class OkHttpHelper {
         return builder.build();
     }
 
-    private Request buildPostFormRequest(String url, ParamsMap params, Object tag)
+    private Request buildPostFormRequest(String url, ParamsMap params)
             throws UnsupportedEncodingException {
 
         FormBody.Builder builder = new FormBody.Builder();
@@ -223,8 +214,8 @@ public class OkHttpHelper {
                 .post(requestBody)
                 .cacheControl(CacheControl.FORCE_NETWORK);
 
-        if (tag != null)
-            reqBuilder.tag(tag);
+        if (null != null)
+            reqBuilder.tag(null);
 
         return reqBuilder.build();
     }
@@ -257,10 +248,6 @@ public class OkHttpHelper {
         asyncGet(url, FORCE_NETWORK, callback, null);
     }
 
-    public void asyncGet(String url, int cacheType, ResultCallback callback) {
-        asyncGet(url, cacheType, callback, null);
-    }
-
     public void asyncGet(String url, int cacheType, ResultCallback callback, Object tag) {
         if (callback == null) callback = DEFAULT_CALLBACK;
         final ResultCallback rspCallBack = callback;
@@ -285,13 +272,13 @@ public class OkHttpHelper {
     }
 
     public String post(String url, ParamsMap params) throws IOException {
-        Request request = buildPostFormRequest(url, params, null);
+        Request request = buildPostFormRequest(url, params);
         Response response = mClient.newCall(request).execute();
         return getResponseBody(response);
     }
 
     public Response postAsResponse(String url, ParamsMap params) throws IOException {
-        Request request = buildPostFormRequest(url, params, null);
+        Request request = buildPostFormRequest(url, params);
         return mClient.newCall(request).execute();
     }
 
@@ -300,7 +287,7 @@ public class OkHttpHelper {
         if (callback == null) callback = DEFAULT_CALLBACK;
         final ResultCallback rspCallBack = callback;
 
-        Request request = buildPostFormRequest(url, params, null);
+        Request request = buildPostFormRequest(url, params);
         mClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -320,31 +307,23 @@ public class OkHttpHelper {
     }
 
     private void handleFailureCallback(final Request request, final Exception e, final ResultCallback callback) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Logger.e(e.getClass().getName() + "\n" + e.getMessage());
-                callback.onError(request, e);
-            }
+        handler.post(() -> {
+            Logger.e(e.getClass().getName() + "\n" + e.getMessage());
+            callback.onError(request, e);
         });
     }
 
     private void handleSuccessCallback(final String response, final ResultCallback callback) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                callback.onResponse(response);
-            }
-        });
+        handler.post(() -> callback.onResponse(response));
     }
 
     public void clearCookies() {
-        if (mCookiestore != null)
-            mCookiestore.removeAll();
+        if (mCookieStore != null)
+            mCookieStore.removeAll();
     }
 
     public boolean isLoggedIn() {
-        List<Cookie> cookies = mCookiestore.getCookies();
+        List<Cookie> cookies = mCookieStore.getCookies();
         for (Cookie cookie : cookies) {
             if ("cdb_auth".equals(cookie.name())) {
                 return true;
@@ -354,7 +333,7 @@ public class OkHttpHelper {
     }
 
     public String getAuthCookie() {
-        List<Cookie> cookies = mCookiestore.getCookies();
+        List<Cookie> cookies = mCookieStore.getCookies();
         for (Cookie cookie : cookies) {
             if ("cdb_auth".equals(cookie.name())) {
                 return cookie.value();
@@ -374,25 +353,14 @@ public class OkHttpHelper {
         return null;
     }
 
-    public void cancel(Object tag) {
-        for (Call call : mClient.dispatcher().queuedCalls()) {
-            if (tag.equals(call.request().tag())) call.cancel();
-        }
-        for (Call call : mClient.dispatcher().runningCalls()) {
-            if (tag.equals(call.request().tag())) call.cancel();
-        }
-    }
-
     public interface ResultCallback {
 
         void onError(Request request, Exception e);
 
         void onResponse(String response);
-
     }
 
     private static class SingletonHolder {
         static final OkHttpHelper INSTANCE = new OkHttpHelper();
     }
-
 }

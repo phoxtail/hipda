@@ -11,6 +11,8 @@ import com.bumptech.glide.util.ContentLengthInputStream;
 import net.jejer.hipda.okhttp.OkHttpHelper;
 import net.jejer.hipda.utils.HiUtils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -50,7 +52,7 @@ public class ImageStreamFetcher implements DataFetcher<InputStream> {
     }
 
     @Override
-    public void loadData(Priority priority, DataCallback<? super InputStream> callback) {
+    public void loadData(@NotNull Priority priority, @NotNull DataCallback<? super InputStream> callback) {
         Request request = getRequest();
         try {
             Response response = client.newCall(request).execute();

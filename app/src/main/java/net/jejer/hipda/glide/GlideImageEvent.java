@@ -1,7 +1,5 @@
 package net.jejer.hipda.glide;
 
-import net.jejer.hipda.utils.Constants;
-
 /**
  * Image loading event
  * Created by GreenSkinMonster on 2015-08-27.
@@ -10,8 +8,7 @@ public class GlideImageEvent {
 
     private final String mUrl;
     private final int mProgress;
-    private int mStatus = -1;
-    private String mMessage;
+    private final int mStatus;
 
     public GlideImageEvent(String url, int progress, int status) {
         mUrl = url;
@@ -23,7 +20,6 @@ public class GlideImageEvent {
         mUrl = url;
         mStatus = status;
         mProgress = progress;
-        mMessage = message;
     }
 
     public String getImageUrl() {
@@ -37,13 +33,4 @@ public class GlideImageEvent {
     public int getStatus() {
         return mStatus;
     }
-
-    public boolean isInProgress() {
-        return mStatus == Constants.STATUS_IN_PROGRESS;
-    }
-
-    public String getMessage() {
-        return mMessage;
-    }
-
 }

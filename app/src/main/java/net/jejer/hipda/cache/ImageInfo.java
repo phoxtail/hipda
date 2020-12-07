@@ -24,7 +24,6 @@ public class ImageInfo {
     private int mHeight;
     private String mPath;
     private String mMime;
-    private long mFileSize;
     private int mOrientation;
     private int mProgress;
     private int mStatus = IDLE;
@@ -76,14 +75,6 @@ public class ImageInfo {
         mMime = mime;
     }
 
-    public long getFileSize() {
-        return mFileSize;
-    }
-
-    public void setFileSize(long fileSize) {
-        mFileSize = fileSize;
-    }
-
     public boolean isSuccess() {
         return mStatus == SUCCESS;
     }
@@ -130,10 +121,6 @@ public class ImageInfo {
 
     public void setProgress(int progress) {
         mProgress = progress;
-    }
-
-    public int getStatus() {
-        return mStatus;
     }
 
     public void setStatus(int status) {

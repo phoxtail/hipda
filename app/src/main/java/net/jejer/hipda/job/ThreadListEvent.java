@@ -8,6 +8,4 @@ import net.jejer.hipda.bean.ThreadListBean;
 
 public class ThreadListEvent extends BaseEvent {
     public ThreadListBean mData;
-    public int mForumId;
-    public int mPage;
 }

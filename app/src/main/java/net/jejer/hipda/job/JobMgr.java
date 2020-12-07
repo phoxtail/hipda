@@ -15,7 +15,7 @@ import net.jejer.hipda.utils.Logger;
 public class JobMgr {
 
     public final static int PRIORITY_HIGH = 9;
-    public final static int PRIORITY_MIDIUM = 6;
+    public final static int PRIORITY_MEDIUM = 6;
     public final static int PRIORITY_LOW = 3;
 
     private final JobManager jobManager;

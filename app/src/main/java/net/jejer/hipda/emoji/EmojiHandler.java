@@ -125,7 +125,6 @@ public final class EmojiHandler {
             Bitmap bitmap = IMAGE_MAP.get(key);
             if (bitmap != null && !bitmap.isRecycled()) {
                 bitmap.recycle();
-                bitmap = null;
             }
         }
         IMAGE_MAP.clear();

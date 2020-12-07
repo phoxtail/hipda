@@ -11,7 +11,6 @@ public class History {
     private String mUid;
     private String mUsername;
     private String mPostTime;
-    private long mVisitTime;
 
     public History() {
     }
@@ -62,13 +61,5 @@ public class History {
 
     public void setUsername(String username) {
         mUsername = username;
-    }
-
-    public long getVisitTime() {
-        return mVisitTime;
-    }
-
-    public void setVisitTime(long visitTime) {
-        mVisitTime = visitTime;
     }
 }

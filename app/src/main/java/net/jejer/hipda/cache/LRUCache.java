@@ -14,8 +14,6 @@
 // This module is provided "as is", without warranties of any kind.
 package net.jejer.hipda.cache;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -83,34 +81,9 @@ public class LRUCache<K, V> {
         map.put(key, value);
     }
 
-    /**
-     * Clears the cache.
-     */
-    public synchronized void clear() {
-        map.clear();
-    }
-
-    /**
-     * Returns the number of used entries in the cache.
-     *
-     * @return the number of entries currently in the cache.
-     */
-    public synchronized int usedEntries() {
-        return map.size();
-    }
-
     public synchronized boolean containsKey(K key) {
         return map.containsKey(key);
     }
 
-
-    /**
-     * Returns a <code>Collection</code> that contains a copy of all cache entries.
-     *
-     * @return a <code>Collection</code> with a copy of the cache content.
-     */
-    public synchronized Collection<Map.Entry<K, V>> getAll() {
-        return new ArrayList<Map.Entry<K, V>>(map.entrySet());
-    }
 
 } // end class LRUCache
