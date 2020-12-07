@@ -6,5 +6,5 @@ This project is based on [GreenSkinMonster/hipda](https://github.com/GreenSkinMo
 
 | Version | Goal | Current Status |
 | --- | --- | --- |
-| 0.1 | clean up code, fix all wannings | WIP |
-| 0.2 | replace some old third-party library with more morden ones |     |
+| 0.1 | clean up code, fix all warnings | WIP |
+| 0.2 | replace some old third-party library with more modern ones |     |

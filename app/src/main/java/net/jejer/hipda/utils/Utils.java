@@ -59,7 +59,6 @@ import java.util.regex.Pattern;
  */
 public class Utils {
     //public final static String URL_REGEX = "[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)";
-    @SuppressWarnings("Annotator")
     public final static String URL_REGEX = "[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_+.~#?&//=]*)";
 
     public final static Pattern URL_PATTERN = Pattern.compile(URL_REGEX);
