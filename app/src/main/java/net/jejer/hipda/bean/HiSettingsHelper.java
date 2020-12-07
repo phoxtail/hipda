@@ -6,11 +6,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.os.Build;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import net.jejer.hipda.R;
 import net.jejer.hipda.service.NotiHelper;
@@ -26,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class HiSettingsHelper {
     /*
      *
@@ -129,8 +129,8 @@ public class HiSettingsHelper {
     private List<Integer> mForums = new ArrayList<>();
     private Set<String> mFreqMenus = new HashSet<>();
     private boolean mEncodeUtf8 = false;
-    private List<String> mOldBlacklists;
-    private List<String> mBlacklists;
+    private List<String> mOldBlocklists;
+    private List<String> mBlocklists;
     private int mPostTextSizeAdj = 0;
     private int mPostLineSpacing = 0;
     private int mTitleTextSizeAdj = 0;
@@ -146,7 +146,6 @@ public class HiSettingsHelper {
     // --------------- THIS IS NOT IN PERF -----------
     private int mBasePostTextSize = -1;
     private int mBaseTitleTextSize = -1;
-    private boolean mIsLandscape = false;
     private long mLastCheckSmsTime;
 
     private HiSettingsHelper() {
@@ -168,16 +167,9 @@ public class HiSettingsHelper {
             setMobileNetwork(!Connectivity.isConnectedWifi(context));
     }
 
+    @SuppressWarnings("SameReturnValue")
     public static HiSettingsHelper getInstance() {
         return SingletonHolder.INSTANCE;
-    }
-
-    public boolean getIsLandscape() {
-        return mIsLandscape;
-    }
-
-    public void setIsLandscape(boolean landscape) {
-        mIsLandscape = landscape;
     }
 
     public boolean isImageLoadable(long imageSize, boolean isThumb) {
@@ -198,10 +190,6 @@ public class HiSettingsHelper {
     public boolean isLoadAvatar() {
         return Constants.LOAD_TYPE_ALWAYS.equals(mAvatarLoadType)
                 || (!isMobileNetwork() && Constants.LOAD_TYPE_ONLY_WIFI.equals(mAvatarLoadType));
-    }
-
-    public long getLastCheckSmsTime() {
-        return mLastCheckSmsTime;
     }
 
     // --------------- THIS IS NOT IN PERF -----------
@@ -235,7 +223,7 @@ public class HiSettingsHelper {
         isEncodeUtf8FromPref();
         getPostTextSizeAdjFromPref();
         getTitleTextSizeAdjFromPref();
-        getScreenOrietationFromPref();
+        getScreenOrientationFromPref();
         isGestureBackFromPref();
         getPostLineSpacingFromPref();
         getLastForumIdFromPerf();
@@ -266,9 +254,8 @@ public class HiSettingsHelper {
         editor.putString(PERF_USERNAME, username).apply();
     }
 
-    private String getUsernameFromPref() {
+    private void getUsernameFromPref() {
         mUsername = mSharedPref.getString(PERF_USERNAME, "");
-        return mUsername;
     }
 
     public String getPassword() {
@@ -281,9 +268,8 @@ public class HiSettingsHelper {
         editor.putString(PERF_PASSWORD, password).apply();
     }
 
-    private String getPasswordFromPref() {
+    private void getPasswordFromPref() {
         mPassword = mSharedPref.getString(PERF_PASSWORD, "");
-        return mPassword;
     }
 
     public String getUid() {
@@ -296,9 +282,8 @@ public class HiSettingsHelper {
         editor.putString(PERF_UID, uid).apply();
     }
 
-    private String getUidFromPref() {
+    private void getUidFromPref() {
         mUid = mSharedPref.getString(PERF_UID, "");
-        return mUid;
     }
 
     public String getSecQuestion() {
@@ -311,9 +296,8 @@ public class HiSettingsHelper {
         editor.putString(PERF_SECQUESTION, secQuestion).apply();
     }
 
-    private String getSecQuestionFromPref() {
+    private void getSecQuestionFromPref() {
         mSecQuestion = mSharedPref.getString(PERF_SECQUESTION, "");
-        return mSecQuestion;
     }
 
     public String getSecAnswer() {
@@ -326,9 +310,8 @@ public class HiSettingsHelper {
         editor.putString(PERF_SECANSWER, secAnswer).apply();
     }
 
-    private String getSecAnswerFromPref() {
+    private void getSecAnswerFromPref() {
         mSecAnswer = mSharedPref.getString(PERF_SECANSWER, "");
-        return mSecAnswer;
     }
 
     public boolean isShowStickThreads() {
@@ -341,24 +324,12 @@ public class HiSettingsHelper {
         editor.putBoolean(PERF_SHOWSTICKTHREADS, showStickThreads).apply();
     }
 
-    private boolean isShowStickThreadsFromPref() {
+    private void isShowStickThreadsFromPref() {
         mShowStickThreads = mSharedPref.getBoolean(PERF_SHOWSTICKTHREADS, false);
-        return mShowStickThreads;
     }
 
-    private String getAvatarLoadTypeFromPref() {
+    private void getAvatarLoadTypeFromPref() {
         mAvatarLoadType = mSharedPref.getString(PERF_AVATAR_LOAD_TYPE, Constants.LOAD_TYPE_ALWAYS);
-        return mAvatarLoadType;
-    }
-
-    public String getAvatarLoadType() {
-        return mAvatarLoadType;
-    }
-
-    public void setAvatarLoadType(String avatarLoadType) {
-        this.mAvatarLoadType = avatarLoadType;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putString(PERF_AVATAR_LOAD_TYPE, avatarLoadType).apply();
     }
 
     public boolean isSortByPostTime(int fid) {
@@ -376,54 +347,32 @@ public class HiSettingsHelper {
         editor.putStringSet(PERF_SORTBYPOSTTIME_BY_FORUM, mSortByPostTimeByForum).apply();
     }
 
-    private Set<String> isSortByPostTimeByForumFromPref() {
-        mSortByPostTimeByForum = mSharedPref.getStringSet(PERF_SORTBYPOSTTIME_BY_FORUM, new HashSet<String>());
-        return mSortByPostTimeByForum;
+    private void isSortByPostTimeByForumFromPref() {
+        mSortByPostTimeByForum = mSharedPref.getStringSet(PERF_SORTBYPOSTTIME_BY_FORUM, new HashSet<>());
     }
 
     public boolean isAddTail() {
         return mAddTail && Utils.getWordCount(mTailText) <= MAX_TAIL_TEXT_LENGTH;
     }
 
-    public void setAddTail(boolean addTail) {
-        mAddTail = addTail;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putBoolean(PERF_ADDTAIL, addTail).apply();
-    }
-
-    public boolean isAddTailFromPref() {
+    public void isAddTailFromPref() {
         mAddTail = mSharedPref.getBoolean(PERF_ADDTAIL, false);
-        return mAddTail;
     }
 
     public String getTailText() {
         return mTailText;
     }
 
-    public void setTailText(String tailText) {
-        mTailText = tailText;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putString(PERF_TAILTEXT, tailText).apply();
-    }
-
-    private String getTailTextFromPref() {
+    private void getTailTextFromPref() {
         mTailText = mSharedPref.getString(PERF_TAILTEXT, "");
-        return mTailText;
     }
 
     public String getTailUrl() {
         return mTailUrl;
     }
 
-    public void setTailUrl(String tailUrl) {
-        mTailUrl = tailUrl;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putString(PERF_TAILURL, tailUrl).apply();
-    }
-
-    private String getTailUrlFromPref() {
+    private void getTailUrlFromPref() {
         mTailUrl = mSharedPref.getString(PERF_TAILURL, "");
-        return mTailUrl;
     }
 
     public String getTailStr() {
@@ -453,9 +402,8 @@ public class HiSettingsHelper {
         editor.putString(PERF_THEME, theme).apply();
     }
 
-    private String getThemeFromPref() {
+    private void getThemeFromPref() {
         mTheme = mSharedPref.getString(PERF_THEME, THEME_LIGHT);
-        return mTheme;
     }
 
     public int getPrimaryColor() {
@@ -468,24 +416,16 @@ public class HiSettingsHelper {
         editor.putInt(PERF_PRIMARY_COLOR, primaryColor).apply();
     }
 
-    private int getPrimaryColorFromPref() {
+    private void getPrimaryColorFromPref() {
         mPrimaryColor = mSharedPref.getInt(PERF_PRIMARY_COLOR, 0);
-        return mPrimaryColor;
     }
 
     public String getNightTheme() {
         return mNightTheme;
     }
 
-    public void setNightTheme(String theme) {
-        mNightTheme = theme;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putString(PERF_NIGHT_THEME, theme).apply();
-    }
-
-    private String getNightThemeFromPref() {
+    private void getNightThemeFromPref() {
         mNightTheme = mSharedPref.getString(PERF_NIGHT_THEME, THEME_DARK);
-        return mNightTheme;
     }
 
     public boolean isNightMode() {
@@ -499,9 +439,8 @@ public class HiSettingsHelper {
         editor.putBoolean(PERF_NIGHT_MODE, nightMode).commit();
     }
 
-    private boolean isNightModeFromPref() {
+    private void isNightModeFromPref() {
         mNightMode = mSharedPref.getBoolean(PERF_NIGHT_MODE, false);
-        return mNightMode;
     }
 
     public String getFont() {
@@ -514,24 +453,16 @@ public class HiSettingsHelper {
         editor.putString(PERF_FONT, font).apply();
     }
 
-    private String getFontFromPref() {
+    private void getFontFromPref() {
         mFont = mSharedPref.getString(PERF_FONT, "");
-        return mFont;
     }
 
     public boolean isNavBarColored() {
         return mNavBarColor;
     }
 
-    public void setNavBarColored(boolean navBarColored) {
-        mNavBarColor = navBarColored;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putBoolean(PERF_NAVBAR_COLORED, navBarColored).apply();
-    }
-
-    private boolean isNavBarColoredFromPref() {
+    private void isNavBarColoredFromPref() {
         mNavBarColor = mSharedPref.getBoolean(PERF_NAVBAR_COLORED, false);
-        return mNavBarColor;
     }
 
     public List<Integer> getForums() {
@@ -551,12 +482,12 @@ public class HiSettingsHelper {
         }
     }
 
-    private List<Integer> getForumsFromPref() {
+    private void getForumsFromPref() {
         List<Integer> forums = new ArrayList<>();
         String fidsAsString = mSharedPref.getString(PERF_FORUMS, "");
         String[] fids = fidsAsString.split(",");
         for (String fid : fids) {
-            if (HiUtils.isValidId(fid) && HiUtils.getForumByFid(Integer.valueOf(fid)) != null)
+            if (HiUtils.isValidId(fid) && HiUtils.getForumByFid(Integer.parseInt(fid)) != null)
                 forums.add(Integer.valueOf(fid));
         }
         if (forums.size() == 0) {
@@ -565,38 +496,18 @@ public class HiSettingsHelper {
             }
         }
         mForums = forums;
-        return mForums;
     }
 
     public Set<String> getFreqMenus() {
         return mFreqMenus;
     }
 
-    public void setFreqMenus(Set<String> menus) {
-        mFreqMenus = menus;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.remove(PERF_FREQ_MENUS).apply();
-        editor.putStringSet(PERF_FREQ_MENUS, menus).apply();
+    private void getFreqMenusFromPref() {
+        mFreqMenus = mSharedPref.getStringSet(PERF_FREQ_MENUS, new HashSet<>());
     }
 
-    private Set<String> getFreqMenusFromPref() {
-        mFreqMenus = mSharedPref.getStringSet(PERF_FREQ_MENUS, new HashSet<String>());
-        return mFreqMenus;
-    }
-
-    public boolean isEncodeUtf8() {
-        return mEncodeUtf8;
-    }
-
-    public void setEncodeUtf8(boolean encodeUtf8) {
-        mEncodeUtf8 = encodeUtf8;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putBoolean(PERF_ENCODEUTF8, encodeUtf8).apply();
-    }
-
-    private boolean isEncodeUtf8FromPref() {
+    private void isEncodeUtf8FromPref() {
         mEncodeUtf8 = mSharedPref.getBoolean(PERF_ENCODEUTF8, false);
-        return mEncodeUtf8;
     }
 
     public String getEncode() {
@@ -611,38 +522,24 @@ public class HiSettingsHelper {
         return mErrorReportMode;
     }
 
-    public void setErrorReportMode(boolean errorReportMode) {
-        mErrorReportMode = errorReportMode;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putBoolean(PERF_ERROR_REPORT_MODE, errorReportMode).apply();
-    }
-
-    private boolean isErrorReportModeFromPref() {
+    private void isErrorReportModeFromPref() {
         mErrorReportMode = mSharedPref.getBoolean(PERF_ERROR_REPORT_MODE, false);
-        return mErrorReportMode;
     }
 
     public boolean isNotiTaskEnabled() {
         return mNotiTaskEnabled;
     }
 
-    public void setNotiTaskEnabled(boolean notiTaskEnabled) {
-        mNotiTaskEnabled = notiTaskEnabled;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putBoolean(PERF_NOTI_TASK_ENABLED, mNotiTaskEnabled).apply();
-    }
-
-    private boolean isNotiTaskEnabledFromPref() {
+    private void isNotiTaskEnabledFromPref() {
         mNotiTaskEnabled = mSharedPref.getBoolean(PERF_NOTI_TASK_ENABLED, false);
-        return mNotiTaskEnabled;
     }
 
     public List<String> getOldBlacklists() {
-        return mOldBlacklists;
+        return mOldBlocklists;
     }
 
     public void setOldBlacklists(List<String> blacklists) {
-        mOldBlacklists = blacklists;
+        mOldBlocklists = blacklists;
         StringBuilder sb = new StringBuilder();
         for (String username : blacklists) {
             if (!TextUtils.isEmpty(username)) {
@@ -655,24 +552,23 @@ public class HiSettingsHelper {
         editor.putString(PERF_OLD_BLACKLIST, sb.toString()).apply();
     }
 
-    private List<String> getOldBlacklistsFromPref() {
+    private void getOldBlacklistsFromPref() {
         String[] usernames = mSharedPref.getString(PERF_OLD_BLACKLIST, "").split("\n");
-        mOldBlacklists = new ArrayList<>();
+        mOldBlocklists = new ArrayList<>();
         for (String username : usernames) {
-            if (!TextUtils.isEmpty(username) && !mOldBlacklists.contains(username))
-                mOldBlacklists.add(username);
+            if (!TextUtils.isEmpty(username) && !mOldBlocklists.contains(username))
+                mOldBlocklists.add(username);
         }
-        return mOldBlacklists;
     }
 
     public List<String> getBlacklists() {
-        if (mBlacklists == null)
-            mBlacklists = new ArrayList<>();
-        return mBlacklists;
+        if (mBlocklists == null)
+            mBlocklists = new ArrayList<>();
+        return mBlocklists;
     }
 
     public void setBlacklists(List<String> blacklists) {
-        mBlacklists = blacklists;
+        mBlocklists = blacklists;
         StringBuilder sb = new StringBuilder();
         for (String username : blacklists) {
             if (!TextUtils.isEmpty(username)) {
@@ -685,31 +581,30 @@ public class HiSettingsHelper {
         editor.putString(PERF_BLACKLIST, sb.toString()).apply();
     }
 
-    private List<String> getBlacklistsFromPref() {
+    private void getBlacklistsFromPref() {
         String[] usernames = mSharedPref.getString(PERF_BLACKLIST, "").split("\n");
-        mBlacklists = new ArrayList<>();
+        mBlocklists = new ArrayList<>();
         for (String username : usernames) {
-            if (!TextUtils.isEmpty(username) && !mBlacklists.contains(username))
-                mBlacklists.add(username);
+            if (!TextUtils.isEmpty(username) && !mBlocklists.contains(username))
+                mBlocklists.add(username);
         }
-        return mBlacklists;
     }
 
-    public boolean isInBlacklist(String username) {
-        return mBlacklists.contains(username) || mOldBlacklists.contains(username);
+    public boolean notInBlocklist(String username) {
+        return !mBlocklists.contains(username) && !mOldBlocklists.contains(username);
     }
 
     public void addToBlacklist(String username) {
-        if (!TextUtils.isEmpty(username) && !mBlacklists.contains(username)) {
-            mBlacklists.add(username);
-            setBlacklists(mBlacklists);
+        if (!TextUtils.isEmpty(username) && !mBlocklists.contains(username)) {
+            mBlocklists.add(username);
+            setBlacklists(mBlocklists);
         }
     }
 
     public void removeFromBlacklist(String username) {
         if (!TextUtils.isEmpty(username)) {
-            mBlacklists.remove(username);
-            setBlacklists(mBlacklists);
+            mBlocklists.remove(username);
+            setBlacklists(mBlocklists);
         }
     }
 
@@ -723,9 +618,8 @@ public class HiSettingsHelper {
         editor.putString(PERF_TEXTSIZE_POST_ADJ, String.valueOf(adj)).apply();
     }
 
-    private int getPostTextSizeAdjFromPref() {
+    private void getPostTextSizeAdjFromPref() {
         mPostTextSizeAdj = Utils.parseInt(mSharedPref.getString(PERF_TEXTSIZE_POST_ADJ, "0"));
-        return mPostTextSizeAdj;
     }
 
     public int getPostLineSpacing() {
@@ -738,12 +632,11 @@ public class HiSettingsHelper {
         editor.putString(PERF_POST_LINE_SPACING, lineSpacing + "").apply();
     }
 
-    private int getPostLineSpacingFromPref() {
+    private void getPostLineSpacingFromPref() {
         String value = mSharedPref.getString(PERF_POST_LINE_SPACING, "0");
         if (TextUtils.isDigitsOnly(value)) {
             mPostLineSpacing = Integer.parseInt(value);
         }
-        return mPostLineSpacing;
     }
 
     public int getTitleTextSizeAdj() {
@@ -756,43 +649,28 @@ public class HiSettingsHelper {
         editor.putString(PERF_TEXTSIZE_TITLE_ADJ, String.valueOf(adj)).apply();
     }
 
-    private int getTitleTextSizeAdjFromPref() {
+    private void getTitleTextSizeAdjFromPref() {
         mTitleTextSizeAdj = Utils.parseInt(mSharedPref.getString(PERF_TEXTSIZE_TITLE_ADJ, "0"));
-        return mTitleTextSizeAdj;
     }
 
-    public int getScreenOrietation() {
+    public int getScreenOrientation() {
         return mScreenOrientation;
     }
 
-    public void setScreenOrietation(int screenOrientation) {
-        mScreenOrientation = screenOrientation;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putString(PERF_SCREEN_ORIENTATION, mScreenOrientation + "").apply();
-    }
-
-    private int getScreenOrietationFromPref() {
+    private void getScreenOrientationFromPref() {
         try {
             mScreenOrientation = Integer.parseInt(mSharedPref.getString(PERF_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_USER + ""));
         } catch (Exception e) {
             mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_USER;
         }
-        return mScreenOrientation;
     }
 
     public boolean isGestureBack() {
         return mGestureBack;
     }
 
-    public void setGestureBack(boolean gestureBack) {
-        mGestureBack = gestureBack;
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putBoolean(PERF_GESTURE_BACK, gestureBack).apply();
-    }
-
-    private boolean isGestureBackFromPref() {
+    private void isGestureBackFromPref() {
         mGestureBack = mSharedPref.getBoolean(PERF_GESTURE_BACK, true);
-        return mGestureBack;
     }
 
     public Date getLastUpdateCheckTime() {
@@ -846,9 +724,8 @@ public class HiSettingsHelper {
         editor.putInt(PERF_LAST_FORUM_ID, fid).apply();
     }
 
-    private int getLastForumIdFromPerf() {
+    private void getLastForumIdFromPerf() {
         mLastForumId = mSharedPref.getInt(PERF_LAST_FORUM_ID, 0);
-        return mLastForumId;
     }
 
     public String getBSTypeId() {
@@ -861,9 +738,8 @@ public class HiSettingsHelper {
         editor.putString(PERF_BS_TYPE_ID, typeId).apply();
     }
 
-    private String getBSTypeIdFromPref() {
+    private void getBSTypeIdFromPref() {
         mBSTypeId = mSharedPref.getString(PERF_BS_TYPE_ID, "");
-        return mBSTypeId;
     }
 
     public boolean isAutoUpdateCheckable() {
@@ -906,9 +782,8 @@ public class HiSettingsHelper {
         editor.putString(PERF_FORUM_SERVER, mForumServer).apply();
     }
 
-    private String getForumServerFromPref() {
+    private void getForumServerFromPref() {
         mForumServer = mSharedPref.getString(PERF_FORUM_SERVER, HiUtils.ForumServer);
-        return mForumServer;
     }
 
     public String getImageHost() {
@@ -921,9 +796,8 @@ public class HiSettingsHelper {
         editor.putString(PERF_IMAGE_HOST, mImageHost).apply();
     }
 
-    private String getImageHostFromPref() {
+    private void getImageHostFromPref() {
         mImageHost = mSharedPref.getString(PERF_IMAGE_HOST, HiUtils.ImageHost);
-        return mImageHost;
     }
 
     public String getStringValue(String key, String defaultValue) {
@@ -995,7 +869,7 @@ public class HiSettingsHelper {
     }
 
     public boolean isClickEffect() {
-        return getBooleanValue(PERF_CLICK_EFFECT, Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+        return getBooleanValue(PERF_CLICK_EFFECT, true);
     }
 
     public boolean isShowTail() {
@@ -1020,10 +894,6 @@ public class HiSettingsHelper {
 
     public void setCameraPermAsked(boolean asked) {
         setBooleanValue(PERF_CAMERA_PERM_ASKED, asked);
-    }
-
-    public boolean isHackStatusBar() {
-        return !mSharedPref.getBoolean(PERF_SWIPE_COMPAT_MODE, true);
     }
 
     public boolean isWhiteTheme() {

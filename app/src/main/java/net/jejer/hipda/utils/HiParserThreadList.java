@@ -64,8 +64,6 @@ public class HiParserThreadList {
             thread.setTid(idNum);
             // is stick thread or normal thread
             boolean isStick = idType.startsWith("stickthread");
-            thread.setIsStick(isStick);
-
             if (isStick && !HiSettingsHelper.getInstance().isShowStickThreads()) {
                 continue;
             }
@@ -86,12 +84,6 @@ public class HiParserThreadList {
             Elements typeES = tbodyE.select("th.subject em a");
             if (typeES.size() > 0) {
                 thread.setType(typeES.text());
-            }
-
-            Elements threadIsNewES = tbodyE.select("td.folder img");
-            if (threadIsNewES.size() > 0) {
-                String imgSrc = Utils.nullToText(threadIsNewES.first().attr("src"));
-                thread.setNew(imgSrc.contains("new"));
             }
 
             /*  author, authorId and create_time  */
@@ -125,12 +117,6 @@ public class HiParserThreadList {
             String threadCreateTime = threadCreateTimeES.first().text();
             thread.setTimeCreate(threadCreateTime);
 
-            Elements threadUpdateTimeES = tbodyE.select("td.lastpost em a");
-            if (threadUpdateTimeES.size() > 0) {
-                String threadUpdateTime = threadUpdateTimeES.first().text();
-                thread.setTimeUpdate(threadUpdateTime);
-            }
-
             /*  comments and views  */
             Elements nums = tbodyE.select("td.nums");
             if (nums.size() == 0) {
@@ -155,8 +141,6 @@ public class HiParserThreadList {
             if (lastpostciteES.size() == 0) {
                 continue;
             }
-            String lastpost = lastpostciteES.first().text();
-            thread.setLastPost(lastpost);
 
             // attachment and picture
             Elements attachs = tbodyE.select("img.attach");
@@ -168,9 +152,6 @@ public class HiParserThreadList {
                 }
                 if (attach_img_url.endsWith("image_s.gif")) {
                     thread.setHavePic(true);
-                }
-                if (attach_img_url.endsWith("common.gif")) {
-                    thread.setHaveAttach(true);
                 }
             }
 

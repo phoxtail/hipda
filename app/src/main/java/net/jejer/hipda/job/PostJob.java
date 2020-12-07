@@ -60,7 +60,7 @@ public class PostJob extends BaseJob {
                 EventBus.getDefault().postSticky(mEvent);
                 return;
             }
-            if (mPrePostInfo.isDeleteable()) {
+            if (mPrePostInfo.isDeletable()) {
                 mMode = PostHelper.MODE_EDIT_POST;
                 mPostArg.setDelete(true);
             } else {

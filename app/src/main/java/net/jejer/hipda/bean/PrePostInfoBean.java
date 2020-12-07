@@ -14,7 +14,7 @@ public class PrePostInfoBean {
     private final List<String> mNewAttaches = new ArrayList<>(0);
     private final List<String> mDeleteAttaches = new ArrayList<>(0);
     private final List<String> mAllImages = new ArrayList<>(0);
-    private String mFormhash;
+    private String mFormHash;
     private String mUid;
     private String mHash;
     private String mSubject;
@@ -25,7 +25,7 @@ public class PrePostInfoBean {
     private String mNoticeAuthorMsg;
     private String mNoticeTrimStr;
     private Map<String, String> mTypeValues = new LinkedHashMap<>();
-    private boolean mDeleteable;
+    private boolean mDeletable;
 
     public List<String> getDeleteAttaches() {
         return mDeleteAttaches;
@@ -54,12 +54,12 @@ public class PrePostInfoBean {
             mAttaches.add(attach);
     }
 
-    public String getFormhash() {
-        return mFormhash;
+    public String getFormHash() {
+        return mFormHash;
     }
 
-    public void setFormhash(String formhash) {
-        this.mFormhash = formhash;
+    public void setFormHash(String formHash) {
+        this.mFormHash = formHash;
     }
 
     public String getHash() {
@@ -151,11 +151,11 @@ public class PrePostInfoBean {
         this.mTypeValues = typeValues;
     }
 
-    public boolean isDeleteable() {
-        return mDeleteable;
+    public boolean isDeletable() {
+        return mDeletable;
     }
 
-    public void setDeleteable(boolean deleteable) {
-        this.mDeleteable = deleteable;
+    public void setDeletable(boolean deletable) {
+        this.mDeletable = deletable;
     }
 }

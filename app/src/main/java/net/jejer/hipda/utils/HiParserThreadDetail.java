@@ -354,7 +354,7 @@ public class HiParserThreadDetail {
                     int floor = Utils.getIntFromString(tmp.substring(0, tmp.indexOf("#")));
                     String author = tmp.substring(tmp.lastIndexOf("#") + 1).trim();
                     if (!TextUtils.isEmpty(author) && HiUtils.isValidId(postId) && floor > 0) {
-                        content.addGoToFloor(tmp, tid, postId, floor, author);
+                        content.addGoToFloor(tmp, postId, floor, author);
                         return false;
                     }
                 }
@@ -487,7 +487,7 @@ public class HiParserThreadDetail {
                         divE.select("[style*=display][style*=none]").remove();
 
                         //only keep line break, text with styles, links
-                        content.addQuote(Utils.clean(divE.html()), authorAndTime, tid, postId);
+                        content.addQuote(Utils.clean(divE.html()), authorAndTime, postId);
                         return false;
                     } else return !divE.hasClass("attach_popup");
             }

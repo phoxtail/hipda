@@ -6,6 +6,7 @@ import net.jejer.hipda.utils.Utils;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class DetailBean {
     private final Collection<ContentImg> mImages = new ArrayList<>();
     private String mAuthor;
@@ -15,7 +16,7 @@ public class DetailBean {
     private String mTimePost;
     private int mFloor;
     private String mPostStatus;
-    private Contents mContents;
+    private final Contents mContents;
     private int mPage;
     private boolean mWarned;
     private boolean mSelectMode;
@@ -32,7 +33,7 @@ public class DetailBean {
     public boolean setAuthor(String mAuthor) {
         this.mAuthor = mAuthor;
 
-        return !HiSettingsHelper.getInstance().isInBlacklist(mAuthor);
+        return HiSettingsHelper.getInstance().notInBlocklist(mAuthor);
     }
 
     public String getUid() {
@@ -77,10 +78,6 @@ public class DetailBean {
 
     public Contents getContents() {
         return mContents;
-    }
-
-    public void setContents(Contents contents) {
-        this.mContents = contents;
     }
 
     public Collection<ContentImg> getImages() {
@@ -243,13 +240,13 @@ public class DetailBean {
             newString = true;
         }
 
-        public void addQuote(String text, String authorAndTime, String tid, String postId) {
-            list.add(new ContentQuote(text, authorAndTime, tid, postId));
+        public void addQuote(String text, String authorAndTime, String postId) {
+            list.add(new ContentQuote(text, authorAndTime, postId));
             newString = true;
         }
 
-        public void addGoToFloor(String text, String tid, String postId, int floor, String author) {
-            list.add(new ContentGoToFloor(text, tid, postId, floor, author));
+        public void addGoToFloor(String text, String postId, int floor, String author) {
+            list.add(new ContentGoToFloor(text, postId, floor, author));
             newString = true;
         }
 

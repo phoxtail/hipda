@@ -742,11 +742,6 @@ public class HiParser {
             info.setOnline(Utils.nullToText(onlineImgES.first().attr("src")).contains("online"));
         }
 
-        Elements uidES = doc.select("div#profilecontent div.itemtitle ul li");
-        if (uidES.size() > 0) {
-            info.setUid(Utils.getMiddleString(uidES.first().text(), "(UID:", ")").trim());
-        }
-
         Elements avatarES = doc.select("div.side div.profile_side div.avatar img");
         if (avatarES.size() != 0) {
             info.setAvatarUrl(avatarES.first().attr("src"));

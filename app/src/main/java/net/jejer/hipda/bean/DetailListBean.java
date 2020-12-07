@@ -81,10 +81,6 @@ public class DetailListBean {
         mTid = tid;
     }
 
-    public int getImagesCount() {
-        return mImagesCount;
-    }
-
     public ArrayList<ContentImg> getContentImages() {
         ArrayList<ContentImg> result = new ArrayList<>();
         for (DetailBean detail : mDetailBeans) {

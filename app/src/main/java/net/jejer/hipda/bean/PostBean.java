@@ -12,7 +12,7 @@ public class PostBean {
     private int floor;
     private String subject;
     private String content;
-    private String typeid;
+    private String typeId;
     private int status;
     private String message;
     private boolean delete;
@@ -66,12 +66,12 @@ public class PostBean {
         this.content = content;
     }
 
-    public String getTypeid() {
-        return typeid;
+    public String getTypeId() {
+        return typeId;
     }
 
-    public void setTypeid(String typeid) {
-        this.typeid = typeid;
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
     }
 
     public String getMessage() {

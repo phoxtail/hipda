@@ -379,7 +379,7 @@ public class PostFragment extends BaseFragment {
         if (deleteMenuItem == null)
             return;
         deleteMenuItem.setVisible(true);
-        deleteMenuItem.setEnabled(mPrePostInfo != null && mPrePostInfo.isDeleteable());
+        deleteMenuItem.setEnabled(mPrePostInfo != null && mPrePostInfo.isDeletable());
     }
 
     @Override
@@ -526,7 +526,7 @@ public class PostFragment extends BaseFragment {
         postBean.setTid(mTid);
         postBean.setPid(mPid);
         postBean.setFid(mFid);
-        postBean.setTypeid(mTypeId);
+        postBean.setTypeId(mTypeId);
         postBean.setSubject(subjectText);
         postBean.setFloor(mFloor);
         postBean.setDelete(mDeleteMode);

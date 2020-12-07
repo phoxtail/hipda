@@ -5,7 +5,6 @@ public class UserInfoBean {
     private String mAvatarUrl;
     private String mDetail;
     private String mUsername;
-    private String mUid;
     private boolean mOnline;
     private String mFormHash;
 
@@ -26,14 +25,6 @@ public class UserInfoBean {
 
     public void setDetail(String mDetail) {
         this.mDetail = mDetail;
-    }
-
-    public String getUid() {
-        return mUid;
-    }
-
-    public void setUid(String mUid) {
-        this.mUid = mUid;
     }
 
     public String getUsername() {

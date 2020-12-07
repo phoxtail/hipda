@@ -4,6 +4,8 @@ import android.text.TextUtils;
 
 import net.jejer.hipda.utils.Utils;
 
+import java.util.Objects;
+
 /**
  * Created by GreenSkinMonster on 2017-07-17.
  */
@@ -101,11 +103,11 @@ public class SearchBean {
         SearchBean bean = (SearchBean) o;
 
         if (mFulltext != bean.mFulltext) return false;
-        if (mQuery != null ? !mQuery.equals(bean.mQuery) : bean.mQuery != null) return false;
-        if (mAuthor != null ? !mAuthor.equals(bean.mAuthor) : bean.mAuthor != null) return false;
-        if (mUid != null ? !mUid.equals(bean.mUid) : bean.mUid != null) return false;
-        if (mForum != null ? !mForum.equals(bean.mForum) : bean.mForum != null) return false;
-        return mSearchId != null ? mSearchId.equals(bean.mSearchId) : bean.mSearchId == null;
+        if (!Objects.equals(mQuery, bean.mQuery)) return false;
+        if (!Objects.equals(mAuthor, bean.mAuthor)) return false;
+        if (!Objects.equals(mUid, bean.mUid)) return false;
+        if (!Objects.equals(mForum, bean.mForum)) return false;
+        return Objects.equals(mSearchId, bean.mSearchId);
 
     }
 

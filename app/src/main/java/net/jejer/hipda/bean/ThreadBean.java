@@ -1,32 +1,26 @@
 package net.jejer.hipda.bean;
 
 
+@SuppressWarnings("SpellCheckingInspection")
 public class ThreadBean {
 
     private String mTitle;
     private String mTitleColor;
     private String mTid;
-    private boolean mIsStick;
 
     private String mAuthor;
     private String mAuthorId;
     private String mAvatarUrl;
-    private String mLastPost;
 
     private String mCountCmts;
     private String mCountViews;
 
     private String mTimeCreate;
-    private String mTimeUpdate;
-    private Boolean mHaveAttach;
     private Boolean mHavePic;
-    private boolean mNew;
     private String mType;
     private int mMaxPage;
 
     public ThreadBean() {
-        mIsStick = false;
-        mHaveAttach = false;
         mHavePic = false;
     }
 
@@ -57,16 +51,6 @@ public class ThreadBean {
     }
 
 
-    public boolean getIsStick() {
-        return mIsStick;
-    }
-
-
-    public void setIsStick(boolean mIsStick) {
-        this.mIsStick = mIsStick;
-    }
-
-
     public String getAuthor() {
         return mAuthor;
     }
@@ -76,7 +60,7 @@ public class ThreadBean {
     public boolean setAuthor(String mAuthor) {
         this.mAuthor = mAuthor;
 
-        return !HiSettingsHelper.getInstance().isInBlacklist(mAuthor);
+        return HiSettingsHelper.getInstance().notInBlocklist(mAuthor);
     }
 
 
@@ -87,14 +71,6 @@ public class ThreadBean {
 
     public void setAuthorId(String mAuthorId) {
         this.mAuthorId = mAuthorId;
-    }
-
-    public String getLastPost() {
-        return mLastPost;
-    }
-
-    public void setLastPost(String mLastPost) {
-        this.mLastPost = mLastPost;
     }
 
     public String getCountCmts() {
@@ -117,15 +93,6 @@ public class ThreadBean {
     }
 
 
-    public String getTimeUpdate() {
-        return mTimeUpdate;
-    }
-
-
-    public void setTimeUpdate(String timeUpdate) {
-        mTimeUpdate = timeUpdate;
-    }
-
     public String getTimeCreate() {
         return mTimeCreate;
     }
@@ -135,14 +102,6 @@ public class ThreadBean {
         this.mTimeCreate = mTimeCreate;
     }
 
-    public Boolean getHaveAttach() {
-        return mHaveAttach;
-    }
-
-    public void setHaveAttach(Boolean mHaveAttach) {
-        this.mHaveAttach = mHaveAttach;
-    }
-
 
     public Boolean getHavePic() {
         return mHavePic;
@@ -150,14 +109,6 @@ public class ThreadBean {
 
     public void setHavePic(Boolean mHavePic) {
         this.mHavePic = mHavePic;
-    }
-
-    public boolean isNew() {
-        return mNew;
-    }
-
-    public void setNew(boolean isNew) {
-        this.mNew = isNew;
     }
 
     public String getAvatarUrl() {

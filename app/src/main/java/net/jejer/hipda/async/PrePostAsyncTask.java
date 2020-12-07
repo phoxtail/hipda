@@ -94,7 +94,7 @@ public class PrePostAsyncTask extends AsyncTask<PostBean, Void, PrePostInfoBean>
             mMessage = "页面解析错误";
             return prePostInfo;
         } else {
-            prePostInfo.setFormhash(formhashES.first().attr("value"));
+            prePostInfo.setFormHash(formhashES.first().attr("value"));
         }
 
         Element addtextEl = doc.select("textarea").first();
@@ -130,7 +130,7 @@ public class PrePostAsyncTask extends AsyncTask<PostBean, Void, PrePostInfoBean>
 
         Elements deleteCheckBox = doc.select("input#delete");
         if (deleteCheckBox.size() > 0) {
-            prePostInfo.setDeleteable(true);
+            prePostInfo.setDeletable(true);
         }
 
         Elements uploadInfoES = doc.select("div.uploadinfo");
@@ -231,7 +231,7 @@ public class PrePostAsyncTask extends AsyncTask<PostBean, Void, PrePostInfoBean>
 
     @Override
     protected void onPostExecute(PrePostInfoBean info) {
-        if (info != null && !TextUtils.isEmpty(info.getFormhash()))
+        if (info != null && !TextUtils.isEmpty(info.getFormHash()))
             mListener.PrePostComplete(mMode, true, null, info);
         else
             mListener.PrePostComplete(mMode, false, mMessage, null);

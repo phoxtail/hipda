@@ -7,7 +7,7 @@ public class ThreadListBean {
 
     private boolean mParsed = false;
     private String mUid;
-    private List<ThreadBean> mThreads = new ArrayList<>();
+    private final List<ThreadBean> mThreads = new ArrayList<>();
 
     public ThreadListBean() {
     }
@@ -24,10 +24,6 @@ public class ThreadListBean {
         this.mUid = uid;
     }
 
-    public int getCount() {
-        return mThreads.size();
-    }
-
     public boolean isParsed() {
         return mParsed;
     }
@@ -40,7 +36,4 @@ public class ThreadListBean {
         return mThreads;
     }
 
-    public void setThreads(List<ThreadBean> threads) {
-        mThreads = threads;
-    }
 }

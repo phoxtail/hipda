@@ -2,6 +2,7 @@ package net.jejer.hipda.bean;
 
 import android.text.TextUtils;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class SimpleListItemBean {
     private String mTid;
     private String mPid;

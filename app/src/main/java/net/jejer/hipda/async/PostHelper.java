@@ -68,7 +68,7 @@ public class PostHelper {
         int fid = postBean.getFid();
         int floor = postBean.getFloor();
         String subject = postBean.getSubject();
-        String typeid = postBean.getTypeid();
+        String typeid = postBean.getTypeId();
 
         int count = 0;
         while (mInfo == null && count < 3) {
@@ -119,7 +119,7 @@ public class PostHelper {
     }
 
     private void doPost(String url, String replyText, String subject, String typeid, boolean delete) {
-        String formhash = mInfo != null ? mInfo.getFormhash() : null;
+        String formhash = mInfo != null ? mInfo.getFormHash() : null;
 
         if (TextUtils.isEmpty(formhash)) {
             mResult = "发表失败，无法获取必要信息 ！";

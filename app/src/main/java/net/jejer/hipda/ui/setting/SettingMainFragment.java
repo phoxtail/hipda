@@ -77,7 +77,7 @@ public class SettingMainFragment extends BaseSettingFragment {
             });
         }
 
-        mScreenOrietation = HiSettingsHelper.getInstance().getScreenOrietation();
+        mScreenOrietation = HiSettingsHelper.getInstance().getScreenOrientation();
         mTheme = HiSettingsHelper.getInstance().getActiveTheme();
         mPrimaryColor = HiSettingsHelper.getInstance().getPrimaryColor();
         mForums = HiSettingsHelper.getInstance().getForums();
@@ -119,7 +119,7 @@ public class SettingMainFragment extends BaseSettingFragment {
         if (mCacheCleared
                 || !HiSettingsHelper.getInstance().getFont().equals(mFont)) {
             HiApplication.setSettingStatus(HiApplication.RESTART);
-        } else if (HiSettingsHelper.getInstance().getScreenOrietation() != mScreenOrietation
+        } else if (HiSettingsHelper.getInstance().getScreenOrientation() != mScreenOrietation
                 || !HiSettingsHelper.getInstance().getActiveTheme().equals(mTheme)
                 || (HiSettingsHelper.getInstance().isUsingLightTheme() && HiSettingsHelper.getInstance().getPrimaryColor() != mPrimaryColor)
                 || !HiSettingsHelper.getInstance().getForums().equals(mForums)

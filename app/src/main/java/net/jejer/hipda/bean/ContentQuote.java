@@ -8,15 +8,13 @@ import net.jejer.hipda.utils.Utils;
 public class ContentQuote extends ContentAbs {
     private final String mQuote;
     private final String postId;
-    private final String tid;
     private String author;
     private String to;
     private String time;
     private String text;
 
-    public ContentQuote(String postText, String authorAndTime, String tid, String postId) {
+    public ContentQuote(String postText, String authorAndTime, String postId) {
         this.postId = postId;
-        this.tid = tid;
         mQuote = Utils.nullToText(postText) + Utils.nullToText(authorAndTime);
         //replace chinese space and trim
         text = HtmlCompat.fromHtml(postText).toString().replace("　", " ").replace(String.valueOf((char) 160), " ").trim();
@@ -52,40 +50,20 @@ public class ContentQuote extends ContentAbs {
         return author;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
     public String getTime() {
         return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 
     public String getTo() {
         return to;
     }
 
-    public void setTo(String to) {
-        this.to = to;
-    }
-
     public String getText() {
         return text;
     }
 
-    public void setText(String text) {
-        this.text = text;
-    }
-
     public String getPostId() {
         return postId;
-    }
-
-    public String getTid() {
-        return tid;
     }
 
     public boolean isReplyQuote() {
