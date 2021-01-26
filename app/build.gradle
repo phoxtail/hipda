@@ -74,9 +74,7 @@ dependencies {
     implementation 'com.mikepenz:fontawesome-typeface:5.0.13.0@aar'
 
     implementation 'com.daasuu:BubbleLayout:1.2.0'
-
-    implementation(name: 'matisse-release-0.5.2-beta4', ext: 'aar')
-
-    implementation(name: 'calligraphy-release-2.3.0', ext: 'aar')
-    implementation(name: 'filepicker-release-1.1.1', ext: 'aar')
+    implementation'com.zhihu.android:matisse:0.5.3-beta3'
+    implementation'uk.co.chrisjenx:calligraphy:2.3.0'
+    implementation'com.github.angads25:filepicker:1.1.1'
 }

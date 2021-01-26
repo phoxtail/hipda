@@ -54,7 +54,6 @@ public class FilePickerListener extends OnPreferenceClickListener implements Dia
         if (mType == FONT_FILE) {
             properties.selection_type = DialogConfigs.FILE_SELECT;
             properties.extensions = "ttf:otf".split(":");
-            properties.enable_clear_button = true;
         } else if (mType == SAVE_DIR) {
             properties.selection_type = DialogConfigs.DIR_SELECT;
         }
