@@ -11,7 +11,6 @@ public class UploadImage {
     private String mImgId;
     private Uri mUri;
     private Bitmap mThumb;
-    private String mMessage;
 
     public String getImgId() {
         return mImgId;

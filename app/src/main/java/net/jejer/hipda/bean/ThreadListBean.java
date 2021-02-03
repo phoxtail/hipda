@@ -5,9 +5,9 @@ import java.util.List;
 
 public class ThreadListBean {
 
+    private final List<ThreadBean> mThreads = new ArrayList<>();
     private boolean mParsed = false;
     private String mUid;
-    private final List<ThreadBean> mThreads = new ArrayList<>();
 
     public ThreadListBean() {
     }

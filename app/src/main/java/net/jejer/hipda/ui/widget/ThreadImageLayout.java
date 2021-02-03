@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -92,22 +91,14 @@ public class ThreadImageLayout extends BaseImageLayout {
 
     @Override
     protected OnClickListener getOnClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startImageGallery();
-            }
-        };
+        return view -> startImageGallery();
     }
 
     @Override
     protected OnLongClickListener getOnLongClickListener() {
-        return new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                showImageActionDialog();
-                return true;
-            }
+        return view -> {
+            showImageActionDialog();
+            return true;
         };
     }
 
@@ -161,26 +152,13 @@ public class ThreadImageLayout extends BaseImageLayout {
     private void showImageActionDialog() {
         SimplePopupMenu popupMenu = new SimplePopupMenu(getContext());
         popupMenu.add("save", getResources().getString(R.string.action_save),
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        UIUtils.saveImage(mActivity, UIUtils.getSnackView(mActivity), mContentImg.getContent());
-                    }
-                });
+                (parent, view, position, id) -> UIUtils.saveImage(mActivity, UIUtils.getSnackView(mActivity), mContentImg.getContent()));
         popupMenu.add("share", getResources().getString(R.string.action_share),
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        UIUtils.shareImage(mActivity, UIUtils.getSnackView(mActivity), mUrl);
-                    }
-                });
+                (parent, view, position, id) -> UIUtils.shareImage(mActivity, UIUtils.getSnackView(mActivity), mUrl));
         popupMenu.add("gallery", getResources().getString(R.string.action_image_gallery),
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        stopGif();
-                        startImageGallery();
-                    }
+                (parent, view, position, id) -> {
+                    stopGif();
+                    startImageGallery();
                 });
         popupMenu.show();
     }

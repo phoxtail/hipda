@@ -3,7 +3,6 @@ package net.jejer.hipda.ui;
 
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Editable;
@@ -16,7 +15,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,7 +34,6 @@ import com.mikepenz.iconics.IconicsDrawable;
 
 import net.jejer.hipda.R;
 import net.jejer.hipda.async.LoginHelper;
-import net.jejer.hipda.async.NetworkReadyEvent;
 import net.jejer.hipda.bean.HiSettingsHelper;
 import net.jejer.hipda.bean.NotificationBean;
 import net.jejer.hipda.bean.PostBean;
@@ -72,6 +69,7 @@ import net.jejer.hipda.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +117,7 @@ public class ThreadListFragment extends BaseFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         setHasOptionsMenu(OkHttpHelper.getInstance().isLoggedIn());
 
         View view = inflater.inflate(R.layout.fragment_thread_list, parent, false);
@@ -142,23 +140,15 @@ public class ThreadListFragment extends BaseFragment
         swipeLayout.setProgressBackgroundColorSchemeColor(ColorHelper.getSwipeBackgroundColor(getActivity()));
 
         mLoadingView = view.findViewById(R.id.content_loading);
-        mLoadingView.setErrorStateListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mLoading) {
-                    mLoading = true;
-                    mLoadingView.setState(ContentLoadingView.LOAD_NOW);
-                    refresh();
-                }
+        mLoadingView.setErrorStateListener(view12 -> {
+            if (!mLoading) {
+                mLoading = true;
+                mLoadingView.setState(ContentLoadingView.LOAD_NOW);
+                refresh();
             }
         });
 
-        mLoadingView.setNotLoginStateListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainFrameActivity) getActivity()).showLoginDialog();
-            }
-        });
+        mLoadingView.setNotLoginStateListener(view1 -> ((MainFrameActivity) getActivity()).showLoginDialog());
 
         mRecyclerView.scrollToPosition(mFirstVisibleItem);
 
@@ -218,7 +208,7 @@ public class ThreadListFragment extends BaseFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NotNull Menu menu, @NotNull MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.menu_thread_list, menu);
         if (mForumId == HiUtils.FID_BS) {
@@ -237,50 +227,48 @@ public class ThreadListFragment extends BaseFragment
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(@NotNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.findItem(R.id.action_order_by).setChecked(HiSettingsHelper.getInstance().isSortByPostTime(mForumId));
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Implemented in activity
-                return false;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {// Implemented in activity
+            return false;
 //            case R.id.action_refresh_list:
 //                refresh();
 //                return true;
-            case R.id.action_thread_list_settings:
-                showThreadListSettingsDialog();
-                return true;
-            case R.id.action_new_thread:
-                FragmentUtils.showNewPostActivity(getActivity(), mForumId, mSessionId);
-                return true;
-            case R.id.action_filter_by_type:
-                showForumTypesDialog();
-                return true;
-            case R.id.action_order_by:
-                if (!mLoading) {
-                    item.setChecked(!item.isChecked());
-                    HiSettingsHelper.getInstance().setSortByPostTime(mForumId, item.isChecked());
-                    setActionBarSubtitle();
-                    mLoadingView.setState(ContentLoadingView.LOAD_NOW);
-                    refresh();
-                }
-                return true;
-            case R.id.action_show_stick_threads:
+        } else if (itemId == R.id.action_thread_list_settings) {
+            showThreadListSettingsDialog();
+            return true;
+        } else if (itemId == R.id.action_new_thread) {
+            FragmentUtils.showNewPostActivity(getActivity(), mForumId, mSessionId);
+            return true;
+        } else if (itemId == R.id.action_filter_by_type) {
+            showForumTypesDialog();
+            return true;
+        } else if (itemId == R.id.action_order_by) {
+            if (!mLoading) {
                 item.setChecked(!item.isChecked());
-                HiSettingsHelper.getInstance().setShowStickThreads(item.isChecked());
+                HiSettingsHelper.getInstance().setSortByPostTime(mForumId, item.isChecked());
+                setActionBarSubtitle();
                 mLoadingView.setState(ContentLoadingView.LOAD_NOW);
                 refresh();
-                return true;
-            case R.id.action_open_by_url:
-                showOpenUrlDialog();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+            }
+            return true;
+        } else if (itemId == R.id.action_show_stick_threads) {
+            item.setChecked(!item.isChecked());
+            HiSettingsHelper.getInstance().setShowStickThreads(item.isChecked());
+            mLoadingView.setState(ContentLoadingView.LOAD_NOW);
+            refresh();
+            return true;
+        } else if (itemId == R.id.action_open_by_url) {
+            showOpenUrlDialog();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setActionBarSubtitle() {
@@ -294,41 +282,35 @@ public class ThreadListFragment extends BaseFragment
     @Override
     void setupFab() {
         if (mMainFab != null) {
-            mMainFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mLoadingView.setState(ContentLoadingView.LOAD_NOW);
-                    if (swipeLayout.isShown())
-                        swipeLayout.setRefreshing(false);
-                    refresh();
-                }
+            mMainFab.setOnClickListener(view -> {
+                mLoadingView.setState(ContentLoadingView.LOAD_NOW);
+                if (swipeLayout.isShown())
+                    swipeLayout.setRefreshing(false);
+                refresh();
             });
             if (mThreadBeans.size() > 0)
                 mMainFab.show();
         }
 
         if (mNotificationFab != null) {
-            mNotificationFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    NotificationBean bean = NotiHelper.getCurrentNotification();
-                    if (bean.getSmsCount() == 1
-                            && bean.getThreadCount() == 0
-                            && HiUtils.isValidId(bean.getUid())
-                            && !TextUtils.isEmpty(bean.getUsername())) {
-                        FragmentUtils.showSmsActivity(getActivity(), false, bean.getUid(), bean.getUsername());
-                        NotiHelper.getCurrentNotification().clearSmsCount();
-                        showNotification();
-                    } else if (bean.getSmsCount() > 0) {
-                        FragmentUtils.showSimpleListActivity(getActivity(), false, SimpleListJob.TYPE_SMS);
-                    } else if (bean.getThreadCount() > 0) {
-                        NotiHelper.getCurrentNotification().setThreadCount(0);
-                        FragmentUtils.showSimpleListActivity(getActivity(), false, SimpleListJob.TYPE_THREAD_NOTIFY);
-                        showNotification();
-                    } else {
-                        UIUtils.toast("没有未处理的通知");
-                        mNotificationFab.hide();
-                    }
+            mNotificationFab.setOnClickListener(view -> {
+                NotificationBean bean = NotiHelper.getCurrentNotification();
+                if (bean.getSmsCount() == 1
+                        && bean.getThreadCount() == 0
+                        && HiUtils.isValidId(bean.getUid())
+                        && !TextUtils.isEmpty(bean.getUsername())) {
+                    FragmentUtils.showSmsActivity(getActivity(), false, bean.getUid(), bean.getUsername());
+                    NotiHelper.getCurrentNotification().clearSmsCount();
+                    showNotification();
+                } else if (bean.getSmsCount() > 0) {
+                    FragmentUtils.showSimpleListActivity(getActivity(), false, SimpleListJob.TYPE_SMS);
+                } else if (bean.getThreadCount() > 0) {
+                    NotiHelper.getCurrentNotification().setThreadCount(0);
+                    FragmentUtils.showSimpleListActivity(getActivity(), false, SimpleListJob.TYPE_THREAD_NOTIFY);
+                    showNotification();
+                } else {
+                    UIUtils.toast("没有未处理的通知");
+                    mNotificationFab.hide();
                 }
             });
         }
@@ -372,13 +354,10 @@ public class ThreadListFragment extends BaseFragment
 
         final BottomSheetDialog dialog = new BottomDialog(getActivity());
 
-        valueChangerView.setOnChangeListener(new ValueChangerView.OnChangeListener() {
-            @Override
-            public void onChange(int currentValue) {
-                HiSettingsHelper.getInstance().setTitleTextSizeAdj(currentValue);
-                if (mThreadListAdapter != null)
-                    mThreadListAdapter.notifyDataSetChanged();
-            }
+        valueChangerView.setOnChangeListener(currentValue -> {
+            HiSettingsHelper.getInstance().setTitleTextSizeAdj(currentValue);
+            if (mThreadListAdapter != null)
+                mThreadListAdapter.notifyDataSetChanged();
         });
 
         dialog.setContentView(view);
@@ -403,7 +382,7 @@ public class ThreadListFragment extends BaseFragment
 
         listView.setOnItemClickListener(new OnViewItemSingleClickListener() {
             @Override
-            public void onItemSingleClick(AdapterView<?> adapterView, View view, int position, long row) {
+            public void onItemSingleClick(View view, int position) {
                 dialog.dismiss();
                 if (!HiUtils.BS_TYPE_IDS[position].equals(currentTypeId)) {
                     mLoadingView.setState(ContentLoadingView.LOAD_NOW);
@@ -438,12 +417,7 @@ public class ThreadListFragment extends BaseFragment
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(getActivity());
         popDialog.setTitle(mCtx.getResources().getString(R.string.action_open_by_url));
         popDialog.setView(viewLayout);
-        popDialog.setPositiveButton(getResources().getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                FragmentUtils.show(getActivity(), FragmentUtils.parseUrl(Utils.nullToText(etUrl.getText()).replace("\n", "").trim()));
-            }
-        });
+        popDialog.setPositiveButton(getResources().getString(android.R.string.ok), (dialogInterface, i) -> FragmentUtils.show(getActivity(), FragmentUtils.parseUrl(Utils.nullToText(etUrl.getText()).replace("\n", "").trim())));
 
         final AlertDialog dialog = popDialog.create();
 
@@ -510,7 +484,6 @@ public class ThreadListFragment extends BaseFragment
         mLoadingView.setState(ContentLoadingView.NOT_LOGIN);
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(PostEvent event) {
         PostBean postResult = event.mPostResult;
@@ -554,14 +527,12 @@ public class ThreadListFragment extends BaseFragment
         }
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NetworkReadyEvent event) {
+    public void onEvent() {
         if (!mLoading && mThreadBeans.size() == 0)
             refresh();
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(ThreadListEvent event) {
         if (!mSessionId.equals(event.mSessionId))
@@ -570,7 +541,6 @@ public class ThreadListFragment extends BaseFragment
         mEventCallback.process(event);
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(ThreadUpdatedEvent event) {
         if (event.mFid == mForumId && event.mTid != null) {
@@ -590,7 +560,7 @@ public class ThreadListFragment extends BaseFragment
         int visibleItemCount, totalItemCount;
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
             if (dy > 0) {
                 LinearLayoutManager mLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 visibleItemCount = mLayoutManager.getChildCount();
@@ -613,7 +583,7 @@ public class ThreadListFragment extends BaseFragment
     private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
 
         @Override
-        public void onItemClick(View view, int position) {
+        public void onItemClick(int position) {
             ThreadBean thread = mThreadListAdapter.getItem(position);
             if (thread != null) {
                 String tid = thread.getTid();
@@ -641,7 +611,7 @@ public class ThreadListFragment extends BaseFragment
         }
 
         @Override
-        public void onDoubleTap(View view, int position) {
+        public void onDoubleTap() {
         }
     }
 

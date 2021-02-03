@@ -15,6 +15,8 @@ import net.jejer.hipda.cache.ImageInfo;
 import net.jejer.hipda.glide.GlideHelper;
 import net.jejer.hipda.ui.widget.ImageViewerLayout;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 /**
@@ -39,12 +41,13 @@ public class ImageViewerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(@NotNull View view, @NotNull Object object) {
         return view == object;
     }
 
+    @NotNull
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(@NotNull ViewGroup container, int position) {
 
         final ContentImg contentImg = mImages.get(position);
         final String imageUrl = contentImg.getContent();
@@ -75,7 +78,7 @@ public class ImageViewerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(ViewGroup container, int position, @NotNull Object object) {
         ImageViewerLayout imageLayout = (ImageViewerLayout) object;
         container.removeView(imageLayout);
     }

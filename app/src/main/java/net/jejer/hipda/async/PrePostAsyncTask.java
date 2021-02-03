@@ -232,9 +232,9 @@ public class PrePostAsyncTask extends AsyncTask<PostBean, Void, PrePostInfoBean>
     @Override
     protected void onPostExecute(PrePostInfoBean info) {
         if (info != null && !TextUtils.isEmpty(info.getFormHash()))
-            mListener.PrePostComplete(mMode, true, null, info);
+            mListener.PrePostComplete(true, null, info);
         else
-            mListener.PrePostComplete(mMode, false, mMessage, null);
+            mListener.PrePostComplete(false, mMessage, null);
     }
 
     public String getMessage() {
@@ -242,7 +242,7 @@ public class PrePostAsyncTask extends AsyncTask<PostBean, Void, PrePostInfoBean>
     }
 
     public interface PrePostListener {
-        void PrePostComplete(int mode, boolean result, String message, PrePostInfoBean info);
+        void PrePostComplete(boolean result, String message, PrePostInfoBean info);
     }
 
 }

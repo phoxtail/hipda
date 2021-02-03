@@ -13,6 +13,8 @@ import net.jejer.hipda.utils.HiUtils;
 import net.jejer.hipda.utils.Logger;
 import net.jejer.hipda.utils.Utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
@@ -60,7 +62,7 @@ public class OkHttpHelper {
             .build();
     private final ResultCallback DEFAULT_CALLBACK = new ResultCallback() {
         @Override
-        public void onError(Request request, Exception e) {
+        public void onError(Exception e) {
         }
 
         @Override
@@ -75,7 +77,7 @@ public class OkHttpHelper {
         mCookieStore = new PersistentCookieStore(HiApplication.getAppContext(), HiUtils.CookieDomain);
         CookieJar mCookieJar = new CookieJar() {
             @Override
-            public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+            public void saveFromResponse(@NotNull HttpUrl url, @NotNull List<Cookie> cookies) {
                 if (cookies != null && cookies.size() > 0) {
                     for (Cookie item : cookies) {
                         mCookieStore.add(url, item);
@@ -83,8 +85,9 @@ public class OkHttpHelper {
                 }
             }
 
+            @NotNull
             @Override
-            public List<Cookie> loadForRequest(HttpUrl url) {
+            public List<Cookie> loadForRequest(@NotNull HttpUrl url) {
                 return mCookieStore.get(url);
             }
         };
@@ -255,17 +258,17 @@ public class OkHttpHelper {
         Request request = buildGetRequest(url, tag, getCacheControl(cacheType));
         mClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                handleFailureCallback(call.request(), e, rspCallBack);
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                handleFailureCallback(e, rspCallBack);
             }
 
             @Override
-            public void onResponse(Call call, Response response) {
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
                 try {
                     String body = getResponseBody(response);
                     handleSuccessCallback(body, rspCallBack);
                 } catch (IOException e) {
-                    handleFailureCallback(response.request(), e, rspCallBack);
+                    handleFailureCallback(e, rspCallBack);
                 }
             }
         });
@@ -290,26 +293,26 @@ public class OkHttpHelper {
         Request request = buildPostFormRequest(url, params);
         mClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                handleFailureCallback(call.request(), e, rspCallBack);
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                handleFailureCallback(e, rspCallBack);
             }
 
             @Override
-            public void onResponse(Call call, Response response) {
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
                 try {
                     String body = getResponseBody(response);
                     handleSuccessCallback(body, rspCallBack);
                 } catch (IOException e) {
-                    handleFailureCallback(response.request(), e, rspCallBack);
+                    handleFailureCallback(e, rspCallBack);
                 }
             }
         });
     }
 
-    private void handleFailureCallback(final Request request, final Exception e, final ResultCallback callback) {
+    private void handleFailureCallback(final Exception e, final ResultCallback callback) {
         handler.post(() -> {
             Logger.e(e.getClass().getName() + "\n" + e.getMessage());
-            callback.onError(request, e);
+            callback.onError(e);
         });
     }
 
@@ -355,7 +358,7 @@ public class OkHttpHelper {
 
     public interface ResultCallback {
 
-        void onError(Request request, Exception e);
+        void onError(Exception e);
 
         void onResponse(String response);
     }

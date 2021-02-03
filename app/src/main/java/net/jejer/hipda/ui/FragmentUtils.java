@@ -8,10 +8,8 @@ import android.text.TextUtils;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import net.jejer.hipda.R;
 import net.jejer.hipda.async.PostHelper;
@@ -180,23 +178,6 @@ public class FragmentUtils {
                 .commitAllowingStateLoss();
     }
 
-    public static void showThread(FragmentManager fragmentManager, boolean skipEnterAnim, String tid, String title, int page, int floor, String pid, int maxPage) {
-        Bundle arguments = new Bundle();
-        arguments.putString(ThreadDetailFragment.ARG_TID_KEY, tid);
-        arguments.putString(ThreadDetailFragment.ARG_TITLE_KEY, title);
-        arguments.putInt(ThreadDetailFragment.ARG_MAX_PAGE_KEY, maxPage);
-        if (page != -1)
-            arguments.putInt(ThreadDetailFragment.ARG_PAGE_KEY, page);
-        if (floor != -1)
-            arguments.putInt(ThreadDetailFragment.ARG_FLOOR_KEY, floor);
-        if (HiUtils.isValidId(pid))
-            arguments.putString(ThreadDetailFragment.ARG_PID_KEY, pid);
-        ThreadDetailFragment fragment = new ThreadDetailFragment();
-        fragment.setArguments(arguments);
-
-        showFragment(fragmentManager, fragment, skipEnterAnim);
-    }
-
     public static void showThreadActivity(Activity activity, boolean skipEnterAnim, String tid, String title, int page, int floor, String pid, int maxPage) {
         Intent intent = new Intent(activity, ThreadDetailActivity.class);
         intent.putExtra(ThreadDetailFragment.ARG_TID_KEY, tid);
@@ -222,46 +203,11 @@ public class FragmentUtils {
         return options.toBundle();
     }
 
-    public static void showUserInfo(FragmentManager fragmentManager, boolean skipEnterAnim, String uid, String username) {
-        Bundle arguments = new Bundle();
-        arguments.putString(UserInfoFragment.ARG_UID, uid);
-        arguments.putString(UserInfoFragment.ARG_USERNAME, username);
-        UserInfoFragment fragment = new UserInfoFragment();
-        fragment.setArguments(arguments);
-
-        showFragment(fragmentManager, fragment, skipEnterAnim);
-    }
-
     public static void showUserInfoActivity(Activity activity, boolean skipEnterAnim, String uid, String username) {
         Intent intent = new Intent(activity, UserInfoActivity.class);
         intent.putExtra(UserInfoFragment.ARG_UID, uid);
         intent.putExtra(UserInfoFragment.ARG_USERNAME, username);
         ActivityCompat.startActivity(activity, intent, getAnimBundle(activity, skipEnterAnim));
-    }
-
-    public static void showThreadNotify(FragmentManager fragmentManager, boolean skipEnterAnim) {
-        Bundle notifyBundle = new Bundle();
-        notifyBundle.putInt(SimpleListFragment.ARG_TYPE, SimpleListJob.TYPE_THREAD_NOTIFY);
-        SimpleListFragment fragment = new SimpleListFragment();
-        fragment.setArguments(notifyBundle);
-        showFragment(fragmentManager, fragment, skipEnterAnim);
-    }
-
-    public static void showSmsList(FragmentManager fragmentManager, boolean skipEnterAnim) {
-        Bundle smsBundle = new Bundle();
-        smsBundle.putInt(SimpleListFragment.ARG_TYPE, SimpleListJob.TYPE_SMS);
-        SimpleListFragment fragment = new SimpleListFragment();
-        fragment.setArguments(smsBundle);
-        showFragment(fragmentManager, fragment, skipEnterAnim);
-    }
-
-    public static void showSmsDetail(FragmentManager fragmentManager, boolean skipEnterAnim, String uid, String author) {
-        Bundle smsBundle = new Bundle();
-        smsBundle.putString(SmsFragment.ARG_AUTHOR, author);
-        smsBundle.putString(SmsFragment.ARG_UID, uid);
-        SmsFragment fragment = new SmsFragment();
-        fragment.setArguments(smsBundle);
-        showFragment(fragmentManager, fragment, skipEnterAnim);
     }
 
     public static void showSmsActivity(Activity activity, boolean skipEnterAnim, String uid, String author) {
@@ -302,24 +248,6 @@ public class FragmentUtils {
         if (quoteText != null)
             intent.putExtra(PostFragment.ARG_QUOTE_TEXT_KEY, quoteText);
         ActivityCompat.startActivity(activity, intent, getAnimBundle(activity, true));
-    }
-
-    public static void showFragment(FragmentManager fragmentManager, Fragment fragment, boolean skipEnterAnim) {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-
-        if (skipEnterAnim) {
-            transaction.setCustomAnimations(0, 0, 0, R.anim.slide_out_right);
-        } else {
-            transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_right);
-        }
-
-        transaction.add(R.id.main_frame_container, fragment, fragment.getClass().getName())
-                .addToBackStack(fragment.getClass().getName())
-                .commitAllowingStateLoss();
-    }
-
-    public static void showFragment(FragmentManager fragmentManager, Fragment fragment) {
-        showFragment(fragmentManager, fragment, false);
     }
 
     public static void show(FragmentActivity activity, FragmentArgs args) {

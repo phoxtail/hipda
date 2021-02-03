@@ -43,7 +43,7 @@ public class SmsAdapter extends BaseRvAdapter<SimpleListItemBean> {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup parent) {
         return new ViewHolderImpl(mInflater.inflate(R.layout.item_sms_list, parent, false));
     }
 
@@ -135,14 +135,14 @@ public class SmsAdapter extends BaseRvAdapter<SimpleListItemBean> {
     }
 
     private static class ViewHolderImpl extends RecyclerView.ViewHolder {
-        TextViewWithEmoticon tv_content;
-        TextView tv_time;
-        ImageView iv_isnew;
-        ImageView iv_my_avatar;
-        ImageView iv_friend_avatar;
-        LinearLayout info_layout;
-        BubbleLayout bubble_layout;
-        ProgressBar progressBar;
+        final TextViewWithEmoticon tv_content;
+        final TextView tv_time;
+        final ImageView iv_isnew;
+        final ImageView iv_my_avatar;
+        final ImageView iv_friend_avatar;
+        final LinearLayout info_layout;
+        final BubbleLayout bubble_layout;
+        final ProgressBar progressBar;
 
         ViewHolderImpl(View itemView) {
             super(itemView);

@@ -1,27 +1,19 @@
 package net.jejer.hipda.ui.widget;
 
-import android.content.Context;
 import android.graphics.Rect;
-import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.view.ViewCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * Created by GreenSkinMonster on 2016-11-14.
  */
-@SuppressWarnings("unused")
 public class FABHideOnScrollBehavior extends FloatingActionButton.Behavior {
 
     public FABHideOnScrollBehavior() {
-        super();
-    }
-
-    public FABHideOnScrollBehavior(Context context, AttributeSet attrs) {
         super();
     }
 
@@ -36,9 +28,8 @@ public class FABHideOnScrollBehavior extends FloatingActionButton.Behavior {
     }
 
     @Override
-    public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-
+    public void onNestedScroll(@NonNull CoordinatorLayout coordinatorLayout, @NonNull FloatingActionButton child, @NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type, @NonNull int[] consumed) {
+        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type, consumed);
         boolean isNearBottom = target instanceof XRecyclerView && ((XRecyclerView) target).isNearBottom();
         if (isNearBottom && child.getVisibility() == View.INVISIBLE) {
             child.show();
@@ -49,13 +40,6 @@ public class FABHideOnScrollBehavior extends FloatingActionButton.Behavior {
                 child.show();
             }
         }
-    }
-
-    @Override
-    public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View directTargetChild, View target, int nestedScrollAxes) {
-        return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL
-                || super.onStartNestedScroll(coordinatorLayout,
-                child, directTargetChild, target, nestedScrollAxes);
     }
 
     // http://stackoverflow.com/a/39875070

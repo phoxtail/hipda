@@ -49,11 +49,10 @@ import net.jejer.hipda.utils.UIUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Request;
 
 public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.SmsPostListener {
 
@@ -101,11 +100,11 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_info, container, false);
         view.setClickable(false);
 
-        mAvatarView = (ImageView) view.findViewById(R.id.userinfo_avatar);
+        mAvatarView = view.findViewById(R.id.userinfo_avatar);
         if (HiSettingsHelper.getInstance().isLoadAvatar()) {
             mAvatarView.setVisibility(View.VISIBLE);
             mAvatarView.setOnClickListener(new OnSingleClickListener() {
@@ -124,26 +123,26 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
             mAvatarView.setVisibility(View.GONE);
         }
 
-        mUsernameView = (TextView) view.findViewById(R.id.userinfo_username);
+        mUsernameView = view.findViewById(R.id.userinfo_username);
         mUsernameView.setText(mUsername);
         mUsernameView.setTextSize(HiSettingsHelper.getInstance().getPostTextSize() + 2);
 
-        mOnlineView = (TextView) view.findViewById(R.id.user_online);
+        mOnlineView = view.findViewById(R.id.user_online);
         mOnlineView.setVisibility(View.INVISIBLE);
 
-        mDetailView = (TextView) view.findViewById(R.id.userinfo_detail);
+        mDetailView = view.findViewById(R.id.userinfo_detail);
         mDetailView.setText("正在获取信息...");
         mDetailView.setTextSize(HiSettingsHelper.getInstance().getPostTextSize());
 
         //to avoid click through this view
         view.setOnTouchListener((v, event) -> true);
 
-        mRecyclerView = (XRecyclerView) view.findViewById(R.id.rv_search_threads);
+        mRecyclerView = view.findViewById(R.id.rv_search_threads);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new SimpleDivider(getActivity()));
 
-        mButton = (Button) view.findViewById(R.id.btn_search_threads);
+        mButton = view.findViewById(R.id.btn_search_threads);
         mButton.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View view) {
@@ -202,7 +201,7 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NotNull Menu menu, @NotNull MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.menu_userinfo, menu);
         menu.findItem(R.id.action_send_sms).setIcon(new IconicsDrawable(getActivity(),
@@ -216,19 +215,17 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Implemented in activity
-                return false;
-            case R.id.action_send_sms:
-                showSendSmsDialog(mUid, mUsername, this);
-                return true;
-            case R.id.action_blacklist:
-                BlacklistHelper.addBlacklist(mFormHash, mUsername);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {// Implemented in activity
+            return false;
+        } else if (itemId == R.id.action_send_sms) {
+            showSendSmsDialog(mUid, mUsername, this);
+            return true;
+        } else if (itemId == R.id.action_blacklist) {
+            BlacklistHelper.addBlacklist(mFormHash, mUsername);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
 
     }
 
@@ -248,7 +245,6 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
         }
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(SimpleListEvent event) {
         if (!mSessionId.equals(event.mSessionId))
@@ -280,7 +276,7 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
 
     private class UserInfoCallback implements OkHttpHelper.ResultCallback {
         @Override
-        public void onError(Request request, Exception e) {
+        public void onError(Exception e) {
             Logger.e(e);
             mDetailView.setText("获取信息失败 : " + OkHttpHelper.getErrorMessage(e));
         }
@@ -316,7 +312,7 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
         int visibleItemCount, totalItemCount;
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
             if (dy > 0) {
                 LinearLayoutManager mLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 visibleItemCount = mLayoutManager.getChildCount();
@@ -348,7 +344,7 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
 
     private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
         @Override
-        public void onItemClick(View view, int position) {
+        public void onItemClick(int position) {
             if (position < 0 || position >= mSimpleListAdapter.getItemCount()) {
                 return;
             }
@@ -366,7 +362,7 @@ public class UserInfoFragment extends BaseFragment implements PostSmsAsyncTask.S
         }
 
         @Override
-        public void onDoubleTap(View view, int position) {
+        public void onDoubleTap() {
         }
     }
 

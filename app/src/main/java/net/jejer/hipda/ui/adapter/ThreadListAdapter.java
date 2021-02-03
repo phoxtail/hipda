@@ -20,7 +20,7 @@ public class ThreadListAdapter extends BaseRvAdapter<ThreadBean> {
     }
 
     @Override
-    public ViewHolderImpl onCreateViewHolderImpl(ViewGroup parent, int viewType) {
+    public ViewHolderImpl onCreateViewHolderImpl(ViewGroup parent) {
         return new ViewHolderImpl(new ThreadItemLayout(parent.getContext(), mGlide));
     }
 
@@ -32,7 +32,7 @@ public class ThreadListAdapter extends BaseRvAdapter<ThreadBean> {
     }
 
     private static class ViewHolderImpl extends RecyclerView.ViewHolder {
-        ThreadItemLayout mItemLayout;
+        final ThreadItemLayout mItemLayout;
 
         ViewHolderImpl(View itemView) {
             super(itemView);

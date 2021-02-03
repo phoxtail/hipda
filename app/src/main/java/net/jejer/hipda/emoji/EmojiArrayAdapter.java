@@ -44,7 +44,7 @@ final class EmojiArrayAdapter extends ArrayAdapter<Emoji> {
             view = LayoutInflater.from(getContext()).inflate(R.layout.emoji_text_view, parent, false);
 
             final ViewHolder holder = new ViewHolder();
-            holder.icon = (TextView) view.findViewById(R.id.emoji_icon);
+            holder.icon = view.findViewById(R.id.emoji_icon);
             view.setTag(holder);
         }
 

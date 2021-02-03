@@ -52,7 +52,7 @@ public class ThreadTypeAdapter extends BaseAdapter {
         } else {
             row = convertView;
         }
-        TextView textView = (TextView) row.findViewById(R.id.thread_type_text);
+        TextView textView = row.findViewById(R.id.thread_type_text);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
         textView.setText(mTypes.get(key));
         return row;

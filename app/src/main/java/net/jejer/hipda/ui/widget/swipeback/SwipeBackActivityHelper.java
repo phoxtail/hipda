@@ -28,11 +28,11 @@ public class SwipeBackActivityHelper {
                 R.layout.swipeback_layout, null);
         mSwipeBackLayout.addSwipeListener(new SwipeBackLayout.SwipeListener() {
             @Override
-            public void onScrollStateChange(int state, float scrollPercent) {
+            public void onScrollStateChange() {
             }
 
             @Override
-            public void onEdgeTouch(int edgeFlag) {
+            public void onEdgeTouch() {
                 SwipeUtils.convertActivityToTranslucent(mActivity);
             }
 

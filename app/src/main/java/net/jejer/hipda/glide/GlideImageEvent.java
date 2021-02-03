@@ -16,12 +16,6 @@ public class GlideImageEvent {
         mProgress = progress;
     }
 
-    public GlideImageEvent(String url, int progress, int status, String message) {
-        mUrl = url;
-        mStatus = status;
-        mProgress = progress;
-    }
-
     public String getImageUrl() {
         return mUrl;
     }

@@ -37,7 +37,7 @@ public class RecyclerItemClickListener implements View.OnTouchListener {
                     if (elapsedTime <= MIN_CLICK_INTERVAL)
                         return true;
 
-                    mListener.onItemClick(mChildView, (int) mChildView.getTag());
+                    mListener.onItemClick((int) mChildView.getTag());
                 }
                 return true;
             }
@@ -53,7 +53,7 @@ public class RecyclerItemClickListener implements View.OnTouchListener {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
                 if (mChildView != null && mListener != null) {
-                    mListener.onDoubleTap(mChildView, (int) mChildView.getTag());
+                    mListener.onDoubleTap();
                 }
                 return super.onDoubleTap(e);
             }
@@ -94,10 +94,10 @@ public class RecyclerItemClickListener implements View.OnTouchListener {
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View view, int position);
+        void onItemClick(int position);
 
         void onLongItemClick(View view, int position);
 
-        void onDoubleTap(View view, int position);
+        void onDoubleTap();
     }
 }

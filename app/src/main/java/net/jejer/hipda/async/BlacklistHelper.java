@@ -18,8 +18,6 @@ import org.jsoup.select.Elements;
 import java.util.Collections;
 import java.util.List;
 
-import okhttp3.Request;
-
 /**
  * Created by GreenSkinMonster on 2017-07-14.
  */
@@ -33,7 +31,7 @@ public class BlacklistHelper {
         try {
             OkHttpHelper.getInstance().asyncPost(HiUtils.AddBlackUrl, params, new OkHttpHelper.ResultCallback() {
                 @Override
-                public void onError(Request request, Exception e) {
+                public void onError(Exception e) {
                     UIUtils.toast(OkHttpHelper.getErrorMessage(e).getMessage());
                 }
 
@@ -67,7 +65,7 @@ public class BlacklistHelper {
         try {
             OkHttpHelper.getInstance().asyncPost(HiUtils.DelBlackUrl, params, callback);
         } catch (Exception e) {
-            callback.onError(null, e);
+            callback.onError(e);
         }
     }
 
@@ -78,7 +76,7 @@ public class BlacklistHelper {
     public static void syncBlacklists() {
         BlacklistHelper.getBlacklists(new OkHttpHelper.ResultCallback() {
             @Override
-            public void onError(Request request, Exception e) {
+            public void onError(Exception e) {
             }
 
             @Override

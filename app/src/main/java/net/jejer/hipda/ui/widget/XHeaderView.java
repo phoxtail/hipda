@@ -39,10 +39,10 @@ public class XHeaderView extends RelativeLayout {
                 Utils.dpToPx(XRecyclerView.HEIGHT_IN_DP)));
         addView(mLayout);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.header_progressbar);
+        mProgressBar = findViewById(R.id.header_progressbar);
         mProgressBar.getIndeterminateDrawable()
                 .setColorFilter(Color.LTGRAY, android.graphics.PorterDuff.Mode.SRC_IN);
-        mTitle = (TextView) findViewById(R.id.header_text);
+        mTitle = findViewById(R.id.header_text);
     }
 
     protected int getState() {

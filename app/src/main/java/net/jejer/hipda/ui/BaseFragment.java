@@ -29,16 +29,13 @@ import com.mikepenz.iconics.IconicsDrawable;
 
 import net.jejer.hipda.R;
 import net.jejer.hipda.async.PostSmsAsyncTask;
-import net.jejer.hipda.emoji.Emoji;
 import net.jejer.hipda.emoji.EmojiEditText;
 import net.jejer.hipda.emoji.EmojiPopup;
-import net.jejer.hipda.emoji.OnEmojiClickedListener;
-import net.jejer.hipda.emoji.OnEmojiPopupDismissListener;
-import net.jejer.hipda.emoji.OnEmojiPopupShownListener;
-import net.jejer.hipda.emoji.OnSoftKeyboardCloseListener;
 import net.jejer.hipda.ui.widget.OnSingleClickListener;
 import net.jejer.hipda.utils.UIUtils;
 import net.jejer.hipda.utils.Utils;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -59,7 +56,7 @@ public abstract class BaseFragment extends Fragment {
         if (getActivity() != null) {
             ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
             String t = Utils.nullToText(title);
-            if (actionBar != null && !t.equals(actionBar.getTitle())) {
+            if (actionBar != null && !t.contentEquals(actionBar.getTitle())) {
                 actionBar.setTitle(t);
             }
         }
@@ -77,7 +74,7 @@ public abstract class BaseFragment extends Fragment {
         if (getActivity() != null) {
             ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
             String t = Utils.nullToText(title);
-            if (actionBar != null && !t.equals(actionBar.getTitle())) {
+            if (actionBar != null && !t.contentEquals(actionBar.getTitle())) {
                 actionBar.setSubtitle(t);
             }
         }
@@ -128,7 +125,7 @@ public abstract class BaseFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NotNull Menu menu, @NotNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         setupFab();
     }
@@ -141,7 +138,7 @@ public abstract class BaseFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -247,43 +244,15 @@ public abstract class BaseFragment extends Fragment {
             mFaceDrawable = new IconicsDrawable(getActivity(), GoogleMaterial.Icon.gmd_tag_faces).sizeDp(28).color(Color.GRAY);
 
         mIbEmojiSwitch.setImageDrawable(mFaceDrawable);
-        mIbEmojiSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEmojiPopup.toggle();
-            }
-        });
+        mIbEmojiSwitch.setOnClickListener(v -> mEmojiPopup.toggle());
 
-        mEtContent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mEmojiPopup.isShowing())
-                    mEmojiPopup.dismiss();
-            }
+        mEtContent.setOnClickListener(v -> {
+            if (mEmojiPopup.isShowing())
+                mEmojiPopup.dismiss();
         });
 
         mEmojiPopup = ((BaseActivity) getActivity()).getEmojiBuilder()
-                .setOnEmojiClickedListener(new OnEmojiClickedListener() {
-                    @Override
-                    public void onEmojiClicked(final Emoji emoji) {
-                        mEtContent.requestFocus();
-                    }
-                }).setOnEmojiPopupShownListener(new OnEmojiPopupShownListener() {
-                    @Override
-                    public void onEmojiPopupShown() {
-                        mIbEmojiSwitch.setImageDrawable(mKeyboardDrawable);
-                    }
-                }).setOnEmojiPopupDismissListener(new OnEmojiPopupDismissListener() {
-                    @Override
-                    public void onEmojiPopupDismiss() {
-                        mIbEmojiSwitch.setImageDrawable(mFaceDrawable);
-                    }
-                }).setOnSoftKeyboardCloseListener(new OnSoftKeyboardCloseListener() {
-                    @Override
-                    public void onKeyboardClose() {
-                        mEmojiPopup.dismiss();
-                    }
-                }).build(mEtContent);
+                .setOnEmojiClickedListener(emoji -> mEtContent.requestFocus()).setOnEmojiPopupShownListener(() -> mIbEmojiSwitch.setImageDrawable(mKeyboardDrawable)).setOnEmojiPopupDismissListener(() -> mIbEmojiSwitch.setImageDrawable(mFaceDrawable)).setOnSoftKeyboardCloseListener(() -> mEmojiPopup.dismiss()).build(mEtContent);
     }
 
 }

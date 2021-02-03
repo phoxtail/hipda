@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -23,7 +22,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -74,6 +72,7 @@ import net.jejer.hipda.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -109,7 +108,6 @@ public class PostFragment extends BaseFragment {
     private TextView mTvImagesInfo;
     private EditText mEtSubject;
     private EmojiEditText mEtContent;
-    private ImageButton mIbEmojiSwitch;
     private int mContentPosition = -1;
     private PrePostInfoBean mPrePostInfo;
     private PrePostAsyncTask mPrePostAsyncTask;
@@ -162,7 +160,7 @@ public class PostFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post, container, false);
 
         mEtContent = view.findViewById(R.id.et_reply);
@@ -174,12 +172,9 @@ public class PostFragment extends BaseFragment {
         mImageAdapter = new GridImageAdapter(getActivity());
 
         mTvImagesInfo.setText("图片信息");
-        mTvImagesInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mContentPosition = mEtContent.getSelectionStart();
-                showImagesDialog();
-            }
+        mTvImagesInfo.setOnClickListener(v -> {
+            mContentPosition = mEtContent.getSelectionStart();
+            showImagesDialog();
         });
         updateImageInfo();
 
@@ -208,20 +203,14 @@ public class PostFragment extends BaseFragment {
             }
         });
 
-        mEtContent.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus)
-                    savePostConent(true);
-            }
+        mEtContent.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                savePostConent(true);
         });
 
-        mEtSubject.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus && mEmojiPopup != null && mEmojiPopup.isShowing())
-                    mEmojiPopup.dismiss();
-            }
+        mEtSubject.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && mEmojiPopup != null && mEmojiPopup.isShowing())
+                mEmojiPopup.dismiss();
         });
 
         if (!TextUtils.isEmpty(mText)) {
@@ -240,7 +229,7 @@ public class PostFragment extends BaseFragment {
         if (mMode != PostHelper.MODE_EDIT_POST)
             countdownButton.setCountdown(PostHelper.getWaitTimeToPost());
 
-        mIbEmojiSwitch = view.findViewById(R.id.ib_emoji_switch);
+        ImageButton mIbEmojiSwitch = view.findViewById(R.id.ib_emoji_switch);
         setUpEmojiPopup(mEtContent, mIbEmojiSwitch);
 
         setActionBarTitle(R.string.action_reply);
@@ -269,12 +258,7 @@ public class PostFragment extends BaseFragment {
     private void savePostConent(boolean force) {
         if (force || SystemClock.uptimeMillis() - mLastSavedTime > 3000) {
             mLastSavedTime = SystemClock.uptimeMillis();
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    ContentDao.saveContent(mSessionId, mEtContent.getText().toString());
-                }
-            });
+            new Handler().post(() -> ContentDao.saveContent(mSessionId, mEtContent.getText().toString()));
         }
     }
 
@@ -290,25 +274,21 @@ public class PostFragment extends BaseFragment {
         }
 
         if (mMode == PostHelper.MODE_NEW_THREAD && TextUtils.isEmpty(mEtSubject.getText().toString())) {
-            (new Handler()).postDelayed(new Runnable() {
-                public void run() {
-                    mEtSubject.requestFocus();
-                    long t = SystemClock.uptimeMillis();
-                    mEtSubject.dispatchTouchEvent(MotionEvent.obtain(t, t, MotionEvent.ACTION_DOWN, 0, 0, 0));
-                    mEtSubject.dispatchTouchEvent(MotionEvent.obtain(t, t, MotionEvent.ACTION_UP, 0, 0, 0));
-                }
+            (new Handler()).postDelayed(() -> {
+                mEtSubject.requestFocus();
+                long t = SystemClock.uptimeMillis();
+                mEtSubject.dispatchTouchEvent(MotionEvent.obtain(t, t, MotionEvent.ACTION_DOWN, 0, 0, 0));
+                mEtSubject.dispatchTouchEvent(MotionEvent.obtain(t, t, MotionEvent.ACTION_UP, 0, 0, 0));
             }, 100);
         } else {
-            (new Handler()).postDelayed(new Runnable() {
-                public void run() {
-                    mEtContent.requestFocus();
-                    long t = SystemClock.uptimeMillis();
-                    mEtContent.dispatchTouchEvent(MotionEvent.obtain(t, t, MotionEvent.ACTION_DOWN, 0, 0, 0));
-                    mEtContent.dispatchTouchEvent(MotionEvent.obtain(t, t, MotionEvent.ACTION_UP, 0, 0, 0));
-                    mEtContent.setSelection(
-                            (mContentPosition <= 0 || mContentPosition > mEtContent.getText().length())
-                                    ? mEtContent.getText().length() : mContentPosition);
-                }
+            (new Handler()).postDelayed(() -> {
+                mEtContent.requestFocus();
+                long t = SystemClock.uptimeMillis();
+                mEtContent.dispatchTouchEvent(MotionEvent.obtain(t, t, MotionEvent.ACTION_DOWN, 0, 0, 0));
+                mEtContent.dispatchTouchEvent(MotionEvent.obtain(t, t, MotionEvent.ACTION_UP, 0, 0, 0));
+                mEtContent.setSelection(
+                        (mContentPosition <= 0 || mContentPosition > mEtContent.getText().length())
+                                ? mEtContent.getText().length() : mContentPosition);
             }, 100);
         }
     }
@@ -337,7 +317,7 @@ public class PostFragment extends BaseFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(BUNDLE_POSITION_KEY, mContentPosition);
     }
@@ -351,7 +331,7 @@ public class PostFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NotNull Menu menu, @NotNull MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.menu_reply, menu);
 
@@ -371,7 +351,7 @@ public class PostFragment extends BaseFragment {
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(@NotNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
         if (mMode != PostHelper.MODE_EDIT_POST)
             return;
@@ -384,34 +364,32 @@ public class PostFragment extends BaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Implemented in activity
-                return false;
-            case R.id.action_upload_img:
-                if (mPrePostInfo == null) {
-                    fetchPrePostInfo(false);
-                    UIUtils.toast("请等待信息收集结束再选择图片");
-                } else {
-                    if (UIUtils.askForBothPermissions(getActivity()))
-                        return true;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {// Implemented in activity
+            return false;
+        } else if (itemId == R.id.action_upload_img) {
+            if (mPrePostInfo == null) {
+                fetchPrePostInfo(false);
+                UIUtils.toast("请等待信息收集结束再选择图片");
+            } else {
+                if (UIUtils.askForBothPermissions(getActivity()))
+                    return true;
 
-                    showImageSelector();
-                }
-                return true;
-            case R.id.action_device_info:
-                showAppendDeviceInfoDialog();
-                return true;
-            case R.id.action_restore_content:
-                mEtContent.requestFocus();
-                showRestoreContentDialog();
-                return true;
-            case R.id.action_delete_post:
-                showDeletePostDialog();
-                return true;
-            default:
-                return false;
+                showImageSelector();
+            }
+            return true;
+        } else if (itemId == R.id.action_device_info) {
+            showAppendDeviceInfoDialog();
+            return true;
+        } else if (itemId == R.id.action_restore_content) {
+            mEtContent.requestFocus();
+            showRestoreContentDialog();
+            return true;
+        } else if (itemId == R.id.action_delete_post) {
+            showDeletePostDialog();
+            return true;
         }
+        return false;
     }
 
     protected void showImageSelector() {
@@ -480,38 +458,32 @@ public class PostFragment extends BaseFragment {
                                 + "<br>如果您希望显示这些图片，请选择 <b>保留图片</b>"
                                 + "<br>否则请选择 <b>丢弃图片</b>"))
                         .setPositiveButton("保留图片",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        StringBuilder sb = new StringBuilder();
-                                        String tail = HiSettingsHelper.getInstance().getTailStr();
-                                        String content;
-                                        boolean appendTail = false;
-                                        if (replyText.trim().endsWith(tail)) {
-                                            content = replyText.substring(0, replyText.lastIndexOf(tail));
-                                            appendTail = true;
-                                        } else {
-                                            content = replyText;
-                                        }
-                                        sb.append(content).append("\n");
-                                        for (String imgId : extraImgs) {
-                                            sb.append("[attachimg]").append(imgId).append("[/attachimg]").append("\n");
-                                            mPrePostInfo.addNewAttach(imgId);
-                                        }
-                                        if (appendTail)
-                                            sb.append(tail);
-                                        startPostJob(subjectText, sb.toString());
+                                (dialog12, which) -> {
+                                    StringBuilder sb = new StringBuilder();
+                                    String tail = HiSettingsHelper.getInstance().getTailStr();
+                                    String content;
+                                    boolean appendTail = false;
+                                    if (replyText.trim().endsWith(tail)) {
+                                        content = replyText.substring(0, replyText.lastIndexOf(tail));
+                                        appendTail = true;
+                                    } else {
+                                        content = replyText;
                                     }
+                                    sb.append(content).append("\n");
+                                    for (String imgId : extraImgs) {
+                                        sb.append("[attachimg]").append(imgId).append("[/attachimg]").append("\n");
+                                        mPrePostInfo.addNewAttach(imgId);
+                                    }
+                                    if (appendTail)
+                                        sb.append(tail);
+                                    startPostJob(subjectText, sb.toString());
                                 })
                         .setNeutralButton("丢弃图片",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        for (String imgId : extraImgs) {
-                                            mPrePostInfo.addDeleteAttach(imgId);
-                                        }
-                                        startPostJob(subjectText, replyText);
+                                (dialog1, which) -> {
+                                    for (String imgId : extraImgs) {
+                                        mPrePostInfo.addDeleteAttach(imgId);
                                     }
+                                    startPostJob(subjectText, replyText);
                                 }).create();
                 dialog.show();
                 return;
@@ -542,11 +514,7 @@ public class PostFragment extends BaseFragment {
             return;
         }
         mImageUploading = true;
-        (new Handler()).postDelayed(new Runnable() {
-            public void run() {
-                mImageUploading = false;
-            }
-        }, 2000);
+        (new Handler()).postDelayed(() -> mImageUploading = false, 2000);
 
         if (resultCode == Activity.RESULT_OK && requestCode == SELECT_PICTURE) {
             boolean duplicate = false;
@@ -590,7 +558,7 @@ public class PostFragment extends BaseFragment {
 
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View viewlayout = inflater.inflate(R.layout.dialog_restore_content, null);
-        final ListView listView = (ListView) viewlayout.findViewById(R.id.lv_contents);
+        final ListView listView = viewlayout.findViewById(R.id.lv_contents);
 
         listView.setAdapter(new SavedContentsAdapter(getActivity(), 0, contents));
 
@@ -601,7 +569,7 @@ public class PostFragment extends BaseFragment {
 
         listView.setOnItemClickListener(new OnViewItemSingleClickListener() {
             @Override
-            public void onItemSingleClick(AdapterView<?> adapterView, View view, int position, long row) {
+            public void onItemSingleClick(View view, int position) {
                 if (!TextUtils.isEmpty(mEtContent.getText()) && !mEtContent.getText().toString().endsWith("\n"))
                     mEtContent.append("\n");
                 mEtContent.append(contents[position].getContent());
@@ -618,12 +586,9 @@ public class PostFragment extends BaseFragment {
         popDialog.setTitle("删除本帖？");
         popDialog.setMessage(HtmlCompat.fromHtml("确认删除发表的内容吗？<br><br><font color=red>注意：此操作不可恢复。</font>"));
         popDialog.setPositiveButton("删除",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mDeleteMode = true;
-                        postReply();
-                    }
+                (dialog, which) -> {
+                    mDeleteMode = true;
+                    postReply();
                 });
         popDialog.setIcon(new IconicsDrawable(getActivity(), FontAwesome.Icon.faw_exclamation_circle).sizeDp(24).color(Color.RED));
         popDialog.setNegativeButton("取消", null);
@@ -690,12 +655,7 @@ public class PostFragment extends BaseFragment {
             mTvType.setText(mTypeValues.get(mTypeId));
             mTvType.setTag(mTypeId);
             mTvType.setVisibility(View.VISIBLE);
-            mTvType.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showThreadTypesDialog();
-                }
-            });
+            mTvType.setOnClickListener(v -> showThreadTypesDialog());
         }
 
         if (TextUtils.isEmpty(mEtContent.getText())) {
@@ -712,12 +672,7 @@ public class PostFragment extends BaseFragment {
             UIUtils.setLineSpacing(mTvQuoteText);
             mTvQuoteText.setText(mQuoteText);
             mTvQuoteText.setVisibility(View.VISIBLE);
-            mTvQuoteText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    UIUtils.showMessageDialog(getActivity(), mFloor + "# " + mFloorAuthor, mQuoteText, true);
-                }
-            });
+            mTvQuoteText.setOnClickListener(v -> UIUtils.showMessageDialog(getActivity(), mFloor + "# " + mFloorAuthor, mQuoteText, true));
         }
     }
 
@@ -740,17 +695,9 @@ public class PostFragment extends BaseFragment {
                     .setTitle("放弃发表？")
                     .setMessage("\n确认放弃已输入的内容吗？\n")
                     .setPositiveButton(getResources().getString(android.R.string.ok),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    PostFragment.this.getActivity().finish();
-                                }
-                            })
+                            (dialog12, which) -> PostFragment.this.getActivity().finish())
                     .setNegativeButton(getResources().getString(android.R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
+                            (dialog1, which) -> {
                             }).create();
             dialog.show();
             return true;
@@ -762,17 +709,14 @@ public class PostFragment extends BaseFragment {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("追加系统信息？");
         builder.setMessage("反馈问题时，提供系统信息可以帮助开发者更好的定位问题。\n\n" + Utils.getDeviceInfo());
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                int selectionStart = 0;
-                String deviceInfo = Utils.getDeviceInfo();
-                if (mContentPosition < 0 || mContentPosition > mEtContent.length())
-                    selectionStart = mEtContent.getSelectionStart();
-                if (selectionStart > 0 && mEtContent.getText().charAt(selectionStart - 1) != '\n')
-                    deviceInfo = "\n" + deviceInfo;
-                mEtContent.getText().insert(selectionStart, deviceInfo);
-            }
+        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+            int selectionStart = 0;
+            String deviceInfo = Utils.getDeviceInfo();
+            if (mContentPosition < 0 || mContentPosition > mEtContent.length())
+                selectionStart = mEtContent.getSelectionStart();
+            if (selectionStart > 0 && mEtContent.getText().charAt(selectionStart - 1) != '\n')
+                deviceInfo = "\n" + deviceInfo;
+            mEtContent.getText().insert(selectionStart, deviceInfo);
         });
         builder.setNegativeButton(android.R.string.cancel, null);
         final AlertDialog dialog = builder.create();
@@ -783,7 +727,7 @@ public class PostFragment extends BaseFragment {
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View viewlayout = inflater.inflate(R.layout.dialog_forum_types, null);
 
-        final ListView listView = (ListView) viewlayout.findViewById(R.id.lv_forum_types);
+        final ListView listView = viewlayout.findViewById(R.id.lv_forum_types);
 
         listView.setAdapter(new ThreadTypeAdapter(getActivity(), mTypeValues));
 
@@ -794,7 +738,7 @@ public class PostFragment extends BaseFragment {
 
         listView.setOnItemClickListener(new OnViewItemSingleClickListener() {
             @Override
-            public void onItemSingleClick(AdapterView<?> adapterView, View view, int position, long row) {
+            public void onItemSingleClick(View view, int position) {
                 mTypeId = mTypeValues.keySet().toArray()[position].toString();
                 mTvType.setText(mTypeValues.get(mTypeId));
                 dialog.dismiss();
@@ -807,7 +751,7 @@ public class PostFragment extends BaseFragment {
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View viewlayout = inflater.inflate(R.layout.dialog_images, null);
 
-        final GridView gridView = (GridView) viewlayout.findViewById(R.id.gv_images);
+        final GridView gridView = viewlayout.findViewById(R.id.gv_images);
 
         gridView.setAdapter(mImageAdapter);
 
@@ -818,7 +762,7 @@ public class PostFragment extends BaseFragment {
 
         gridView.setOnItemClickListener(new OnViewItemSingleClickListener() {
             @Override
-            public void onItemSingleClick(AdapterView<?> adapterView, View view, int position, long row) {
+            public void onItemSingleClick(View view, int position) {
                 if (view.getTag() != null)
                     appendImage(view.getTag().toString());
                 dialog.dismiss();
@@ -827,7 +771,7 @@ public class PostFragment extends BaseFragment {
 
     }
 
-    private void imageProcess(int total, int current, int percentage) {
+    private void imageProcess(int total, int current) {
         mProgressDialog.setMessage("正在上传... (" + (current + 1) + "/" + total + ")");
     }
 
@@ -849,7 +793,6 @@ public class PostFragment extends BaseFragment {
         updateImageInfo();
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(ImageUploadEvent event) {
         if (!mSessionId.equals(event.mSessionId))
@@ -863,7 +806,7 @@ public class PostFragment extends BaseFragment {
 
         for (ImageUploadEvent evt : events) {
             if (evt.mType == ImageUploadEvent.UPLOADING) {
-                imageProcess(evt.mTotal, evt.mCurrent, evt.mPercentage);
+                imageProcess(evt.mTotal, evt.mCurrent);
             } else if (evt.mType == ImageUploadEvent.ITEM_DONE) {
                 imageDone(evt);
             } else if (evt.mType == ImageUploadEvent.ALL_DONE) {
@@ -875,7 +818,7 @@ public class PostFragment extends BaseFragment {
 
     private class PrePostListener implements PrePostAsyncTask.PrePostListener {
         @Override
-        public void PrePostComplete(int mode, boolean result, String message, PrePostInfoBean info) {
+        public void PrePostComplete(boolean result, String message, PrePostInfoBean info) {
             mFetchingInfo = false;
             mProgressBar.hide();
             if (result) {
@@ -887,12 +830,9 @@ public class PostFragment extends BaseFragment {
                 if (getView() != null) {
                     mSnackbar = Snackbar.make(getView(), "收集信息失败 : " + message, Snackbar.LENGTH_LONG);
                     UIUtils.setSnackbarMessageTextColor(mSnackbar, ContextCompat.getColor(getActivity(), R.color.md_yellow_500));
-                    mSnackbar.setAction("重试", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            fetchPrePostInfo(true);
-                            mSnackbar.dismiss();
-                        }
+                    mSnackbar.setAction("重试", v -> {
+                        fetchPrePostInfo(true);
+                        mSnackbar.dismiss();
                     });
                     mSnackbar.show();
                 }
@@ -900,8 +840,8 @@ public class PostFragment extends BaseFragment {
         }
     }
 
-    private class SavedContentsAdapter extends ArrayAdapter {
-        Content[] contents;
+    private class SavedContentsAdapter extends ArrayAdapter<Content> {
+        final Content[] contents;
 
         public SavedContentsAdapter(Context context, int resource, Content[] objects) {
             super(context, resource, objects);

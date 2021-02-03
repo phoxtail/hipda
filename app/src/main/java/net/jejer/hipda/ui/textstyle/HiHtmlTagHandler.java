@@ -65,16 +65,14 @@ public class HiHtmlTagHandler implements Html.TagHandler {
     private Object getLast(Editable text, Class kind) {
         Object[] objs = text.getSpans(0, text.length(), kind);
 
-        if (objs.length == 0) {
-            return null;
-        } else {
+        if (objs.length != 0) {
             for (int i = objs.length; i > 0; i--) {
                 if (text.getSpanFlags(objs[i - 1]) == Spannable.SPAN_MARK_MARK) {
                     return objs[i - 1];
                 }
             }
-            return null;
         }
+        return null;
     }
 
     private void processAttributes(final XMLReader xmlReader) {

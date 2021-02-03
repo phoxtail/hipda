@@ -1,6 +1,5 @@
 package net.jejer.hipda.ui.setting;
 
-import android.content.DialogInterface;
 import android.widget.TimePicker;
 
 import androidx.appcompat.app.AlertDialog;
@@ -35,22 +34,19 @@ public class TimePickerListener extends OnPreferenceClickListener {
         }
         timePicker.setIs24HourView(true);
         if (hour >= 0 && hour < 24 && minute >= 0 && minute < 60) {
-            timePicker.setCurrentHour(hour);
-            timePicker.setCurrentMinute(minute);
+            timePicker.setHour(hour);
+            timePicker.setMinute(minute);
         }
 
         builder.setView(timePicker);
         builder.setMessage(preference.getTitle());
 
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                int hour = timePicker.getCurrentHour();
-                int minute = timePicker.getCurrentMinute();
-                String hourMinute = (hour < 10 ? "0" : "") + hour + ":" + (minute < 10 ? "0" : "") + minute;
-                HiSettingsHelper.getInstance().setStringValue(preference.getKey(), hourMinute);
-                preference.setSummary(hourMinute);
-            }
+        builder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+            int hour1 = timePicker.getHour();
+            int minute1 = timePicker.getMinute();
+            String hourMinute1 = (hour1 < 10 ? "0" : "") + hour1 + ":" + (minute1 < 10 ? "0" : "") + minute1;
+            HiSettingsHelper.getInstance().setStringValue(preference.getKey(), hourMinute1);
+            preference.setSummary(hourMinute1);
         });
         builder.setNegativeButton(android.R.string.cancel, null);
 

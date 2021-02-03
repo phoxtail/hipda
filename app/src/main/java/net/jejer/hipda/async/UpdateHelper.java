@@ -21,8 +21,6 @@ import net.jejer.hipda.utils.Utils;
 
 import java.util.Date;
 
-import okhttp3.Request;
-
 /**
  * check and download update file
  * Created by GreenSkinMonster on 2015-03-09.
@@ -31,11 +29,9 @@ public class UpdateHelper {
 
     private final Activity mCtx;
     private final boolean mSilent;
-
-    private HiProgressDialog pd;
-
     private final String checkUrl;
     private final String downloadUrl;
+    private HiProgressDialog pd;
 
     public UpdateHelper(Activity ctx, boolean isSilent) {
         mCtx = ctx;
@@ -185,7 +181,7 @@ public class UpdateHelper {
     private class UpdateCheckCallback implements OkHttpHelper.ResultCallback {
 
         @Override
-        public void onError(Request request, Exception e) {
+        public void onError(Exception e) {
             Logger.e(e);
             if (!HiApplication.isAppVisible())
                 return;

@@ -44,10 +44,6 @@ public class SimpleGridMenu {
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public String getTitle() {
-        return mTitle;
-    }
-
     public void setTitle(String title) {
         mTitle = title;
     }
@@ -58,8 +54,8 @@ public class SimpleGridMenu {
 
     public void show() {
         View view = mInflater.inflate(R.layout.dialog_grid_menu, null);
-        GridView gridView = (GridView) view.findViewById(R.id.grid_view);
-        TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
+        GridView gridView = view.findViewById(R.id.grid_view);
+        TextView tvTitle = view.findViewById(R.id.tv_title);
 
         gridView.setAdapter(new MenuActionAdapter(mContext));
         tvTitle.setText(mTitle);
@@ -70,16 +66,13 @@ public class SimpleGridMenu {
         mDialog.setOnDismissListener(mOnDismissListener);
         mDialog.show();
 
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long row) {
-                String actionKey = (String) view.getTag();
-                MenuItem menuItem = mMenuItems.get(actionKey);
-                if (menuItem != null) {
-                    menuItem.listener.onItemClick(adapterView, view, position, row);
-                }
-                dismiss();
+        gridView.setOnItemClickListener((adapterView, view1, position, row) -> {
+            String actionKey = (String) view1.getTag();
+            MenuItem menuItem = mMenuItems.get(actionKey);
+            if (menuItem != null) {
+                menuItem.listener.onItemClick(adapterView, view1, position, row);
             }
+            dismiss();
         });
     }
 
@@ -95,7 +88,6 @@ public class SimpleGridMenu {
     public void add(String actionKey, String actionName, AdapterView.OnItemClickListener listener,
                     IIcon icon, View.OnClickListener iconListener) {
         MenuItem menuItem = new MenuItem();
-        menuItem.actionKey = actionKey;
         menuItem.actionName = actionName;
         menuItem.listener = listener;
         menuItem.icon = icon;
@@ -103,6 +95,13 @@ public class SimpleGridMenu {
         mMenuItems.put(actionKey, menuItem);
         if (!mActionKeys.contains(actionKey))
             mActionKeys.add(actionKey);
+    }
+
+    private static class MenuItem {
+        String actionName;
+        AdapterView.OnItemClickListener listener;
+        IIcon icon;
+        View.OnClickListener iconListener;
     }
 
     private class MenuActionAdapter extends ArrayAdapter<String> {
@@ -123,10 +122,10 @@ public class SimpleGridMenu {
             view.setTag(actionKey);
 
             final MenuItem menuItem = mMenuItems.get(actionKey);
-            TextView textView = (TextView) view.findViewById(R.id.action_text);
+            TextView textView = view.findViewById(R.id.action_text);
             textView.setText(mMenuItems.get(actionKey).actionName);
 
-            ImageView imageView = (ImageView) view.findViewById(R.id.action_image);
+            ImageView imageView = view.findViewById(R.id.action_image);
             if (menuItem.icon != null) {
                 imageView.setVisibility(View.VISIBLE);
                 int pading = Utils.dpToPx(16);
@@ -134,13 +133,10 @@ public class SimpleGridMenu {
                 imageView.setClickable(true);
                 imageView.setImageDrawable(new IconicsDrawable(mContext, menuItem.icon)
                         .sizeDp(24).color(ContextCompat.getColor(mContext, R.color.background_grey)));
-                imageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (menuItem.iconListener != null)
-                            menuItem.iconListener.onClick(v);
-                        dismiss();
-                    }
+                imageView.setOnClickListener(v -> {
+                    if (menuItem.iconListener != null)
+                        menuItem.iconListener.onClick(v);
+                    dismiss();
                 });
 
             } else {
@@ -148,14 +144,6 @@ public class SimpleGridMenu {
             }
             return view;
         }
-    }
-
-    private class MenuItem {
-        String actionKey;
-        String actionName;
-        AdapterView.OnItemClickListener listener;
-        IIcon icon;
-        View.OnClickListener iconListener;
     }
 
 }

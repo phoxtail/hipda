@@ -1,7 +1,6 @@
 package net.jejer.hipda.ui.setting;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,8 @@ import net.jejer.hipda.bean.Forum;
 import net.jejer.hipda.bean.HiSettingsHelper;
 import net.jejer.hipda.utils.HiUtils;
 import net.jejer.hipda.utils.UIUtils;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,18 +61,18 @@ public class ForumSelectListener extends OnPreferenceClickListener {
         final RvAdapter adapter = new RvAdapter();
 
         ItemTouchHelper.Callback ithCallback = new ItemTouchHelper.Callback() {
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            public boolean onMove(@NotNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 Collections.swap(mForumSelctions, viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 adapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 return true;
             }
 
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            public void onSwiped(@NotNull RecyclerView.ViewHolder viewHolder, int direction) {
             }
 
             @Override
-            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            public int getMovementFlags(@NotNull RecyclerView recyclerView, @NotNull RecyclerView.ViewHolder viewHolder) {
                 return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
                         ItemTouchHelper.DOWN | ItemTouchHelper.UP);
             }
@@ -82,13 +83,10 @@ public class ForumSelectListener extends OnPreferenceClickListener {
             }
         };
 
-        mOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v instanceof CompoundButton) {
-                    int position = (Integer) v.getTag();
-                    mForumSelctions.get(position).mEnabled = ((CompoundButton) v).isChecked();
-                }
+        mOnClickListener = v -> {
+            if (v instanceof CompoundButton) {
+                int position = (Integer) v.getTag();
+                mForumSelctions.get(position).mEnabled = ((CompoundButton) v).isChecked();
             }
         };
 
@@ -101,21 +99,18 @@ public class ForumSelectListener extends OnPreferenceClickListener {
         builder.setView(recyclerView);
         builder.setTitle(preference.getTitle());
 
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                List<Integer> forums = new ArrayList<>();
-                for (ForumStatus forumStatus : mForumSelctions) {
-                    if (forumStatus.mEnabled) {
-                        forums.add(forumStatus.mForum.getId());
-                    }
+        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+            List<Integer> forums = new ArrayList<>();
+            for (ForumStatus forumStatus : mForumSelctions) {
+                if (forumStatus.mEnabled) {
+                    forums.add(forumStatus.mForum.getId());
                 }
-                if (forums.size() > 0) {
-                    HiSettingsHelper.getInstance().setForums(forums);
-                    preference.setSummary(HiUtils.getForumsSummary());
-                } else {
-                    UIUtils.toast("至少选择一个版面");
-                }
+            }
+            if (forums.size() > 0) {
+                HiSettingsHelper.getInstance().setForums(forums);
+                preference.setSummary(HiUtils.getForumsSummary());
+            } else {
+                UIUtils.toast("至少选择一个版面");
             }
         });
         builder.setNegativeButton(android.R.string.cancel, null);
@@ -127,23 +122,34 @@ public class ForumSelectListener extends OnPreferenceClickListener {
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
-        CheckBox cb_forum_enabled;
+        final CheckBox cb_forum_enabled;
 
         ViewHolder(View itemView) {
             super(itemView);
-            cb_forum_enabled = (CheckBox) itemView.findViewById(R.id.forum_enabled);
+            cb_forum_enabled = itemView.findViewById(R.id.forum_enabled);
         }
     }
 
-    private class RvAdapter extends RecyclerView.Adapter {
+    private static class ForumStatus {
+        final Forum mForum;
+        boolean mEnabled;
 
+        ForumStatus(Forum forum, boolean enabled) {
+            mForum = forum;
+            mEnabled = enabled;
+        }
+    }
+
+    private class RvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        @NotNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
             return new ViewHolder(mInflater.inflate(R.layout.item_forum_selector, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NotNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ViewHolder) {
                 CheckBox checkBox = ((ViewHolder) holder).cb_forum_enabled;
                 checkBox.setText(mForumSelctions.get(position).mForum.getName());
@@ -156,16 +162,6 @@ public class ForumSelectListener extends OnPreferenceClickListener {
         @Override
         public int getItemCount() {
             return mForumSelctions != null ? mForumSelctions.size() : 0;
-        }
-    }
-
-    private class ForumStatus {
-        Forum mForum;
-        boolean mEnabled;
-
-        ForumStatus(Forum forum, boolean enabled) {
-            mForum = forum;
-            mEnabled = enabled;
         }
     }
 }

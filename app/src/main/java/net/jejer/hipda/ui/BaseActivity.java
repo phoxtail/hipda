@@ -62,7 +62,7 @@ public class BaseActivity extends AppCompatActivity {
                 HiSettingsHelper.getInstance().getPrimaryColor());
         setTheme(theme);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && HiSettingsHelper.getInstance().isNavBarColored()) {
+        if (HiSettingsHelper.getInstance().isNavBarColored()) {
             getWindow().setNavigationBarColor(ColorHelper.getColorPrimary(this));
             View view = getWindow().getDecorView();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -78,8 +78,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                && mAppBarLayout != null) {
+        if (mAppBarLayout != null) {
             if (HiSettingsHelper.getInstance().isWhiteTheme()) {
                 mAppBarLayout.setStateListAnimator(null);
                 mAppBarLayout.setElevation(Utils.dpToPx(2));
@@ -135,10 +134,6 @@ public class BaseActivity extends AppCompatActivity {
 
     public View getRootView() {
         return mRootView;
-    }
-
-    public View getToolbar() {
-        return mToolbar;
     }
 
     @Override

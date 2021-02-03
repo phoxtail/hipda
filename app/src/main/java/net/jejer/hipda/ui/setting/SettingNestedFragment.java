@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 
@@ -84,29 +83,24 @@ public class SettingNestedFragment extends BaseSettingFragment {
                 forumsPreference.setSummary(HiUtils.getForumsSummary());
 
                 final Preference tailTextPreference = findPreference(HiSettingsHelper.PERF_TAILTEXT);
-                tailTextPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        String text = Utils.nullToText((String) newValue);
-                        if (Utils.getWordCount(text) > HiSettingsHelper.MAX_TAIL_TEXT_LENGTH) {
-                            UIUtils.toast("小尾巴文字限制最长 " + HiSettingsHelper.MAX_TAIL_TEXT_LENGTH + " 字符，中文视为 2 个字符");
-                            return false;
-                        }
-                        preference.setSummary(text);
-                        return true;
+                tailTextPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+                    String text = Utils.nullToText((String) newValue);
+                    if (Utils.getWordCount(text) > HiSettingsHelper.MAX_TAIL_TEXT_LENGTH) {
+                        UIUtils.toast("小尾巴文字限制最长 " + HiSettingsHelper.MAX_TAIL_TEXT_LENGTH + " 字符，中文视为 2 个字符");
+                        return false;
                     }
+                    preference.setSummary(text);
+                    return true;
                 });
                 tailTextPreference.setSummary(HiSettingsHelper.getInstance().getTailText());
 
                 mBlackListPreference = findPreference(HiSettingsHelper.PERF_BLACKLIST);
-                mBlackListPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    public boolean onPreferenceClick(Preference preference) {
-                        Intent intent = new Intent(getActivity(), SettingActivity.class);
-                        intent.putExtra(BlacklistFragment.TAG_KEY, BlacklistFragment.TAG_KEY);
-                        ActivityOptionsCompat options = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, 0);
-                        ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
-                        return true;
-                    }
+                mBlackListPreference.setOnPreferenceClickListener(preference -> {
+                    Intent intent = new Intent(getActivity(), SettingActivity.class);
+                    intent.putExtra(BlacklistFragment.TAG_KEY, BlacklistFragment.TAG_KEY);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, 0);
+                    ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
+                    return true;
                 });
 
                 break;
@@ -123,15 +117,11 @@ public class SettingNestedFragment extends BaseSettingFragment {
                 bindPreferenceSummaryToValue(findPreference(HiSettingsHelper.PERF_FONT));
                 bindPreferenceSummaryToValue(findPreference(HiSettingsHelper.PERF_AVATAR_LOAD_TYPE));
                 Preference navBarColoredPreference = findPreference(HiSettingsHelper.PERF_NAVBAR_COLORED);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && navBarColoredPreference != null)
-                    navBarColoredPreference.setEnabled(false);
 
                 Preference fontPreference = findPreference(HiSettingsHelper.PERF_FONT);
                 fontPreference.setOnPreferenceClickListener(new FilePickerListener(getActivity(), FilePickerListener.FONT_FILE));
 
                 Preference swipeCompatPreference = findPreference(HiSettingsHelper.PERF_SWIPE_COMPAT_MODE);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && swipeCompatPreference != null)
-                    swipeCompatPreference.setEnabled(false);
 
                 break;
 
@@ -142,42 +132,36 @@ public class SettingNestedFragment extends BaseSettingFragment {
                 bindPreferenceSummaryToValue(findPreference(HiSettingsHelper.PERF_NOTI_SILENT_END));
 
                 final Preference notiEnablePreference = findPreference(HiSettingsHelper.PERF_NOTI_TASK_ENABLED);
-                notiEnablePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        if (newValue instanceof Boolean) {
-                            enableNotiItems(preference, (Boolean) newValue);
-                        }
-                        return true;
+                notiEnablePreference.setOnPreferenceChangeListener((preference, newValue) -> {
+                    if (newValue instanceof Boolean) {
+                        enableNotiItems(preference, (Boolean) newValue);
                     }
+                    return true;
                 });
 
                 ringtonePreference = findPreference(HiSettingsHelper.PERF_NOTI_SOUND);
-                ringtonePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION);
-                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
-                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, Settings.System.DEFAULT_NOTIFICATION_URI);
+                ringtonePreference.setOnPreferenceClickListener(preference -> {
+                    Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, Settings.System.DEFAULT_NOTIFICATION_URI);
 
-                        String existingValue = HiSettingsHelper.getInstance().getStringValue(HiSettingsHelper.PERF_NOTI_SOUND, "");
-                        if (existingValue != null) {
-                            if (existingValue.length() == 0) {
-                                // Select "Silent"
-                                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, (Uri) null);
-                            } else {
-                                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(existingValue));
-                            }
+                    String existingValue = HiSettingsHelper.getInstance().getStringValue(HiSettingsHelper.PERF_NOTI_SOUND, "");
+                    if (existingValue != null) {
+                        if (existingValue.length() == 0) {
+                            // Select "Silent"
+                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, (Uri) null);
                         } else {
-                            // No ringtone has been selected, set to the default
-                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Settings.System.DEFAULT_NOTIFICATION_URI);
+                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(existingValue));
                         }
-
-                        startActivityForResult(intent, REQUEST_CODE_ALERT_RINGTONE);
-                        return true;
+                    } else {
+                        // No ringtone has been selected, set to the default
+                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Settings.System.DEFAULT_NOTIFICATION_URI);
                     }
+
+                    startActivityForResult(intent, REQUEST_CODE_ALERT_RINGTONE);
+                    return true;
                 });
                 ringtonePreference.setSummary(Utils.getRingtoneTitle(getActivity(), Uri.parse(HiSettingsHelper.getInstance().getStringValue(HiSettingsHelper.PERF_NOTI_SOUND, ""))));
 
@@ -214,28 +198,21 @@ public class SettingNestedFragment extends BaseSettingFragment {
                 bindPreferenceSummaryToValue(findPreference(HiSettingsHelper.PERF_FORUM_SERVER));
 
                 final Preference forumServerPreference = findPreference(HiSettingsHelper.PERF_FORUM_SERVER);
-                forumServerPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        TaskHelper.updateImageHost(getActivity(), preference);
-                        return true;
-                    }
+                forumServerPreference.setOnPreferenceClickListener(preference -> {
+                    TaskHelper.updateImageHost(getActivity(), preference);
+                    return true;
                 });
 
                 Preference clearPreference = findPreference(HiSettingsHelper.PERF_CLEAR_CACHE);
-                clearPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    public boolean onPreferenceClick(Preference preference) {
-                        showClearCacheDialog();
-                        return true;
-                    }
+                clearPreference.setOnPreferenceClickListener(preference -> {
+                    showClearCacheDialog();
+                    return true;
                 });
 
                 Preference clearImagePreference = findPreference(HiSettingsHelper.PERF_CLEAR_IMAGE_CACHE);
-                clearImagePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    public boolean onPreferenceClick(Preference preference) {
-                        showClearImageCacheDialog();
-                        return true;
-                    }
+                clearImagePreference.setOnPreferenceClickListener(preference -> {
+                    showClearImageCacheDialog();
+                    return true;
                 });
                 break;
             default:
@@ -311,10 +288,7 @@ public class SettingNestedFragment extends BaseSettingFragment {
                             }
                         })
                 .setNegativeButton(getResources().getString(android.R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
+                        (dialog1, which) -> {
                         }).create();
         dialog.show();
     }
@@ -360,10 +334,7 @@ public class SettingNestedFragment extends BaseSettingFragment {
                             }
                         })
                 .setNegativeButton(getResources().getString(android.R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
+                        (dialog1, which) -> {
                         }).create();
         dialog.show();
     }

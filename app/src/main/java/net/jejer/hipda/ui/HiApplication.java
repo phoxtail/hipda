@@ -10,6 +10,8 @@ import net.jejer.hipda.async.UpdateHelper;
 import net.jejer.hipda.bean.HiSettingsHelper;
 import net.jejer.hipda.utils.HiUtils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -30,7 +32,6 @@ public class HiApplication extends Application implements Application.ActivityLi
     private static boolean fontSet;
     private static int settingStatus;
     private static int visibleActivityCount = 0;
-    private static int foregroundActivityCount = 0;
     private static int mainActivityCount = 0;
 
     public static Context getAppContext() {
@@ -74,10 +75,6 @@ public class HiApplication extends Application implements Application.ActivityLi
         HiApplication.settingStatus = settingStatus;
     }
 
-    public static boolean isAppInForeground() {
-        return foregroundActivityCount > 0;
-    }
-
     public static boolean isAppVisible() {
         return visibleActivityCount > 0;
     }
@@ -108,35 +105,33 @@ public class HiApplication extends Application implements Application.ActivityLi
         HiUtils.updateBaseUrls();
     }
 
-    public void onActivityCreated(Activity activity, Bundle bundle) {
+    public void onActivityCreated(@NotNull Activity activity, Bundle bundle) {
         if (activity instanceof MainFrameActivity) {
             mainActivityCount++;
         }
     }
 
-    public void onActivityDestroyed(Activity activity) {
+    public void onActivityDestroyed(@NotNull Activity activity) {
         if (activity instanceof MainFrameActivity) {
             mainActivityCount--;
         }
     }
 
-    public void onActivityResumed(Activity activity) {
-        foregroundActivityCount++;
+    public void onActivityResumed(@NotNull Activity activity) {
     }
 
-    public void onActivityPaused(Activity activity) {
-        foregroundActivityCount--;
+    public void onActivityPaused(@NotNull Activity activity) {
     }
 
 
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+    public void onActivitySaveInstanceState(@NotNull Activity activity, @NotNull Bundle outState) {
     }
 
-    public void onActivityStarted(Activity activity) {
+    public void onActivityStarted(@NotNull Activity activity) {
         visibleActivityCount++;
     }
 
-    public void onActivityStopped(Activity activity) {
+    public void onActivityStopped(@NotNull Activity activity) {
         visibleActivityCount--;
     }
 

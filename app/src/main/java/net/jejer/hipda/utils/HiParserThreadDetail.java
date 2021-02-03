@@ -103,7 +103,7 @@ public class HiParserThreadDetail {
             Element postE = postsEL.child(i);
 
             DetailBean detail = new DetailBean();
-            detail.setPage(page);
+            detail.setPage();
 
             //id
             String id = postE.attr("id");

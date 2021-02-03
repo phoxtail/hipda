@@ -43,7 +43,7 @@ final class EmojiView extends FrameLayout implements ViewPager.OnPageChangeListe
 
         View.inflate(context, R.layout.emoji_view, this);
 
-        final ViewPager emojisPager = (ViewPager) findViewById(R.id.emojis_pager);
+        final ViewPager emojisPager = findViewById(R.id.emojis_pager);
         emojisPager.addOnPageChangeListener(this);
 
         final List<FrameLayout> views = getViews(context, onEmojiClickedListener, recentEmoji);
@@ -51,10 +51,10 @@ final class EmojiView extends FrameLayout implements ViewPager.OnPageChangeListe
         emojisPager.setAdapter(emojisAdapter);
 
         emojiTabs = new ImageView[DUMB_INDEX + 1];
-        emojiTabs[RECENT_INDEX] = (ImageView) findViewById(R.id.emojis_tab_0_recent);
-        emojiTabs[DEFAULT_INDEX] = (ImageView) findViewById(R.id.emojis_tab_1_default);
-        emojiTabs[MONKEY_INDEX] = (ImageView) findViewById(R.id.emojis_tab_2_monkey);
-        emojiTabs[DUMB_INDEX] = (ImageView) findViewById(R.id.emojis_tab_3_dumb);
+        emojiTabs[RECENT_INDEX] = findViewById(R.id.emojis_tab_0_recent);
+        emojiTabs[DEFAULT_INDEX] = findViewById(R.id.emojis_tab_1_default);
+        emojiTabs[MONKEY_INDEX] = findViewById(R.id.emojis_tab_2_monkey);
+        emojiTabs[DUMB_INDEX] = findViewById(R.id.emojis_tab_3_dumb);
 
         handleOnClicks(emojisPager);
 

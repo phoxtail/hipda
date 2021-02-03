@@ -2,7 +2,6 @@ package net.jejer.hipda.ui.adapter;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -78,7 +77,7 @@ public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
     }
 
     @Override
-    public ViewHolderImpl onCreateViewHolderImpl(ViewGroup parent, int position) {
+    public ViewHolderImpl onCreateViewHolderImpl(ViewGroup parent) {
         return new ViewHolderImpl(mInflater.inflate(R.layout.item_thread_detail, parent, false));
     }
 
@@ -103,10 +102,6 @@ public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
         } else {
             viewHolder.itemView.setBackgroundResource(mBackgroundResource);
         }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            //set background cause padding values lost, reset them
-            viewHolder.itemView.setPadding(pLeft, pTop, pRight, pBottom);
-        }
 
         holder.author.setText(detail.getAuthor());
         holder.time.setText(Utils.shortyTime(detail.getTimePost()));
@@ -116,12 +111,9 @@ public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
             holder.floor.setTag(null);
             holder.floor.setTextColor(ContextCompat.getColor(mCtx, R.color.md_amber_900));
             holder.floor.setClickable(false);
-            holder.floor.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    detail.setSelectMode(false);
-                    notifyItemChanged(position);
-                }
+            holder.floor.setOnClickListener(v -> {
+                detail.setSelectMode(false);
+                notifyItemChanged(position);
             });
         } else if (detail.isWarned()) {
             holder.floor.setText(detail.getFloor() + "");
@@ -203,7 +195,7 @@ public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
                             && !fullUrl.equals(thumbUrl)
                             && !ImageContainer.getImageInfo(fullUrl).isSuccess();
 
-                    ThreadImageLayout threadImageLayout = new ThreadImageLayout(mDetailFragment.getActivity(), contentImg, mDetailFragment.getImagesInPage(detail.getPage()), mIsThumb);
+                    ThreadImageLayout threadImageLayout = new ThreadImageLayout(mDetailFragment.getActivity(), contentImg, mDetailFragment.getImagesInPage(), mIsThumb);
 
                     contentView.addView(threadImageLayout);
                 } else if (content instanceof ContentAttach) {
@@ -228,7 +220,7 @@ public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
                     trimBr = true;
                 } else if (content instanceof ContentGoToFloor || content instanceof ContentQuote) {
 
-                    String author = "";
+                    String author;
                     String time = "";
                     String note = "";
                     String text = "";
@@ -254,13 +246,12 @@ public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
                         if (HiUtils.isValidId(postId)) {
                             detailBean = mDetailFragment.getCachedPost(postId);
                         }
+                        author = contentQuote.getAuthor();
                         if (detailBean != null) {
-                            author = contentQuote.getAuthor();
                             text = detailBean.getContents().getContent();
                             floor = detailBean.getFloor();
                             note = floor + "#";
                         } else {
-                            author = contentQuote.getAuthor();
                             if (!TextUtils.isEmpty(contentQuote.getTo()))
                                 note = "to: " + contentQuote.getTo();
                             time = contentQuote.getTime();
@@ -335,12 +326,12 @@ public class ThreadDetailAdapter extends BaseRvAdapter<DetailBean> {
     }
 
     private static class ViewHolderImpl extends RecyclerView.ViewHolder {
-        ImageView avatar;
-        TextView author;
-        TextView floor;
-        TextView postStatus;
-        TextView time;
-        LinearLayout contentView;
+        final ImageView avatar;
+        final TextView author;
+        final TextView floor;
+        final TextView postStatus;
+        final TextView time;
+        final LinearLayout contentView;
 
         ViewHolderImpl(View itemView) {
             super(itemView);

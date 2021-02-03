@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,7 +20,6 @@ import com.mikepenz.iconics.IconicsDrawable;
 
 import net.jejer.hipda.R;
 import net.jejer.hipda.async.FavoriteHelper;
-import net.jejer.hipda.async.NetworkReadyEvent;
 import net.jejer.hipda.async.PostSmsAsyncTask;
 import net.jejer.hipda.bean.HiSettingsHelper;
 import net.jejer.hipda.bean.SimpleListBean;
@@ -48,6 +46,7 @@ import net.jejer.hipda.utils.UIUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -69,7 +68,6 @@ public class SimpleListFragment extends BaseFragment
     private int mPage = 1;
     private boolean mInloading = false;
     private int mMaxPage;
-    private int mFirstVisibleItem = 0;
     private String mFormhash;
 
     private MenuItem mFavoritesMenuItem;
@@ -101,30 +99,27 @@ public class SimpleListFragment extends BaseFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_simple_list, container, false);
-        mRecyclerView = (XRecyclerView) view.findViewById(R.id.rv_threads);
+        mRecyclerView = view.findViewById(R.id.rv_threads);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new SimpleDivider(getActivity()));
 
         mRecyclerView.addOnScrollListener(new OnScrollListener());
 
-        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mSwipeLayout = view.findViewById(R.id.swipe_container);
         mSwipeLayout.setOnRefreshListener(this);
         mSwipeLayout.setColorSchemeColors(ColorHelper.getSwipeColor(getActivity()));
         mSwipeLayout.setProgressBackgroundColorSchemeColor(ColorHelper.getSwipeBackgroundColor(getActivity()));
         mSwipeLayout.setEnabled(false);
 
-        mLoadingView = (ContentLoadingView) view.findViewById(R.id.content_loading);
-        mLoadingView.setErrorStateListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mInloading) {
-                    mInloading = true;
-                    mLoadingView.setState(ContentLoadingView.LOAD_NOW);
-                    refresh();
-                }
+        mLoadingView = view.findViewById(R.id.content_loading);
+        mLoadingView.setErrorStateListener(view1 -> {
+            if (!mInloading) {
+                mInloading = true;
+                mLoadingView.setState(ContentLoadingView.LOAD_NOW);
+                refresh();
             }
         });
         return view;
@@ -156,7 +151,7 @@ public class SimpleListFragment extends BaseFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NotNull Menu menu, @NotNull MenuInflater inflater) {
         menu.clear();
 
         switch (mType) {
@@ -204,35 +199,33 @@ public class SimpleListFragment extends BaseFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Implemented in activity
-                return false;
-            case R.id.action_refresh:
-                refresh();
-                return true;
-            case R.id.action_favories:
-                mLoadingView.setState(ContentLoadingView.LOAD_NOW);
-                if (mFavoritesMenuItem.getTitle().toString().equals(getString(R.string.action_attention))) {
-                    mFavoritesMenuItem.setTitle(R.string.action_favorites);
-                    mType = SimpleListJob.TYPE_ATTENTION;
-                    setActionBarTitle(R.string.title_my_attention);
-                } else {
-                    mFavoritesMenuItem.setTitle(R.string.action_attention);
-                    mType = SimpleListJob.TYPE_FAVORITES;
-                    setActionBarTitle(R.string.title_my_favorites);
-                }
-                mSimpleListItemBeans.clear();
-                mSimpleListAdapter.setDatas(mSimpleListItemBeans);
-                mRecyclerView.setFooterState(XFooterView.STATE_HIDDEN);
-                refresh();
-                return true;
-            case R.id.action_send_sms:
-                showSendSmsDialog("", "", this);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {// Implemented in activity
+            return false;
+        } else if (itemId == R.id.action_refresh) {
+            refresh();
+            return true;
+        } else if (itemId == R.id.action_favories) {
+            mLoadingView.setState(ContentLoadingView.LOAD_NOW);
+            if (mFavoritesMenuItem.getTitle().toString().equals(getString(R.string.action_attention))) {
+                mFavoritesMenuItem.setTitle(R.string.action_favorites);
+                mType = SimpleListJob.TYPE_ATTENTION;
+                setActionBarTitle(R.string.title_my_attention);
+            } else {
+                mFavoritesMenuItem.setTitle(R.string.action_attention);
+                mType = SimpleListJob.TYPE_FAVORITES;
+                setActionBarTitle(R.string.title_my_favorites);
+            }
+            mSimpleListItemBeans.clear();
+            mSimpleListAdapter.setDatas(mSimpleListItemBeans);
+            mRecyclerView.setFooterState(XFooterView.STATE_HIDDEN);
+            refresh();
+            return true;
+        } else if (itemId == R.id.action_send_sms) {
+            showSendSmsDialog("", "", this);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void refresh() {
@@ -258,38 +251,22 @@ public class SimpleListFragment extends BaseFragment
 
     private void showFavoriteActionDialog(final SimpleListItemBean item) {
         final SimplePopupMenu popupMenu = new SimplePopupMenu(getActivity());
-        popupMenu.add("cancel", "取消收藏", new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FavoriteHelper.getInstance().deleteFavorite(mFormhash, FavoriteHelper.TYPE_FAVORITE, item.getTid());
-                removeItem(item);
-            }
+        popupMenu.add("cancel", "取消收藏", (parent, view, position, id) -> {
+            FavoriteHelper.getInstance().deleteFavorite(mFormhash, FavoriteHelper.TYPE_FAVORITE, item.getTid());
+            removeItem(item);
         });
-        popupMenu.add("last_page", "转到最新回复", new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showLastPage(item);
-            }
-        });
+        popupMenu.add("last_page", "转到最新回复", (parent, view, position, id) -> showLastPage(item));
         popupMenu.show();
     }
 
     private void showAttentionActionDialog(final SimpleListItemBean item) {
         SimplePopupMenu popupMenu = new SimplePopupMenu(getActivity());
-        popupMenu.add("cancel", "取消关注", new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FavoriteHelper.getInstance().deleteFavorite(mFormhash, FavoriteHelper.TYPE_ATTENTION, item.getTid());
-                removeItem(item);
-            }
+        popupMenu.add("cancel", "取消关注", (parent, view, position, id) -> {
+            FavoriteHelper.getInstance().deleteFavorite(mFormhash, FavoriteHelper.TYPE_ATTENTION, item.getTid());
+            removeItem(item);
         });
         popupMenu.add("last_page", "转到最新回复",
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        showLastPage(item);
-                    }
-                });
+                (parent, view, position, id) -> showLastPage(item));
         popupMenu.show();
     }
 
@@ -342,7 +319,6 @@ public class SimpleListFragment extends BaseFragment
         }
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(SimpleListEvent event) {
         if (!mSessionId.equals(event.mSessionId))
@@ -351,7 +327,6 @@ public class SimpleListFragment extends BaseFragment
         mEventCallback.process(event);
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(SmsRefreshEvent event) {
         EventBus.getDefault().removeStickyEvent(event);
@@ -359,9 +334,8 @@ public class SimpleListFragment extends BaseFragment
             onRefresh();
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NetworkReadyEvent event) {
+    public void onEvent() {
         if (!mInloading && mSimpleListItemBeans.size() == 0)
             refresh();
     }
@@ -370,12 +344,12 @@ public class SimpleListFragment extends BaseFragment
         int visibleItemCount, totalItemCount;
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
             if (dy > 0) {
                 LinearLayoutManager mLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 visibleItemCount = mLayoutManager.getChildCount();
                 totalItemCount = mLayoutManager.getItemCount();
-                mFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+                int mFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
 
                 if ((visibleItemCount + mFirstVisibleItem) >= totalItemCount - 5) {
                     if (!mInloading) {
@@ -397,7 +371,7 @@ public class SimpleListFragment extends BaseFragment
     private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
 
         @Override
-        public void onItemClick(View view, int position) {
+        public void onItemClick(int position) {
             if (position < 0 || position >= mSimpleListAdapter.getItemCount()) {
                 return;
             }
@@ -438,7 +412,7 @@ public class SimpleListFragment extends BaseFragment
         }
 
         @Override
-        public void onDoubleTap(View view, int position) {
+        public void onDoubleTap() {
         }
     }
 

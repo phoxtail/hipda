@@ -39,7 +39,6 @@ public class SwipeBackActivity extends AppCompatActivity implements SwipeBackAct
         return v;
     }
 
-    @Override
     public SwipeBackLayout getSwipeBackLayout() {
         return mHelper.getSwipeBackLayout();
     }

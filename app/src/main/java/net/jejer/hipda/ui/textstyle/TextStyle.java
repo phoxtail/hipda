@@ -171,16 +171,8 @@ public class TextStyle {
     private boolean underline;
     private String color;
 
-    public boolean isBold() {
-        return bold;
-    }
-
     public void setBold(boolean bold) {
         this.bold = bold;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public void setColor(String color) {
@@ -206,24 +198,12 @@ public class TextStyle {
         }
     }
 
-    public boolean isItalic() {
-        return italic;
-    }
-
     public void setItalic(boolean italic) {
         this.italic = italic;
     }
 
-    public boolean isStrike() {
-        return strike;
-    }
-
     public void setStrike(boolean strike) {
         this.strike = strike;
-    }
-
-    public boolean isUnderline() {
-        return underline;
     }
 
     public void setUnderline(boolean underline) {

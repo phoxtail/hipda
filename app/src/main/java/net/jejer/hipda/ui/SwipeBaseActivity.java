@@ -45,8 +45,7 @@ public class SwipeBaseActivity extends BaseActivity implements SwipeBackActivity
         return v;
     }
 
-    @Override
-    public SwipeBackLayout getSwipeBackLayout() {
+    private SwipeBackLayout getSwipeBackLayout() {
         return mHelper != null ? mHelper.getSwipeBackLayout() : null;
     }
 

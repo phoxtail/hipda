@@ -49,7 +49,6 @@ public class UploadImgHelper {
     private String mMessage = "";
     private String mDetail = "";
     private Bitmap mThumb;
-    private String mCurrentFileName = "";
 
     public UploadImgHelper(Context ctx, UploadImgListener v, String uid, String hash, Uri[] uris, boolean original) {
         mCtx = ctx;
@@ -102,17 +101,15 @@ public class UploadImgHelper {
             int mCurrent = i++;
             mListener.updateProgress(mTotal, mCurrent, -1);
             String imgId = uploadImage(HiUtils.UploadImgUrl, post_param, uri);
-            mListener.itemComplete(uri, mTotal, mCurrent, mCurrentFileName, mMessage, mDetail, imgId, mThumb);
+            mListener.itemComplete(uri, mTotal, mCurrent, mMessage, mDetail, imgId, mThumb);
         }
     }
 
     private String uploadImage(String urlStr, Map<String, String> param, Uri uri) {
         mThumb = null;
         mMessage = "";
-        mCurrentFileName = "";
 
         ImageFileInfo imageFileInfo = CursorUtils.getImageFileInfo(mCtx, uri);
-        mCurrentFileName = imageFileInfo.getFileName();
 
         ByteArrayOutputStream avatar = getImageStream(uri, imageFileInfo);
         if (avatar == null) {
@@ -298,7 +295,7 @@ public class UploadImgHelper {
     public interface UploadImgListener {
         void updateProgress(int total, int current, int percentage);
 
-        void itemComplete(Uri uri, int total, int current, String currentFileName, String message, String detail, String imgId, Bitmap thumbnail);
+        void itemComplete(Uri uri, int total, int current, String message, String detail, String imgId, Bitmap thumbnail);
     }
 
 }

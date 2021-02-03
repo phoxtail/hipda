@@ -2,7 +2,6 @@ package net.jejer.hipda.ui.widget;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
@@ -38,10 +37,8 @@ public class BottomDialog extends BottomSheetDialog {
             getWindow().setLayout((int) (width * 0.7), ViewGroup.LayoutParams.MATCH_PARENT);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final WindowManager.LayoutParams params = getWindow().getAttributes();
-            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            getWindow().setAttributes(params);
-        }
+        final WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        getWindow().setAttributes(params);
     }
 }

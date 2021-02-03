@@ -16,7 +16,6 @@ public class ImageUploadEvent extends BaseEvent {
     public int mType;
     public int mTotal;
     public int mCurrent;
-    public int mPercentage;
     public UploadImage mImage;
 
 }

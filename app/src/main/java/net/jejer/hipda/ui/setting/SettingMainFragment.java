@@ -139,24 +139,20 @@ public class SettingMainFragment extends BaseSettingFragment {
 
         dialogPref.setSummary(HiApplication.getAppVersion()
                 + (Utils.isFromGooglePlay(getActivity()) ? " (Google Play)" : ""));
-        dialogPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
+        dialogPref.setOnPreferenceClickListener(preference -> {
 
-                Intent intent = new Intent(getActivity(), SettingActivity.class);
-                intent.putExtra(AboutFragment.TAG_KEY, AboutFragment.TAG_KEY);
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, 0);
-                ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
-                return true;
-            }
+            Intent intent = new Intent(getActivity(), SettingActivity.class);
+            intent.putExtra(AboutFragment.TAG_KEY, AboutFragment.TAG_KEY);
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, 0);
+            ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
+            return true;
         });
 
         final Preference checkPreference = findPreference(HiSettingsHelper.PERF_LAST_UPDATE_CHECK);
-        checkPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                checkPreference.setSummary("上次检查 ：" + Utils.shortyTime(new Date()));
-                new UpdateHelper(getActivity(), false).check();
-                return true;
-            }
+        checkPreference.setOnPreferenceClickListener(preference -> {
+            checkPreference.setSummary("上次检查 ：" + Utils.shortyTime(new Date()));
+            new UpdateHelper(getActivity(), false).check();
+            return true;
         });
         Date lastCheckTime = HiSettingsHelper.getInstance().getLastUpdateCheckTime();
         if (lastCheckTime != null) {
@@ -166,12 +162,10 @@ public class SettingMainFragment extends BaseSettingFragment {
         }
 
         Preference supportPreference = findPreference(HiSettingsHelper.PERF_SUPPORT);
-        supportPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                FragmentUtils.show(getActivity(),
-                        FragmentUtils.parseUrl(HiUtils.BaseUrl + "viewthread.php?tid=" + HiUtils.CLIENT_TID));
-                return true;
-            }
+        supportPreference.setOnPreferenceClickListener(preference -> {
+            FragmentUtils.show(getActivity(),
+                    FragmentUtils.parseUrl(HiUtils.BaseUrl + "viewthread.php?tid=" + HiUtils.CLIENT_TID));
+            return true;
         });
 
     }

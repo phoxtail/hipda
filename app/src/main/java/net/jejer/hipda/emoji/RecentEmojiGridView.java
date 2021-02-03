@@ -28,7 +28,7 @@ final class RecentEmojiGridView extends FrameLayout {
 
     public RecentEmojiGridView init(@Nullable final OnEmojiClickedListener onEmojiClickedListener) {
         final Collection<Emoji> emojis = recentEmojis.getRecentEmojis();
-        final GridView gridView = (GridView) findViewById(R.id.emoji_grid_view);
+        final GridView gridView = findViewById(R.id.emoji_grid_view);
         emojiArrayAdapter = new EmojiArrayAdapter(getContext(), emojis.toArray(new Emoji[0]));
         emojiArrayAdapter.setOnEmojiClickedListener(onEmojiClickedListener);
         gridView.setAdapter(emojiArrayAdapter);

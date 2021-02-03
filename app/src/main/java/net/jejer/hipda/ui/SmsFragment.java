@@ -3,7 +3,6 @@ package net.jejer.hipda.ui;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -13,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AlertDialog;
@@ -52,12 +50,11 @@ import net.jejer.hipda.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import okhttp3.Request;
 
 public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPostListener {
 
@@ -70,7 +67,6 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
     private SmsAdapter mSmsAdapter;
     private XRecyclerView mRecyclerView;
     private EmojiEditText mEtSms;
-    private ImageButton mIbEmojiSwitch;
     private CountdownButton mCountdownButton;
     private ContentLoadingView mLoadingView;
     private boolean mSending = false;
@@ -93,28 +89,25 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sms, container, false);
-        mRecyclerView = (XRecyclerView) view.findViewById(R.id.rv_sms);
+        mRecyclerView = view.findViewById(R.id.rv_sms);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
-        mLoadingView = (ContentLoadingView) view.findViewById(R.id.content_loading);
-        mLoadingView.setErrorStateListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mLoadingView.setState(ContentLoadingView.LOAD_NOW);
-                SimpleListJob job = new SimpleListJob(getActivity(), mSessionId, SimpleListJob.TYPE_SMS_DETAIL, 1, mUid);
-                JobMgr.addJob(job);
-            }
+        mLoadingView = view.findViewById(R.id.content_loading);
+        mLoadingView.setErrorStateListener(view1 -> {
+            mLoadingView.setState(ContentLoadingView.LOAD_NOW);
+            SimpleListJob job = new SimpleListJob(getActivity(), mSessionId, SimpleListJob.TYPE_SMS_DETAIL, 1, mUid);
+            JobMgr.addJob(job);
         });
 
-        mCountdownButton = (CountdownButton) view.findViewById(R.id.countdown_button);
+        mCountdownButton = view.findViewById(R.id.countdown_button);
         mCountdownButton.setImageDrawable(new IconicsDrawable(getActivity(), GoogleMaterial.Icon.gmd_send).sizeDp(28).color(Color.GRAY));
 
-        mEtSms = (EmojiEditText) view.findViewById(R.id.et_sms);
+        mEtSms = view.findViewById(R.id.et_sms);
         mEtSms.setTextSize(HiSettingsHelper.getInstance().getPostTextSize());
         mCountdownButton.setOnClickListener(new OnSingleClickListener() {
             @Override
@@ -126,7 +119,7 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
             }
         });
 
-        mIbEmojiSwitch = (ImageButton) view.findViewById(R.id.ib_emoji_switch);
+        ImageButton mIbEmojiSwitch = view.findViewById(R.id.ib_emoji_switch);
         setUpEmojiPopup(mEtSms, mIbEmojiSwitch);
 
         showSendButton();
@@ -195,7 +188,7 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NotNull Menu menu, @NotNull MenuInflater inflater) {
         menu.clear();
 
         inflater.inflate(R.menu.menu_sms_detail, menu);
@@ -211,16 +204,14 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Implemented in activity
-                return false;
-            case R.id.action_clear_sms:
-                showClearSmsDialog();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {// Implemented in activity
+            return false;
+        } else if (itemId == R.id.action_clear_sms) {
+            showClearSmsDialog();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void showClearSmsDialog() {
@@ -228,30 +219,27 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
         popDialog.setTitle("清空短消息？");
         popDialog.setMessage(HtmlCompat.fromHtml("确认清空所有与用户 <b>" + mAuthor + "</b> 的短消息？<br><br><font color=red>注意：此操作不可恢复。</font>"));
         popDialog.setPositiveButton("清空",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        final HiProgressDialog progress = HiProgressDialog.show(getActivity(), "正在处理...");
+                (dialog, which) -> {
+                    final HiProgressDialog progress = HiProgressDialog.show(getActivity(), "正在处理...");
 
-                        String url = HiUtils.ClearSMS.replace("{uid}", mUid);
+                    String url = HiUtils.ClearSMS.replace("{uid}", mUid);
 
-                        OkHttpHelper.getInstance().asyncGet(url, new OkHttpHelper.ResultCallback() {
-                            @Override
-                            public void onError(Request request, Exception e) {
-                                progress.dismissError("操作时发生错误 : " + OkHttpHelper.getErrorMessage(e));
-                                EventBus.getDefault().postSticky(new SmsRefreshEvent());
-                                ((BaseActivity) getActivity()).finishWithNoSlide();
-                            }
+                    OkHttpHelper.getInstance().asyncGet(url, new OkHttpHelper.ResultCallback() {
+                        @Override
+                        public void onError(Exception e) {
+                            progress.dismissError("操作时发生错误 : " + OkHttpHelper.getErrorMessage(e));
+                            EventBus.getDefault().postSticky(new SmsRefreshEvent());
+                            ((BaseActivity) getActivity()).finishWithNoSlide();
+                        }
 
-                            @Override
-                            public void onResponse(String response) {
-                                progress.dismiss("操作完成");
-                                EventBus.getDefault().postSticky(new SmsRefreshEvent());
-                                ((BaseActivity) getActivity()).finishWithNoSlide();
-                            }
-                        });
+                        @Override
+                        public void onResponse(String response) {
+                            progress.dismiss("操作完成");
+                            EventBus.getDefault().postSticky(new SmsRefreshEvent());
+                            ((BaseActivity) getActivity()).finishWithNoSlide();
+                        }
+                    });
 
-                    }
                 });
         popDialog.setIcon(new IconicsDrawable(getActivity(), FontAwesome.Icon.faw_exclamation_circle).sizeDp(24).color(Color.RED));
         popDialog.setNegativeButton("取消", null);
@@ -302,7 +290,6 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
             mRecyclerView.scrollToPosition(0);
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(SimpleListEvent event) {
         if (!mSessionId.equals(event.mSessionId))
@@ -324,7 +311,7 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
     private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
 
         @Override
-        public void onItemClick(View view, int position) {
+        public void onItemClick(int position) {
         }
 
         @Override
@@ -333,31 +320,25 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
             final int rvPosition = position;
             if (bean != null) {
                 SimplePopupMenu popupMenu = new SimplePopupMenu(getActivity());
-                popupMenu.add("copy", "复制内容", new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                        CharSequence content = Utils.fromHtmlAndStrip(bean.getInfo());
-                        if (content.length() > 0) {
-                            ClipData clip = ClipData.newPlainText("SMS CONTENT FROM HiPDA", content);
-                            clipboard.setPrimaryClip(clip);
-                            UIUtils.toast("内容已复制");
-                        } else {
-                            UIUtils.toast("内容为空");
-                        }
+                popupMenu.add("copy", "复制内容", (parent, view12, position12, id) -> {
+                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    CharSequence content = Utils.fromHtmlAndStrip(bean.getInfo());
+                    if (content.length() > 0) {
+                        ClipData clip = ClipData.newPlainText("SMS CONTENT FROM HiPDA", content);
+                        clipboard.setPrimaryClip(clip);
+                        UIUtils.toast("内容已复制");
+                    } else {
+                        UIUtils.toast("内容为空");
                     }
                 });
                 if (!mSending && bean.getStatus() == Constants.STATUS_FAIL && PostSmsAsyncTask.getWaitTimeToSendSms() <= 0) {
-                    popupMenu.add("resend", "重新发送", new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            if (!mSending && PostSmsAsyncTask.getWaitTimeToSendSms() <= 0) {
-                                String content = bean.getInfo();
-                                removeFailedSms(rvPosition);
-                                sendSms(content);
-                            } else {
-                                UIUtils.toast("短消息发送时间限制");
-                            }
+                    popupMenu.add("resend", "重新发送", (parent, view1, position1, id) -> {
+                        if (!mSending && PostSmsAsyncTask.getWaitTimeToSendSms() <= 0) {
+                            String content = bean.getInfo();
+                            removeFailedSms(rvPosition);
+                            sendSms(content);
+                        } else {
+                            UIUtils.toast("短消息发送时间限制");
                         }
                     });
                 }
@@ -366,7 +347,7 @@ public class SmsFragment extends BaseFragment implements PostSmsAsyncTask.SmsPos
         }
 
         @Override
-        public void onDoubleTap(View view, int position) {
+        public void onDoubleTap() {
         }
     }
 

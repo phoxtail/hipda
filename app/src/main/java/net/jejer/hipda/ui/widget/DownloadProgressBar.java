@@ -2,7 +2,6 @@ package net.jejer.hipda.ui.widget;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,10 +13,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+
+import androidx.core.content.res.ResourcesCompat;
 
 import net.jejer.hipda.R;
 
@@ -81,10 +79,11 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
     private final Paint mProgressPaint;
     private final RectF mProgressRect;
     private final List<DownloadProgressBar.OnClickListener> mClickListeners;
-    private Drawable mIdleIcon;
-    private Drawable mCancelIcon;
+    private final Drawable mIdleIcon;
+    private final Drawable mCancelIcon;
+    private final Drawable mErrorIcon;
+    private final int mProgressIndeterminateSweepAngle;
     private Drawable mFinishIcon;
-    private Drawable mErrorIcon;
     private boolean mCancelable;
     private boolean mHideOnFinish;
     private int mIdleIconWidth;
@@ -110,7 +109,6 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
     private Drawable mDeterminateBgDrawable;
     private ValueAnimator mIndeterminateAnimator;
     private int mCurrIndeterminateBarPos;
-    private int mProgressIndeterminateSweepAngle;
     private int mProgressDeterminateColor;
     private int mProgressIndeterminateColor;
     private int mProgressMargin;
@@ -139,11 +137,10 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
 
         mProgressRect = new RectF();
 
-        Resources res = context.getResources();
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DownloadProgressBar, 0, 0);
 
-            initBackgroundDrawableFromAttribs(res, a);
+            initBackgroundDrawableFromAttribs(a);
 
             mCurrState = a.getInt(R.styleable.DownloadProgressBar_state, STATE_IDLE);
             mCancelable = a.getBoolean(R.styleable.DownloadProgressBar_cancelable, DEF_CANCELABLE);
@@ -159,22 +156,22 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
             mMaxProgress = a.getInteger(R.styleable.DownloadProgressBar_maxProgress, 100);
 
             int icIdleDrawableId = a.getResourceId(R.styleable.DownloadProgressBar_idleIconDrawable, R.drawable.ic_action_download);
-            mIdleIcon = res.getDrawable(icIdleDrawableId);
+            mIdleIcon = ResourcesCompat.getDrawable(getResources(), icIdleDrawableId, null);
             mIdleIconWidth = a.getDimensionPixelSize(R.styleable.DownloadProgressBar_idleIconWidth, mIdleIcon.getMinimumWidth());
             mIdleIconHeight = a.getDimensionPixelSize(R.styleable.DownloadProgressBar_idleIconHeight, mIdleIcon.getMinimumHeight());
 
             int icCancelDrawableId = a.getResourceId(R.styleable.DownloadProgressBar_cancelIconDrawable, R.drawable.ic_action_cancel);
-            mCancelIcon = res.getDrawable(icCancelDrawableId);
+            mCancelIcon = ResourcesCompat.getDrawable(getResources(), icCancelDrawableId, null);
             mCancelIconWidth = a.getDimensionPixelSize(R.styleable.DownloadProgressBar_cancelIconWidth, mCancelIcon.getMinimumWidth());
             mCancelIconHeight = a.getDimensionPixelSize(R.styleable.DownloadProgressBar_cancelIconHeight, mCancelIcon.getMinimumHeight());
 
             int icFinishDrawableId = a.getResourceId(R.styleable.DownloadProgressBar_finishIconDrawable, R.drawable.ic_action_finish);
-            mFinishIcon = res.getDrawable(icFinishDrawableId);
+            mFinishIcon = ResourcesCompat.getDrawable(getResources(), icFinishDrawableId, null);
             mFinishIconWidth = a.getDimensionPixelSize(R.styleable.DownloadProgressBar_finishIconWidth, mFinishIcon.getMinimumWidth());
             mFinishIconHeight = a.getDimensionPixelSize(R.styleable.DownloadProgressBar_finishIconHeight, mFinishIcon.getMinimumHeight());
 
             int icErrorDrawableId = a.getResourceId(R.styleable.DownloadProgressBar_errorIconDrawable, R.drawable.ic_action_refresh);
-            mErrorIcon = res.getDrawable(icErrorDrawableId);
+            mErrorIcon = ResourcesCompat.getDrawable(getResources(), icErrorDrawableId, null);
             mErrorIconWidth = a.getDimensionPixelSize(R.styleable.DownloadProgressBar_errorIconWidth, mErrorIcon.getMinimumWidth());
             mErrorIconHeight = a.getDimensionPixelSize(R.styleable.DownloadProgressBar_errorIconHeight, mErrorIcon.getMinimumHeight());
 
@@ -197,19 +194,19 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
             mIndeterminateBgColor = DEF_BG_COLOR;
             mDeterminateBgColor = DEF_BG_COLOR;
 
-            mIdleIcon = res.getDrawable(R.drawable.ic_action_download);
+            mIdleIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_download, null);
             mIdleIconWidth = mIdleIcon.getMinimumWidth();
             mIdleIconHeight = mIdleIcon.getMinimumHeight();
 
-            mCancelIcon = res.getDrawable(R.drawable.ic_action_cancel);
+            mCancelIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_cancel, null);
             mCancelIconWidth = mCancelIcon.getMinimumWidth();
             mCancelIconHeight = mCancelIcon.getMinimumHeight();
 
-            mFinishIcon = res.getDrawable(R.drawable.ic_action_finish);
+            mFinishIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_finish, null);
             mFinishIconWidth = mFinishIcon.getMinimumWidth();
             mFinishIconHeight = mFinishIcon.getMinimumHeight();
 
-            mErrorIcon = res.getDrawable(R.drawable.ic_action_refresh);
+            mErrorIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_refresh, null);
             mErrorIconWidth = mErrorIcon.getMinimumWidth();
             mErrorIconHeight = mErrorIcon.getMinimumHeight();
         }
@@ -220,19 +217,23 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
             setVisibility(GONE);
     }
 
-    private void initBackgroundDrawableFromAttribs(Resources res, TypedArray attrs) {
+    private void initBackgroundDrawableFromAttribs(TypedArray attrs) {
         int idleResId = attrs.getResourceId(R.styleable.DownloadProgressBar_idleBackgroundDrawable, -1);
         int finishResId = attrs.getResourceId(R.styleable.DownloadProgressBar_finishBackgroundDrawable, -1);
         int errorResId = attrs.getResourceId(R.styleable.DownloadProgressBar_errorBackgroundDrawable, -1);
         int indeterminateResId = attrs.getResourceId(R.styleable.DownloadProgressBar_indeterminateBackgroundDrawable, -1);
         int determinateResId = attrs.getResourceId(R.styleable.DownloadProgressBar_determinateBackgroundDrawable, -1);
 
-        if (idleResId != -1) mIdleBgDrawable = res.getDrawable(idleResId);
-        if (finishResId != -1) mFinishBgDrawable = res.getDrawable(finishResId);
-        if (errorResId != -1) mFinishBgDrawable = res.getDrawable(errorResId);
+        if (idleResId != -1)
+            mIdleBgDrawable = ResourcesCompat.getDrawable(getResources(), idleResId, null);
+        if (finishResId != -1)
+            mFinishBgDrawable = ResourcesCompat.getDrawable(getResources(), finishResId, null);
+        if (errorResId != -1)
+            mFinishBgDrawable = ResourcesCompat.getDrawable(getResources(), errorResId, null);
         if (indeterminateResId != -1)
-            mIndeterminateBgDrawable = res.getDrawable(indeterminateResId);
-        if (determinateResId != -1) mDeterminateBgDrawable = res.getDrawable(determinateResId);
+            mIndeterminateBgDrawable = ResourcesCompat.getDrawable(getResources(), indeterminateResId, null);
+        if (determinateResId != -1)
+            mDeterminateBgDrawable = ResourcesCompat.getDrawable(getResources(), determinateResId, null);
 
         mIdleBgColor = attrs.getColor(R.styleable.DownloadProgressBar_idleBackgroundColor, DEF_BG_COLOR);
         mFinishBgColor = attrs.getColor(R.styleable.DownloadProgressBar_finishBackgroundColor, DEF_BG_COLOR);
@@ -245,27 +246,12 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
         return mHideOnFinish;
     }
 
-    public void setHideOnFinish(boolean hide) {
-        mHideOnFinish = hide;
-        if (mCurrState == STATE_FINISHED) {
-            if (mHideOnFinish)
-                setVisibility(GONE);
-            else
-                setVisibility(VISIBLE);
-        }
-    }
-
     public int getCurrState() {
         return mCurrState;
     }
 
     public int getMaxProgress() {
         return mMaxProgress;
-    }
-
-    public void setMaxProgress(int maxProgress) {
-        mMaxProgress = maxProgress;
-        invalidate();
     }
 
     public int getCurrentProgress() {
@@ -278,39 +264,8 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
         invalidate();
     }
 
-    public Drawable getIdleIcon() {
-        return mIdleIcon;
-    }
-
-    public void setIdleIcon(Drawable idleIcon) {
-        mIdleIcon = idleIcon;
-        invalidate();
-    }
-
-    public Drawable getCancelIcon() {
-        return mCancelIcon;
-    }
-
-    public void setCancelIcon(Drawable cancelIcon) {
-        mCancelIcon = cancelIcon;
-        invalidate();
-    }
-
-    public Drawable getFinishIcon() {
-        return mFinishIcon;
-    }
-
     public void setFinishIcon(Drawable finishIcon) {
         mFinishIcon = finishIcon;
-        invalidate();
-    }
-
-    public Drawable getErrorIcon() {
-        return mErrorIcon;
-    }
-
-    public void setErrorIcon(Drawable errorIcon) {
-        mErrorIcon = errorIcon;
         invalidate();
     }
 
@@ -327,204 +282,64 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
         return mIdleIconWidth;
     }
 
-    public void setIdleIconWidth(int idleIconWidth) {
-        mIdleIconWidth = idleIconWidth;
-        invalidate();
-    }
-
     public int getIdleIconHeight() {
         return mIdleIconHeight;
-    }
-
-    public void setIdleIconHeight(int idleIconHeight) {
-        mIdleIconHeight = idleIconHeight;
-        invalidate();
     }
 
     public int getCancelIconWidth() {
         return mCancelIconWidth;
     }
 
-    public void setCancelIconWidth(int cancelIconWidth) {
-        mCancelIconWidth = cancelIconWidth;
-        invalidate();
-    }
-
     public int getCancelIconHeight() {
         return mCancelIconHeight;
-    }
-
-    public void setCancelIconHeight(int cancelIconHeight) {
-        mCancelIconHeight = cancelIconHeight;
-        invalidate();
     }
 
     public int getFinishIconWidth() {
         return mFinishIconWidth;
     }
 
-    public void setFinishIconWidth(int finishIconWidth) {
-        mFinishIconWidth = finishIconWidth;
-        invalidate();
-    }
-
     public int getFinishIconHeight() {
         return mFinishIconHeight;
-    }
-
-    public void setFinishIconHeight(int finishIconHeight) {
-        mFinishIconHeight = finishIconHeight;
-        invalidate();
     }
 
     public int getErrorIconWidth() {
         return mErrorIconWidth;
     }
 
-    public void setErrorIconWidth(int errorIconWidth) {
-        mErrorIconWidth = errorIconWidth;
-        invalidate();
-    }
-
     public int getErrorIconHeight() {
         return mErrorIconHeight;
-    }
-
-    public void setErrorIconHeight(int errorIconHeight) {
-        mErrorIconHeight = errorIconHeight;
-        invalidate();
     }
 
     public int getIdleBgColor() {
         return mIdleBgColor;
     }
 
-    public void setIdleBgColor(int idleBgColor) {
-        mIdleBgColor = idleBgColor;
-        invalidate();
-    }
-
     public int getFinishBgColor() {
         return mFinishBgColor;
-    }
-
-    public void setFinishBgColor(int finishBgColor) {
-        mFinishBgColor = finishBgColor;
-        invalidate();
     }
 
     public int getErrorBgColor() {
         return mErrorBgColor;
     }
 
-    public void setErrorBgColor(int errorBgColor) {
-        mErrorBgColor = errorBgColor;
-        invalidate();
-    }
-
     public int getIndeterminateBgColor() {
         return mIndeterminateBgColor;
-    }
-
-    public void setIndeterminateBgColor(int indeterminateBgColor) {
-        mIndeterminateBgColor = indeterminateBgColor;
-        invalidate();
     }
 
     public int getDeterminateBgColor() {
         return mDeterminateBgColor;
     }
 
-    public void setDeterminateBgColor(int determinateBgColor) {
-        mDeterminateBgColor = determinateBgColor;
-        invalidate();
-    }
-
-    public Drawable getIdleBgDrawable() {
-        return mIdleBgDrawable;
-    }
-
-    public void setIdleBgDrawable(Drawable idleBgDrawable) {
-        mIdleBgDrawable = idleBgDrawable;
-        invalidate();
-    }
-
-    public Drawable getFinishBgDrawable() {
-        return mFinishBgDrawable;
-    }
-
-    public void setFinishBgDrawable(Drawable finishBgDrawable) {
-        mFinishBgDrawable = finishBgDrawable;
-        invalidate();
-    }
-
-    public Drawable getErrorBgDrawable() {
-        return mErrorBgDrawable;
-    }
-
-    public void setErrorBgDrawable(Drawable errorBgDrawable) {
-        mErrorBgDrawable = errorBgDrawable;
-        invalidate();
-    }
-
-    public Drawable getIndeterminateBgDrawable() {
-        return mIndeterminateBgDrawable;
-    }
-
-    public void setIndeterminateBgDrawable(Drawable indeterminateBgDrawable) {
-        mIndeterminateBgDrawable = indeterminateBgDrawable;
-        invalidate();
-    }
-
-    public Drawable getDeterminateBgDrawable() {
-        return mDeterminateBgDrawable;
-    }
-
-    public void setDeterminateBgDrawable(Drawable determinateBgDrawable) {
-        mDeterminateBgDrawable = determinateBgDrawable;
-        invalidate();
-    }
-
     public int getProgressDeterminateColor() {
         return mProgressDeterminateColor;
-    }
-
-    public void setProgressDeterminateColor(int progressDeterminateColor) {
-        mProgressDeterminateColor = progressDeterminateColor;
-        invalidate();
     }
 
     public int getProgressIndeterminateColor() {
         return mProgressIndeterminateColor;
     }
 
-    public void setProgressIndeterminateColor(int progressIndeterminateColor) {
-        mProgressIndeterminateColor = progressIndeterminateColor;
-        invalidate();
-    }
-
     public int getProgressMargin() {
         return mProgressMargin;
-    }
-
-    public void setProgressMargin(int progressMargin) {
-        mProgressMargin = progressMargin;
-        invalidate();
-    }
-
-    public int getProgressIndeterminateSweepAngle() {
-        return mProgressIndeterminateSweepAngle;
-    }
-
-    public void setProgressIndeterminateSweepAngle(int progressIndeterminateSweepAngle) {
-        mProgressIndeterminateSweepAngle = progressIndeterminateSweepAngle;
-        invalidate();
-    }
-
-    public void setIdle() {
-        mCurrState = STATE_IDLE;
-        setVisibility(VISIBLE);
-        invalidate();
     }
 
     public void setIndeterminate() {
@@ -557,15 +372,6 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
         mCurrProgress = 0;
         mCurrState = STATE_ERROR;
         invalidate();
-    }
-
-    public void addOnClickListener(DownloadProgressBar.OnClickListener listener) {
-        if (!mClickListeners.contains(listener))
-            mClickListeners.add(listener);
-    }
-
-    public void removeOnClickListener(DownloadProgressBar.OnClickListener listener) {
-        mClickListeners.remove(listener);
     }
 
     @Override
@@ -751,13 +557,10 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
         mIndeterminateAnimator.setDuration(1000);
         mIndeterminateAnimator.setRepeatCount(ValueAnimator.INFINITE);
         mIndeterminateAnimator.setRepeatMode(ValueAnimator.RESTART);
-        mIndeterminateAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int value = (int) animation.getAnimatedValue();
-                mCurrIndeterminateBarPos = value - BASE_START_ANGLE;
-                invalidate();
-            }
+        mIndeterminateAnimator.addUpdateListener(animation -> {
+            int value = (int) animation.getAnimatedValue();
+            mCurrIndeterminateBarPos = value - BASE_START_ANGLE;
+            invalidate();
         });
     }
 
@@ -770,27 +573,6 @@ public class DownloadProgressBar extends View implements View.OnClickListener {
         int top = (getHeight() / 2) - (height / 2);
         drawable.setBounds(left, top, left + width, top + height);
         drawable.draw(canvas);
-    }
-
-    public void fadeOut() {
-        if (getVisibility() != VISIBLE)
-            return;
-        Animation fadeOut = new AlphaAnimation(1, 0);
-        fadeOut.setInterpolator(new AccelerateInterpolator());
-        fadeOut.setDuration(250);
-
-        fadeOut.setAnimationListener(new Animation.AnimationListener() {
-            public void onAnimationEnd(Animation animation) {
-                DownloadProgressBar.super.setVisibility(View.GONE);
-            }
-
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            public void onAnimationStart(Animation animation) {
-            }
-        });
-        startAnimation(fadeOut);
     }
 
     public interface OnClickListener {

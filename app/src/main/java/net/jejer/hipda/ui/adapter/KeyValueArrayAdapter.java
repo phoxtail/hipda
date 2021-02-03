@@ -110,8 +110,8 @@ public class KeyValueArrayAdapter extends ArrayAdapter<KeyValueArrayAdapter.KeyV
      * Key and Value
      */
     public static class KeyValue {
-        public String key;
-        public String value;
+        public final String key;
+        public final String value;
 
         public KeyValue(final String key, final String value) {
             super();

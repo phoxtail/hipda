@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -29,7 +28,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.SearchView;
-import androidx.core.view.MenuItemCompat;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -67,6 +65,7 @@ import net.jejer.hipda.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,9 +147,9 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        mRecyclerView = (XRecyclerView) view.findViewById(R.id.rv_threads);
+        mRecyclerView = view.findViewById(R.id.rv_threads);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new SimpleDivider(getActivity()));
@@ -159,47 +158,44 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
 
         mRecyclerView.setAdapter(mSimpleListAdapter);
 
-        mSearchFilterLayout = (RelativeLayout) view.findViewById(R.id.search_filter_layout);
+        mSearchFilterLayout = view.findViewById(R.id.search_filter_layout);
         ViewCompat.setElevation(mSearchFilterLayout, Utils.dpToPx(4));
         mSearchFilterLayout.setAlpha(0);
 
-        mSpForum = (Spinner) view.findViewById(R.id.sp_forum);
+        mSpForum = view.findViewById(R.id.sp_forum);
         mSpAdapter = new KeyValueArrayAdapter(getActivity(), R.layout.spinner_row);
         mSpAdapter.setEntryValues(getForumIds());
         mSpAdapter.setEntries(getForumNames());
         mSpForum.setAdapter(mSpAdapter);
 
-        mEtAuthor = (EditText) view.findViewById(R.id.et_author);
+        mEtAuthor = view.findViewById(R.id.et_author);
         mEtAuthor.setOnEditorActionListener(mSearchEditorActionListener);
 
-        mCbFulltext = (CheckBox) view.findViewById(R.id.cb_fulltext);
-        mCbFulltext.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (mSearchView != null) {
-                    if (isChecked) {
-                        mSearchView.setQueryHint("搜索全文");
-                    } else {
-                        mSearchView.setQueryHint("搜索标题");
-                    }
+        mCbFulltext = view.findViewById(R.id.cb_fulltext);
+        mCbFulltext.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (mSearchView != null) {
+                if (isChecked) {
+                    mSearchView.setQueryHint("搜索全文");
+                } else {
+                    mSearchView.setQueryHint("搜索标题");
                 }
             }
         });
 
-        RecyclerView rvHistory = (RecyclerView) view.findViewById(R.id.rv_history);
+        RecyclerView rvHistory = view.findViewById(R.id.rv_history);
         rvHistory.setHasFixedSize(true);
         rvHistory.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvHistory.setAdapter(mHistoryAdapter);
 
         mHistoryAdapter.setDatas(mQueries);
 
-        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mSwipeLayout = view.findViewById(R.id.swipe_container);
         mSwipeLayout.setOnRefreshListener(this);
         mSwipeLayout.setColorSchemeColors(ColorHelper.getSwipeColor(getActivity()));
         mSwipeLayout.setProgressBackgroundColorSchemeColor(ColorHelper.getSwipeBackgroundColor(getActivity()));
         mSwipeLayout.setEnabled(false);
 
-        mLoadingView = (ContentLoadingView) view.findViewById(R.id.content_loading);
+        mLoadingView = view.findViewById(R.id.content_loading);
         mLoadingView.setState(ContentLoadingView.NO_DATA);
 
         new Handler().postDelayed(new Runnable() {
@@ -226,60 +222,49 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NotNull Menu menu, @NotNull MenuInflater inflater) {
         menu.clear();
 
         setActionBarTitle(R.string.title_drawer_search);
 
         inflater.inflate(R.menu.menu_search, menu);
         mSearchMenuItem = menu.findItem(R.id.action_search);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
+        mSearchView = (SearchView) mSearchMenuItem.getActionView();
         mSearchView.setIconified(false);
         mSearchView.setQueryHint("搜索标题");
 
-        mSearchTextView = ((EditText) mSearchView.findViewById(androidx.appcompat.R.id.search_src_text));
+        mSearchTextView = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
         mSearchTextView.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         mSearchTextView.setOnEditorActionListener(mSearchEditorActionListener);
-        mSearchTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                mSearchTextView.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-                if (hasFocus) {
-                    if (mSearchFilterLayout.getVisibility() != View.VISIBLE) {
-                        restoreSearchBean();
-                        showSearchFilter();
-                    }
+        mSearchTextView.setOnFocusChangeListener((v, hasFocus) -> {
+            mSearchTextView.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+            if (hasFocus) {
+                if (mSearchFilterLayout.getVisibility() != View.VISIBLE) {
+                    restoreSearchBean();
+                    showSearchFilter();
                 }
             }
         });
-        mSearchTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showSearchFilter();
-            }
-        });
+        mSearchTextView.setOnClickListener(v -> showSearchFilter());
 
-        ImageView closeButton = (ImageView) mSearchView.findViewById(androidx.appcompat.R.id.search_close_btn);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (TextUtils.isEmpty(mSearchTextView.getText()) &&
-                        (mSearchFilterLayout.getVisibility() != View.VISIBLE
-                                || TextUtils.isEmpty(mEtAuthor.getText()))) {
-                    mSearchView.clearFocus();
-                    mSearchView.setQuery("", false);
-                    mSearchView.onActionViewCollapsed();
-                    mSearchMenuItem.collapseActionView();
-                    mEtAuthor.setText("");
-                    mSpForum.setSelection(0);
-                    mCbFulltext.setChecked(false);
-                    hideSearchFilter();
-                } else {
-                    mSearchTextView.setText("");
-                    mEtAuthor.setText("");
-                    mSpForum.setSelection(0);
-                    mCbFulltext.setChecked(false);
-                }
+        ImageView closeButton = mSearchView.findViewById(androidx.appcompat.R.id.search_close_btn);
+        closeButton.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(mSearchTextView.getText()) &&
+                    (mSearchFilterLayout.getVisibility() != View.VISIBLE
+                            || TextUtils.isEmpty(mEtAuthor.getText()))) {
+                mSearchView.clearFocus();
+                mSearchView.setQuery("", false);
+                mSearchView.onActionViewCollapsed();
+                mSearchMenuItem.collapseActionView();
+                mEtAuthor.setText("");
+                mSpForum.setSelection(0);
+                mCbFulltext.setChecked(false);
+                hideSearchFilter();
+            } else {
+                mSearchTextView.setText("");
+                mEtAuthor.setText("");
+                mSpForum.setSelection(0);
+                mCbFulltext.setChecked(false);
             }
         });
 
@@ -361,12 +346,9 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
         mPage = 1;
         SimpleListJob job = new SimpleListJob(getActivity(), mSessionId, mType, mPage, mSearchBean);
         JobMgr.addJob(job);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                addQuery(mSearchBean);
-                mHistoryAdapter.notifyDataSetChanged();
-            }
+        new Handler().postDelayed(() -> {
+            addQuery(mSearchBean);
+            mHistoryAdapter.notifyDataSetChanged();
         }, 500);
     }
 
@@ -488,7 +470,6 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
         return forumNames;
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(SimpleListEvent event) {
         if (!mSessionId.equals(event.mSessionId))
@@ -501,7 +482,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
         int visibleItemCount, totalItemCount;
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
             if (dy > 0) {
                 LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 visibleItemCount = layoutManager.getChildCount();
@@ -528,7 +509,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
     private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
 
         @Override
-        public void onItemClick(View view, int position) {
+        public void onItemClick(int position) {
             collapseSearchView();
             hideSearchFilter();
             if (position < 0 || position >= mSimpleListAdapter.getItemCount()) {
@@ -561,14 +542,14 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
         }
 
         @Override
-        public void onDoubleTap(View view, int position) {
+        public void onDoubleTap() {
         }
     }
 
     private class HistoryItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
 
         @Override
-        public void onItemClick(View view, int position) {
+        public void onItemClick(int position) {
             hideSearchFilter();
             if (position < 0 || position >= mHistoryAdapter.getItemCount()) {
                 return;
@@ -583,7 +564,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
         }
 
         @Override
-        public void onDoubleTap(View view, int position) {
+        public void onDoubleTap() {
         }
     }
 
@@ -653,7 +634,7 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
         }
 
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup parent) {
             return new ViewHolderImpl(mInflater.inflate(R.layout.item_search_history, parent, false));
         }
 
@@ -670,33 +651,25 @@ public class SearchFragment extends BaseFragment implements SwipeRefreshLayout.O
                 holder.imageview.setImageDrawable(mIconDrawable);
             }
             holder.ib_remove.setImageDrawable(mIbDrawable);
-            holder.ib_remove.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mHistoryAdapter.getDatas().remove(position);
-                    mHistoryAdapter.notifyItemRemoved(position);
-                    mHistoryAdapter.notifyItemRangeChanged(position, mHistoryAdapter.getItemCount());
-                    saveQueries();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mHistoryAdapter.notifyDataSetChanged();
-                        }
-                    }, 350);
-                }
+            holder.ib_remove.setOnClickListener(v -> {
+                mHistoryAdapter.getDatas().remove(position);
+                mHistoryAdapter.notifyItemRemoved(position);
+                mHistoryAdapter.notifyItemRangeChanged(position, mHistoryAdapter.getItemCount());
+                saveQueries();
+                new Handler().postDelayed(() -> mHistoryAdapter.notifyDataSetChanged(), 350);
             });
         }
 
         private class ViewHolderImpl extends RecyclerView.ViewHolder {
-            TextView textview;
-            ImageView imageview;
-            ImageButton ib_remove;
+            final TextView textview;
+            final ImageView imageview;
+            final ImageButton ib_remove;
 
             ViewHolderImpl(View itemView) {
                 super(itemView);
-                textview = (TextView) itemView.findViewById(R.id.textview);
-                imageview = (ImageView) itemView.findViewById(R.id.icon);
-                ib_remove = (ImageButton) itemView.findViewById(R.id.ib_remove);
+                textview = itemView.findViewById(R.id.textview);
+                imageview = itemView.findViewById(R.id.icon);
+                ib_remove = itemView.findViewById(R.id.ib_remove);
             }
         }
     }

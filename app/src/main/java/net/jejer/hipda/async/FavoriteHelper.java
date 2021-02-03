@@ -17,8 +17,6 @@ import org.jsoup.parser.Parser;
 import java.util.HashSet;
 import java.util.Set;
 
-import okhttp3.Request;
-
 
 public class FavoriteHelper {
 
@@ -116,7 +114,7 @@ public class FavoriteHelper {
 
         OkHttpHelper.getInstance().asyncGet(url, new OkHttpHelper.ResultCallback() {
             @Override
-            public void onError(Request request, Exception e) {
+            public void onError(Exception e) {
                 UIUtils.toast("添加失败 : " + OkHttpHelper.getErrorMessage(e));
             }
 
@@ -145,7 +143,7 @@ public class FavoriteHelper {
 
         OkHttpHelper.getInstance().asyncGet(url, new OkHttpHelper.ResultCallback() {
             @Override
-            public void onError(Request request, Exception e) {
+            public void onError(Exception e) {
                 UIUtils.toast("移除失败 : " + OkHttpHelper.getErrorMessage(e));
             }
 
@@ -184,7 +182,7 @@ public class FavoriteHelper {
         try {
             OkHttpHelper.getInstance().asyncPost(url, params, new OkHttpHelper.ResultCallback() {
                 @Override
-                public void onError(Request request, Exception e) {
+                public void onError(Exception e) {
                     UIUtils.toast("移除失败 : " + OkHttpHelper.getErrorMessage(e));
                 }
 

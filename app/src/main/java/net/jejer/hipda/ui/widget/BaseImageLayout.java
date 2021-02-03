@@ -159,41 +159,35 @@ public abstract class BaseImageLayout extends RelativeLayout {
     }
 
     private void setupLongClickListener() {
-        setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                ImageInfo imageInfo = ImageContainer.getImageInfo(mUrl);
-                if (imageInfo.isFail()) {
-                    UIUtils.showMessageDialog(getContext(), "错误信息", imageInfo.getMessage(), true);
-                } else if (imageInfo.isSuccess() && getOnLongClickListener() != null) {
-                    getOnLongClickListener().onLongClick(view);
-                }
-                return true;
+        setOnLongClickListener(view -> {
+            ImageInfo imageInfo = ImageContainer.getImageInfo(mUrl);
+            if (imageInfo.isFail()) {
+                UIUtils.showMessageDialog(getContext(), "错误信息", imageInfo.getMessage(), true);
+            } else if (imageInfo.isSuccess() && getOnLongClickListener() != null) {
+                getOnLongClickListener().onLongClick(view);
             }
+            return true;
         });
     }
 
     private void setupClickListener() {
-        setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ImageInfo imageInfo = ImageContainer.getImageInfo(mUrl);
-                BaseImageLayout lastGifLayout = mCurrentViewHolder != null ? mCurrentViewHolder.get() : null;
-                if (lastGifLayout != null) {
-                    lastGifLayout.stopGif();
-                }
+        setOnClickListener(view -> {
+            ImageInfo imageInfo = ImageContainer.getImageInfo(mUrl);
+            BaseImageLayout lastGifLayout = mCurrentViewHolder != null ? mCurrentViewHolder.get() : null;
+            if (lastGifLayout != null) {
+                lastGifLayout.stopGif();
+            }
 
-                if (!BaseImageLayout.this.equals(lastGifLayout)) {
-                    if (imageInfo.isSuccess()) {
-                        if (imageInfo.isGif()) {
-                            loadGif();
-                        } else {
-                            if (getOnClickListener() != null)
-                                getOnClickListener().onClick(view);
-                        }
-                    } else if (imageInfo.isFail() || imageInfo.isIdle()) {
-                        fetchImage(true);
+            if (!BaseImageLayout.this.equals(lastGifLayout)) {
+                if (imageInfo.isSuccess()) {
+                    if (imageInfo.isGif()) {
+                        loadGif();
+                    } else {
+                        if (getOnClickListener() != null)
+                            getOnClickListener().onClick(view);
                     }
+                } else if (imageInfo.isFail() || imageInfo.isIdle()) {
+                    fetchImage(true);
                 }
             }
         });
@@ -206,7 +200,6 @@ public abstract class BaseImageLayout extends RelativeLayout {
         super.onDetachedFromWindow();
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(GlideImageEvent event) {
         if (event.getStatus() == ImageInfo.SUCCESS

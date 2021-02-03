@@ -24,7 +24,6 @@ public class ImageInfo {
     private int mHeight;
     private String mPath;
     private String mMime;
-    private int mOrientation;
     private int mProgress;
     private int mStatus = IDLE;
     private String mMessage;
@@ -99,12 +98,7 @@ public class ImageInfo {
         return !isGif() && mHeight >= 2.5 * mWidth;
     }
 
-    public int getOrientation() {
-        return mOrientation;
-    }
-
     public void setOrientation(int orientation) {
-        mOrientation = orientation;
     }
 
     public int getBitmapHeight() {

@@ -3,7 +3,6 @@ package net.jejer.hipda.ui;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -82,6 +81,7 @@ import net.jejer.hipda.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -259,7 +259,7 @@ public class MainFrameActivity extends BaseActivity {
                             .withIcon(GoogleMaterial.Icon.gmd_more_horiz)
                             .withIdentifier(Constants.DRAWER_NO_ACTION)
                             .withSelectable(false)
-                            .withSubItems(subItems.toArray(new IDrawerItem[subItems.size()])
+                            .withSubItems(subItems.toArray(new IDrawerItem[0])
                             ));
 
         drawerItems.add(new DividerDrawerItem());
@@ -277,15 +277,15 @@ public class MainFrameActivity extends BaseActivity {
                             if (HiSettingsHelper.getInstance().isNightMode() != isChecked) {
                                 final DrawerLayout.DrawerListener nightModeDrawerListener = new DrawerLayout.DrawerListener() {
                                     @Override
-                                    public void onDrawerSlide(View drawerView, float slideOffset) {
+                                    public void onDrawerSlide(@NotNull View drawerView, float slideOffset) {
                                     }
 
                                     @Override
-                                    public void onDrawerOpened(View drawerView) {
+                                    public void onDrawerOpened(@NotNull View drawerView) {
                                     }
 
                                     @Override
-                                    public void onDrawerClosed(View drawerView) {
+                                    public void onDrawerClosed(@NotNull View drawerView) {
                                         mDrawer.getDrawerLayout().removeDrawerListener(this);
                                         recreateActivity();
                                     }
@@ -324,14 +324,11 @@ public class MainFrameActivity extends BaseActivity {
 
         mDrawer.getRecyclerView().setVerticalScrollBarEnabled(false);
 
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mDrawer.isDrawerOpen())
-                    mDrawer.closeDrawer();
-                else
-                    mDrawer.openDrawer();
-            }
+        mToolbar.setNavigationOnClickListener(v -> {
+            if (mDrawer.isDrawerOpen())
+                mDrawer.closeDrawer();
+            else
+                mDrawer.openDrawer();
         });
 
         mToolbar.setOnClickListener(new OnSingleClickListener() {
@@ -418,12 +415,8 @@ public class MainFrameActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                UIUtils.hideSoftKeyboard(this);
-                break;
-            default:
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            UIUtils.hideSoftKeyboard(this);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -520,11 +513,6 @@ public class MainFrameActivity extends BaseActivity {
             mDrawer.getActionBarDrawerToggle().syncState();
     }
 
-    private void closeDrawer() {
-        if (mDrawer != null && mDrawer.isDrawerOpen())
-            mDrawer.closeDrawer();
-    }
-
     private void recreateActivity() {
         HiUtils.updateBaseUrls();
         ColorHelper.clear();
@@ -533,12 +521,10 @@ public class MainFrameActivity extends BaseActivity {
                 HiSettingsHelper.getInstance().getPrimaryColor());
         setTheme(theme);
         View view = getWindow().getDecorView();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (theme == R.style.ThemeLight_White) {
-                view.setSystemUiVisibility(view.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            } else {
-                view.setSystemUiVisibility(view.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
+        if (theme == R.style.ThemeLight_White) {
+            view.setSystemUiVisibility(view.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        } else {
+            view.setSystemUiVisibility(view.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && HiSettingsHelper.getInstance().isNavBarColored()) {
@@ -549,20 +535,16 @@ public class MainFrameActivity extends BaseActivity {
             }
         }
         //avoid “RuntimeException: Performing pause of activity that is not resumed”
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    getWindow().setWindowAnimations(R.style.ThemeTransitionAnimation);
-                    recreate();
-                } catch (Exception e) {
-                    Utils.restartActivity(MainFrameActivity.this);
-                }
+        new Handler().postDelayed(() -> {
+            try {
+                getWindow().setWindowAnimations(R.style.ThemeTransitionAnimation);
+                recreate();
+            } catch (Exception e) {
+                Utils.restartActivity(MainFrameActivity.this);
             }
         }, 5);
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(LoginEvent event) {
         Fragment fg = getSupportFragmentManager().findFragmentByTag(ThreadListFragment.class.getName());
@@ -611,6 +593,14 @@ public class MainFrameActivity extends BaseActivity {
             if (mLoginDialog.isShowing())
                 mLoginDialog.dismiss();
             mLoginDialog = null;
+        }
+    }
+
+    private static class NetworkStateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            HiSettingsHelper.updateMobileNetworkStatus(context);
+            EventBus.getDefault().post(new NetworkReadyEvent());
         }
     }
 
@@ -671,37 +661,26 @@ public class MainFrameActivity extends BaseActivity {
                         .setTitle("退出登录？")
                         .setMessage("确认退出当前登录用户 <" + HiSettingsHelper.getInstance().getUsername() + "> ，并清除保存的登录信息？\n")
                         .setPositiveButton(getResources().getString(android.R.string.ok),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        HiProgressDialog progressDialog = HiProgressDialog.show(MainFrameActivity.this, "正在退出...");
-                                        HiSettingsHelper.getInstance().setUsername("");
-                                        HiSettingsHelper.getInstance().setPassword("");
-                                        HiSettingsHelper.getInstance().setSecQuestion("");
-                                        HiSettingsHelper.getInstance().setSecAnswer("");
-                                        HiSettingsHelper.getInstance().setUid("");
-                                        LoginHelper.logout();
-                                        updateAccountHeader();
+                                (dialog12, which) -> {
+                                    HiProgressDialog progressDialog = HiProgressDialog.show(MainFrameActivity.this, "正在退出...");
+                                    HiSettingsHelper.getInstance().setUsername("");
+                                    HiSettingsHelper.getInstance().setPassword("");
+                                    HiSettingsHelper.getInstance().setSecQuestion("");
+                                    HiSettingsHelper.getInstance().setSecAnswer("");
+                                    HiSettingsHelper.getInstance().setUid("");
+                                    LoginHelper.logout();
+                                    updateAccountHeader();
 
-                                        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_frame_container);
-                                        if (fragment != null && fragment instanceof ThreadListFragment) {
-                                            ((ThreadListFragment) fragment).enterNotLoginState();
-                                        }
-
-                                        progressDialog.dismiss("已退出登录状态", 2000);
-                                        new Handler().postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                showLoginDialog();
-                                            }
-                                        }, 2000);
+                                    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_frame_container);
+                                    if (fragment instanceof ThreadListFragment) {
+                                        ((ThreadListFragment) fragment).enterNotLoginState();
                                     }
+
+                                    progressDialog.dismiss("已退出登录状态", 2000);
+                                    new Handler().postDelayed(MainFrameActivity.this::showLoginDialog, 2000);
                                 })
                         .setNegativeButton(getResources().getString(android.R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
+                                (dialog1, which) -> {
                                 }).create();
                 dialog.show();
             } else {
@@ -713,14 +692,6 @@ public class MainFrameActivity extends BaseActivity {
         @Override
         public boolean onProfileImageLongClick(View view, IProfile profile, boolean current) {
             return false;
-        }
-    }
-
-    private class NetworkStateReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            HiSettingsHelper.updateMobileNetworkStatus(context);
-            EventBus.getDefault().post(new NetworkReadyEvent());
         }
     }
 

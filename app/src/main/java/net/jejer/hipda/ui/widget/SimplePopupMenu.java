@@ -37,7 +37,7 @@ public class SimplePopupMenu {
 
     public void show() {
         View view = mInflater.inflate(R.layout.dialog_menu_actions, null);
-        ListView listView = (ListView) view.findViewById(R.id.lv_menu_actions);
+        ListView listView = view.findViewById(R.id.lv_menu_actions);
 
         listView.setAdapter(new MenuActionAdapter(mContext));
 
@@ -46,15 +46,12 @@ public class SimplePopupMenu {
         final AlertDialog dialog = popDialog.create();
         dialog.show();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long row) {
-                String actionKey = (String) view.getTag();
-                if (mListeners.containsKey(actionKey) && mListeners.get(actionKey) != null) {
-                    mListeners.get(actionKey).onItemClick(adapterView, view, position, row);
-                }
-                dialog.dismiss();
+        listView.setOnItemClickListener((adapterView, view1, position, row) -> {
+            String actionKey = (String) view1.getTag();
+            if (mListeners.containsKey(actionKey) && mListeners.get(actionKey) != null) {
+                mListeners.get(actionKey).onItemClick(adapterView, view1, position, row);
             }
+            dialog.dismiss();
         });
     }
 
@@ -79,7 +76,7 @@ public class SimplePopupMenu {
             }
             String actionKey = mActionKeys.get(position);
             view.setTag(actionKey);
-            TextView text = (TextView) view.findViewById(R.id.action_text);
+            TextView text = view.findViewById(R.id.action_text);
             text.setText(mActions.get(actionKey));
             return view;
         }

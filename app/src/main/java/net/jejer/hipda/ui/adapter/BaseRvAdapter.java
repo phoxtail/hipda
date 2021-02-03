@@ -14,7 +14,7 @@ import java.util.List;
  * Created by GreenSkinMonster on 2016-11-08.
  */
 
-public abstract class BaseRvAdapter<V> extends RecyclerView.Adapter {
+public abstract class BaseRvAdapter<V> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HEADER = -1;
     private static final int TYPE_FOOTER = -2;
@@ -23,7 +23,7 @@ public abstract class BaseRvAdapter<V> extends RecyclerView.Adapter {
     private View mFooterView;
     private List<V> mDatas = new ArrayList<>();
 
-    public abstract RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup parent, int viewType);
+    public abstract RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup parent);
 
     public abstract void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, int position);
 
@@ -115,7 +115,7 @@ public abstract class BaseRvAdapter<V> extends RecyclerView.Adapter {
 
     @NotNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         View itemView = null;
         if (viewType == TYPE_HEADER) {
             itemView = mHeaderView;
@@ -125,7 +125,7 @@ public abstract class BaseRvAdapter<V> extends RecyclerView.Adapter {
         if (itemView != null)
             return new RecyclerView.ViewHolder(itemView) {
             };
-        return onCreateViewHolderImpl(parent, viewType);
+        return onCreateViewHolderImpl(parent);
     }
 
     @Override

@@ -32,7 +32,7 @@ public class SwipeUtils {
             Method method = Activity.class.getDeclaredMethod("convertFromTranslucent");
             method.setAccessible(true);
             method.invoke(activity);
-        } catch (Throwable t) {
+        } catch (Throwable ignored) {
         }
     }
 
@@ -49,33 +49,7 @@ public class SwipeUtils {
      * with the {@link android.R.attr#windowIsFloating} attribute.
      */
     public static void convertActivityToTranslucent(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            convertActivityToTranslucentAfterL(activity);
-        } else {
-            convertActivityToTranslucentBeforeL(activity);
-        }
-    }
-
-    /**
-     * Calling the convertToTranslucent method on platforms before Android 5.0
-     */
-    public static void convertActivityToTranslucentBeforeL(Activity activity) {
-        try {
-            Class<?>[] classes = Activity.class.getDeclaredClasses();
-            Class<?> translucentConversionListenerClazz = null;
-            for (Class clazz : classes) {
-                if (clazz.getSimpleName().contains("TranslucentConversionListener")) {
-                    translucentConversionListenerClazz = clazz;
-                }
-            }
-            Method method = Activity.class.getDeclaredMethod("convertToTranslucent",
-                    translucentConversionListenerClazz);
-            method.setAccessible(true);
-            method.invoke(activity, new Object[]{
-                    null
-            });
-        } catch (Throwable t) {
-        }
+        convertActivityToTranslucentAfterL(activity);
     }
 
     /**
@@ -99,7 +73,7 @@ public class SwipeUtils {
                     translucentConversionListenerClazz, ActivityOptions.class);
             convertToTranslucent.setAccessible(true);
             convertToTranslucent.invoke(activity, null, options);
-        } catch (Throwable t) {
+        } catch (Throwable ignored) {
         }
     }
 }

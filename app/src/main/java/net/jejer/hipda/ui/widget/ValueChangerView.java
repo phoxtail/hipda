@@ -3,7 +3,6 @@ package net.jejer.hipda.ui.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -50,37 +49,31 @@ public class ValueChangerView extends RelativeLayout {
         a.recycle();
 
         inflate(getContext(), R.layout.vw_value_changer, this);
-        mBtnPlus = (Button) findViewById(R.id.btn_plus);
-        mBtnMinus = (Button) findViewById(R.id.btn_minus);
-        mTvValue = (TextView) findViewById(R.id.tv_value);
-        TextView tvTitle = (TextView) findViewById(R.id.tv_title);
+        mBtnPlus = findViewById(R.id.btn_plus);
+        mBtnMinus = findViewById(R.id.btn_minus);
+        mTvValue = findViewById(R.id.tv_value);
+        TextView tvTitle = findViewById(R.id.tv_title);
 
         tvTitle.setText(title);
         updateViews();
 
-        mBtnPlus.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mCurrentValue < mMaxValue) {
-                    mCurrentValue++;
-                    updateViews();
+        mBtnPlus.setOnClickListener(v -> {
+            if (mCurrentValue < mMaxValue) {
+                mCurrentValue++;
+                updateViews();
 
-                    if (mOnChangeListener != null)
-                        mOnChangeListener.onChange(mCurrentValue);
-                }
+                if (mOnChangeListener != null)
+                    mOnChangeListener.onChange(mCurrentValue);
             }
         });
 
-        mBtnMinus.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mCurrentValue > mMinValue) {
-                    mCurrentValue--;
-                    updateViews();
+        mBtnMinus.setOnClickListener(v -> {
+            if (mCurrentValue > mMinValue) {
+                mCurrentValue--;
+                updateViews();
 
-                    if (mOnChangeListener != null)
-                        mOnChangeListener.onChange(mCurrentValue);
-                }
+                if (mOnChangeListener != null)
+                    mOnChangeListener.onChange(mCurrentValue);
             }
         });
 

@@ -40,8 +40,8 @@ public class CountdownButton extends RelativeLayout {
 
     private void init() {
         inflate(getContext(), R.layout.vw_countdown_button, this);
-        mImageButton = (ImageButton) findViewById(R.id.ib_button);
-        mTextView = (TextView) findViewById(R.id.tv_countdown);
+        mImageButton = findViewById(R.id.ib_button);
+        mTextView = findViewById(R.id.tv_countdown);
     }
 
     public void setCountdown(int timeToWait) {

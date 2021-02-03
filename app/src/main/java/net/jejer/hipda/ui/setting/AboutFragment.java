@@ -14,6 +14,8 @@ import net.jejer.hipda.ui.BaseFragment;
 import net.jejer.hipda.ui.HiApplication;
 import net.jejer.hipda.utils.Utils;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * show version and info
  * Created by GreenSkinMonster on 2015-05-23.
@@ -23,18 +25,18 @@ public class AboutFragment extends BaseFragment {
     public static final String TAG_KEY = "ABOUT_KEY";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_about, container, false);
 
-        final TextView tabContent = (TextView) view.findViewById(R.id.tab_content);
-        final ScrollView scrollView = (ScrollView) view.findViewById(R.id.scroll_view);
+        final TextView tabContent = view.findViewById(R.id.tab_content);
+        final ScrollView scrollView = view.findViewById(R.id.scroll_view);
 
-        TextView tvAppVersion = (TextView) view.findViewById(R.id.app_version);
+        TextView tvAppVersion = view.findViewById(R.id.app_version);
         tvAppVersion.setText(
                 getResources().getString(R.string.app_name) + " " + HiApplication.getAppVersion()
                         + "\n" + getResources().getString(R.string.author));
 
-        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         TabLayout.Tab notesTab = tabLayout.newTab().setText("更新记录");
         TabLayout.Tab sponsorTab = tabLayout.newTab().setText("捐助名单");
         TabLayout.Tab linksTab = tabLayout.newTab().setText("感谢");

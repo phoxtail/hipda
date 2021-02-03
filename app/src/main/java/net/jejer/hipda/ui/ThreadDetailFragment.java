@@ -3,7 +3,6 @@ package net.jejer.hipda.ui;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
@@ -22,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -43,7 +41,6 @@ import com.mikepenz.iconics.IconicsDrawable;
 import net.jejer.hipda.BuildConfig;
 import net.jejer.hipda.R;
 import net.jejer.hipda.async.FavoriteHelper;
-import net.jejer.hipda.async.NetworkReadyEvent;
 import net.jejer.hipda.async.PostHelper;
 import net.jejer.hipda.bean.ContentImg;
 import net.jejer.hipda.bean.DetailBean;
@@ -85,6 +82,7 @@ import net.jejer.hipda.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -92,8 +90,6 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Request;
 
 public class ThreadDetailFragment extends BaseFragment {
     public static final String ARG_TID_KEY = "tid";
@@ -112,7 +108,6 @@ public class ThreadDetailFragment extends BaseFragment {
     public final static int FETCH_NEXT = 1;
     public final static int FETCH_PREVIOUS = 2;
     public final static int FETCH_REFRESH = 3;
-    public final static int FETCH_SILENT = 4;
 
     public static final int POSITION_NORMAL = 0;
     public static final int POSITION_HEADER = 1;
@@ -202,10 +197,10 @@ public class ThreadDetailFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_thread_detail, parent, false);
 
-        mRecyclerView = (XRecyclerView) view.findViewById(R.id.rv_thread_details);
+        mRecyclerView = view.findViewById(R.id.rv_thread_details);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mLayoutManager = new SmoothLinearLayoutManager(mCtx);
@@ -257,22 +252,19 @@ public class ThreadDetailFragment extends BaseFragment {
             }
         });
 
-        mLoadingView = (ContentLoadingView) view.findViewById(R.id.content_loading);
-        mLoadingView.setErrorStateListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mLoading) {
-                    mLoadingView.setState(ContentLoadingView.LOAD_NOW);
-                    refresh();
-                }
+        mLoadingView = view.findViewById(R.id.content_loading);
+        mLoadingView.setErrorStateListener(view1 -> {
+            if (!mLoading) {
+                mLoadingView.setState(ContentLoadingView.LOAD_NOW);
+                refresh();
             }
         });
 
         mQuickReply = ((ThreadDetailActivity) getActivity()).getQuickReplyView();
-        mEtReply = (EmojiEditText) mQuickReply.findViewById(R.id.tv_reply_text);
+        mEtReply = mQuickReply.findViewById(R.id.tv_reply_text);
         mEtReply.setTextSize(HiSettingsHelper.getInstance().getPostTextSize());
 
-        mCountdownButton = (CountdownButton) mQuickReply.findViewById(R.id.countdown_button);
+        mCountdownButton = mQuickReply.findViewById(R.id.countdown_button);
         mCountdownButton.setImageDrawable(new IconicsDrawable(getActivity(), GoogleMaterial.Icon.gmd_send).sizeDp(28).color(Color.GRAY));
         mCountdownButton.setOnClickListener(new OnSingleClickListener() {
             @Override
@@ -297,17 +289,14 @@ public class ThreadDetailFragment extends BaseFragment {
                 }
             }
         });
-        mCountdownButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                String replyText = mEtReply.getText().toString();
-                showPost(replyText);
-                hideQuickReply(true);
-                return true;
-            }
+        mCountdownButton.setOnLongClickListener(v -> {
+            String replyText = mEtReply.getText().toString();
+            showPost(replyText);
+            hideQuickReply(true);
+            return true;
         });
 
-        ImageButton ibEmojiSwitch = (ImageButton) mQuickReply.findViewById(R.id.ib_goto_post);
+        ImageButton ibEmojiSwitch = mQuickReply.findViewById(R.id.ib_goto_post);
         setUpEmojiPopup(mEtReply, ibEmojiSwitch);
 
         setActionBarTitle(mTitle);
@@ -345,7 +334,7 @@ public class ThreadDetailFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NotNull Menu menu, @NotNull MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.menu_thread_detail, menu);
 
@@ -357,7 +346,7 @@ public class ThreadDetailFragment extends BaseFragment {
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(@NotNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
         MenuItem favoritesMenuItem = menu.findItem(R.id.action_add_favorite);
         if (favoritesMenuItem != null) {
@@ -393,109 +382,107 @@ public class ThreadDetailFragment extends BaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Implemented in activity
-                return false;
-            case R.id.action_only_author:
-                if (isInAuthorOnlyMode()) {
-                    cancelAuthorOnlyMode();
-                } else {
-                    if (mCache.get(1) != null) {
-                        DetailBean detailBean = mCache.get(1).getAll().get(0);
-                        enterAuthorOnlyMode(detailBean.getUid());
-                    } else {
-                        enterAuthorOnlyMode(ThreadDetailJob.FIND_AUTHOR_ID);
-                    }
-                }
-                return true;
-            case R.id.action_open_url:
-                String url = HiUtils.DetailListUrl + mTid;
-                if (mCurrentPage > 1)
-                    url += "&page=" + mCurrentPage;
-                try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.parse(url), "text/html");
-                    List<ResolveInfo> list = mCtx.getPackageManager().queryIntentActivities(intent, 0);
-
-                    if (list.size() == 0) {
-                        intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        list = mCtx.getPackageManager().queryIntentActivities(intent, 0);
-
-                        ArrayList<Intent> targetIntents = new ArrayList<>();
-                        String myPkgName = BuildConfig.APPLICATION_ID;
-                        for (ResolveInfo currentInfo : list) {
-                            String packageName = currentInfo.activityInfo.packageName;
-                            if (!myPkgName.equals(packageName)) {
-                                Intent targetIntent = new Intent(android.content.Intent.ACTION_VIEW);
-                                targetIntent.setData(Uri.parse(url));
-                                targetIntent.setPackage(packageName);
-                                targetIntents.add(targetIntent);
-                            }
-                        }
-
-                        if (targetIntents.size() > 0) {
-                            Intent chooserIntent = Intent.createChooser(targetIntents.remove(0), getString(R.string.action_open_url));
-                            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetIntents.toArray(new Parcelable[targetIntents.size()]));
-                            startActivity(chooserIntent);
-                        } else {
-                            UIUtils.toast("没有找到浏览器应用");
-                        }
-
-                    } else {
-                        startActivity(intent);
-                    }
-                } catch (Exception e) {
-                    UIUtils.toast("没有找到浏览器应用 : " + e.getMessage());
-                }
-                return true;
-            case R.id.action_copy_url:
-                ClipboardManager clipboard = (ClipboardManager) mCtx.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("THREAD URL FROM HiPDA", HiUtils.DetailListUrl + mTid);
-                clipboard.setPrimaryClip(clip);
-                UIUtils.toast("帖子地址已经复制到粘贴板");
-                return true;
-            case R.id.action_share_thread:
-                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                sharingIntent.setType("text/plain");
-                String shareBody = HiUtils.DetailListUrl + mTid + "\n"
-                        + "主题：" + mTitle + "\n";
-                if (mCache.get(1) != null && mCache.get(1).getAll().size() > 0)
-                    shareBody += ("作者：" + mCache.get(1).getAll().get(0).getAuthor());
-                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                startActivity(Intent.createChooser(sharingIntent, "分享帖子"));
-                return true;
-            case R.id.action_reply:
-                showPost("");
-                return true;
-            case R.id.action_refresh_detail:
-                mLoadingView.setState(ContentLoadingView.LOAD_NOW);
-                refresh();
-                return true;
-            case R.id.action_goto:
-                showGotoPageDialog();
-                return true;
-            case R.id.action_add_favorite:
-                if (FavoriteHelper.getInstance().isInFavorite(mTid))
-                    FavoriteHelper.getInstance().removeFavorite(FavoriteHelper.TYPE_FAVORITE, mTid);
-                else
-                    FavoriteHelper.getInstance().addFavorite(FavoriteHelper.TYPE_FAVORITE, mTid);
-                return true;
-            case R.id.action_add_attention:
-                if (FavoriteHelper.getInstance().isInAttention(mTid))
-                    FavoriteHelper.getInstance().removeFavorite(FavoriteHelper.TYPE_ATTENTION, mTid);
-                else
-                    FavoriteHelper.getInstance().addFavorite(FavoriteHelper.TYPE_ATTENTION, mTid);
-                return true;
-            case R.id.action_show_all:
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {// Implemented in activity
+            return false;
+        } else if (itemId == R.id.action_only_author) {
+            if (isInAuthorOnlyMode()) {
                 cancelAuthorOnlyMode();
-                return true;
-            case R.id.action_font_size:
-                showTextLayoutDialog();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+            } else {
+                if (mCache.get(1) != null) {
+                    DetailBean detailBean = mCache.get(1).getAll().get(0);
+                    enterAuthorOnlyMode(detailBean.getUid());
+                } else {
+                    enterAuthorOnlyMode(ThreadDetailJob.FIND_AUTHOR_ID);
+                }
+            }
+            return true;
+        } else if (itemId == R.id.action_open_url) {
+            String url = HiUtils.DetailListUrl + mTid;
+            if (mCurrentPage > 1)
+                url += "&page=" + mCurrentPage;
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.parse(url), "text/html");
+                List<ResolveInfo> list = mCtx.getPackageManager().queryIntentActivities(intent, 0);
+
+                if (list.size() == 0) {
+                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    list = mCtx.getPackageManager().queryIntentActivities(intent, 0);
+
+                    ArrayList<Intent> targetIntents = new ArrayList<>();
+                    String myPkgName = BuildConfig.APPLICATION_ID;
+                    for (ResolveInfo currentInfo : list) {
+                        String packageName = currentInfo.activityInfo.packageName;
+                        if (!myPkgName.equals(packageName)) {
+                            Intent targetIntent = new Intent(Intent.ACTION_VIEW);
+                            targetIntent.setData(Uri.parse(url));
+                            targetIntent.setPackage(packageName);
+                            targetIntents.add(targetIntent);
+                        }
+                    }
+
+                    if (targetIntents.size() > 0) {
+                        Intent chooserIntent = Intent.createChooser(targetIntents.remove(0), getString(R.string.action_open_url));
+                        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetIntents.toArray(new Parcelable[0]));
+                        startActivity(chooserIntent);
+                    } else {
+                        UIUtils.toast("没有找到浏览器应用");
+                    }
+
+                } else {
+                    startActivity(intent);
+                }
+            } catch (Exception e) {
+                UIUtils.toast("没有找到浏览器应用 : " + e.getMessage());
+            }
+            return true;
+        } else if (itemId == R.id.action_copy_url) {
+            ClipboardManager clipboard = (ClipboardManager) mCtx.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("THREAD URL FROM HiPDA", HiUtils.DetailListUrl + mTid);
+            clipboard.setPrimaryClip(clip);
+            UIUtils.toast("帖子地址已经复制到粘贴板");
+            return true;
+        } else if (itemId == R.id.action_share_thread) {
+            Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            String shareBody = HiUtils.DetailListUrl + mTid + "\n"
+                    + "主题：" + mTitle + "\n";
+            if (mCache.get(1) != null && mCache.get(1).getAll().size() > 0)
+                shareBody += ("作者：" + mCache.get(1).getAll().get(0).getAuthor());
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+            startActivity(Intent.createChooser(sharingIntent, "分享帖子"));
+            return true;
+        } else if (itemId == R.id.action_reply) {
+            showPost("");
+            return true;
+        } else if (itemId == R.id.action_refresh_detail) {
+            mLoadingView.setState(ContentLoadingView.LOAD_NOW);
+            refresh();
+            return true;
+        } else if (itemId == R.id.action_goto) {
+            showGotoPageDialog();
+            return true;
+        } else if (itemId == R.id.action_add_favorite) {
+            if (FavoriteHelper.getInstance().isInFavorite(mTid))
+                FavoriteHelper.getInstance().removeFavorite(FavoriteHelper.TYPE_FAVORITE, mTid);
+            else
+                FavoriteHelper.getInstance().addFavorite(FavoriteHelper.TYPE_FAVORITE, mTid);
+            return true;
+        } else if (itemId == R.id.action_add_attention) {
+            if (FavoriteHelper.getInstance().isInAttention(mTid))
+                FavoriteHelper.getInstance().removeFavorite(FavoriteHelper.TYPE_ATTENTION, mTid);
+            else
+                FavoriteHelper.getInstance().addFavorite(FavoriteHelper.TYPE_ATTENTION, mTid);
+            return true;
+        } else if (itemId == R.id.action_show_all) {
+            cancelAuthorOnlyMode();
+            return true;
+        } else if (itemId == R.id.action_font_size) {
+            showTextLayoutDialog();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -507,12 +494,7 @@ public class ThreadDetailFragment extends BaseFragment {
                 mMainFab.show();
             }
 
-            mMainFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showQuickReply();
-                }
-            });
+            mMainFab.setOnClickListener(view -> showQuickReply());
         }
     }
 
@@ -574,7 +556,7 @@ public class ThreadDetailFragment extends BaseFragment {
         return mCache.getPostByPostId(postId);
     }
 
-    public ArrayList<ContentImg> getImagesInPage(int page) {
+    public ArrayList<ContentImg> getImagesInPage() {
         DetailListBean detailListBean = mCache.get(mCurrentPage);
         if (detailListBean != null) {
             return detailListBean.getContentImages();
@@ -587,115 +569,72 @@ public class ThreadDetailFragment extends BaseFragment {
             return;
         mGridMenu = new SimpleGridMenu(getActivity());
         mGridMenu.setTitle(detailBean.getFloor() + "# " + detailBean.getAuthor());
-        mGridMenu.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                mGridMenu = null;
-            }
-        });
+        mGridMenu.setOnDismissListener(dialog -> mGridMenu = null);
 
-        mGridMenu.add("copy", "复制文字", new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("COPY FROM HiPDA", detailBean.getContents().getCopyText());
-                clipboard.setPrimaryClip(clip);
-                UIUtils.toast("文字已复制");
-            }
+        mGridMenu.add("copy", "复制文字", (parent, view, position, id) -> {
+            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("COPY FROM HiPDA", detailBean.getContents().getCopyText());
+            clipboard.setPrimaryClip(clip);
+            UIUtils.toast("文字已复制");
         });
         String authorText = isInAuthorOnlyMode() ? getString(R.string.action_show_all) : getString(R.string.action_only_floor_author);
         mGridMenu.add("author", authorText,
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        if (isInAuthorOnlyMode()) {
-                            cancelAuthorOnlyMode();
-                        } else {
-                            enterAuthorOnlyMode(detailBean.getUid());
-                        }
+                (parent, view, position, id) -> {
+                    if (isInAuthorOnlyMode()) {
+                        cancelAuthorOnlyMode();
+                    } else {
+                        enterAuthorOnlyMode(detailBean.getUid());
                     }
                 });
         mGridMenu.add("share", "分享",
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                        sharingIntent.setType("text/plain");
-                        String shareBody = "帖子 ：" + mTitle + "\n" +
-                                HiUtils.RedirectToPostUrl.replace("{tid}", mTid).replace("{pid}", detailBean.getPostId()) + "\n" +
-                                detailBean.getFloor() + "#  作者 ：" + detailBean.getAuthor() + "\n\n" +
-                                detailBean.getContents().getCopyText();
-                        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                        startActivity(Intent.createChooser(sharingIntent, "分享文字内容"));
-                    }
+                (parent, view, position, id) -> {
+                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    String shareBody = "帖子 ：" + mTitle + "\n" +
+                            HiUtils.RedirectToPostUrl.replace("{tid}", mTid).replace("{pid}", detailBean.getPostId()) + "\n" +
+                            detailBean.getFloor() + "#  作者 ：" + detailBean.getAuthor() + "\n\n" +
+                            detailBean.getContents().getCopyText();
+                    sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(sharingIntent, "分享文字内容"));
                 });
         mGridMenu.add("select_text", "文字选择",
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        detailBean.setSelectMode(true);
-                        int pos = mDetailAdapter.getPositionByPostId(detailBean.getPostId());
-                        if (pos != -1)
-                            mDetailAdapter.notifyItemChanged(pos);
+                (parent, view, position, id) -> {
+                    detailBean.setSelectMode(true);
+                    int pos = mDetailAdapter.getPositionByPostId(detailBean.getPostId());
+                    if (pos != -1)
+                        mDetailAdapter.notifyItemChanged(pos);
 //                        UIUtils.showMessageDialog(getActivity(),
 //                                detailBean.getFloor() + "# " + detailBean.getAuthor(),
 //                                detailBean.getContents().getCopyText().trim(),
 //                                true);
-                    }
                 });
         mGridMenu.add("reply", "回复",
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        showQuickReply(PostHelper.MODE_REPLY_POST, detailBean);
-                    }
-                },
-                GoogleMaterial.Icon.gmd_open_in_new, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        FragmentUtils.showPostActivity(getActivity(), PostHelper.MODE_REPLY_POST,
-                                mSessionId, mFid, mTid,
-                                detailBean.getPostId(), detailBean.getFloor(),
-                                detailBean.getAuthor(), null, detailBean.getContents().getCopyText());
-                        hideQuickReply(true);
-                    }
+                (parent, view, position, id) -> showQuickReply(PostHelper.MODE_REPLY_POST, detailBean),
+                GoogleMaterial.Icon.gmd_open_in_new, v -> {
+                    FragmentUtils.showPostActivity(getActivity(), PostHelper.MODE_REPLY_POST,
+                            mSessionId, mFid, mTid,
+                            detailBean.getPostId(), detailBean.getFloor(),
+                            detailBean.getAuthor(), null, detailBean.getContents().getCopyText());
+                    hideQuickReply(true);
                 });
         mGridMenu.add("quote", "引用",
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        showQuickReply(PostHelper.MODE_QUOTE_POST, detailBean);
-                    }
-                },
-                GoogleMaterial.Icon.gmd_open_in_new, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        FragmentUtils.showPostActivity(getActivity(), PostHelper.MODE_QUOTE_POST,
-                                mSessionId, mFid, mTid,
-                                detailBean.getPostId(), detailBean.getFloor(),
-                                detailBean.getAuthor(), null, detailBean.getContents().getCopyText());
-                        hideQuickReply(true);
-                    }
+                (parent, view, position, id) -> showQuickReply(PostHelper.MODE_QUOTE_POST, detailBean),
+                GoogleMaterial.Icon.gmd_open_in_new, v -> {
+                    FragmentUtils.showPostActivity(getActivity(), PostHelper.MODE_QUOTE_POST,
+                            mSessionId, mFid, mTid,
+                            detailBean.getPostId(), detailBean.getFloor(),
+                            detailBean.getAuthor(), null, detailBean.getContents().getCopyText());
+                    hideQuickReply(true);
                 });
         if (HiSettingsHelper.getInstance().getUsername().equalsIgnoreCase(detailBean.getAuthor())
                 || HiSettingsHelper.getInstance().getUid().equals(detailBean.getUid())) {
             mGridMenu.add("delete", "快速删除",
-                    new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            showDeletePostDialog(detailBean);
-                        }
-                    });
+                    (parent, view, position, id) -> showDeletePostDialog(detailBean));
             mGridMenu.add("edit", "编辑",
-                    new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            FragmentUtils.showPostActivity(getActivity(), PostHelper.MODE_EDIT_POST,
-                                    mSessionId, mFid, mTid,
-                                    detailBean.getPostId(), detailBean.getFloor(),
-                                    null, null, null);
-                        }
-                    });
+                    (parent, view, position, id) -> FragmentUtils.showPostActivity(getActivity(), PostHelper.MODE_EDIT_POST,
+                            mSessionId, mFid, mTid,
+                            detailBean.getPostId(), detailBean.getFloor(),
+                            null, null, null));
         }
         mGridMenu.show();
     }
@@ -706,20 +645,17 @@ public class ThreadDetailFragment extends BaseFragment {
         popDialog.setMessage(HtmlCompat.fromHtml("确认删除发表的内容吗？<br><br><font color=red>注意：此操作不可恢复。" +
                 "<br><br>如帖子可以删除，则进行删除，否则清空帖子内容以及图片和附件。</font>"));
         popDialog.setPositiveButton("删除",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        PostBean postBean = new PostBean();
-                        postBean.setFid(mFid);
-                        postBean.setTid(mTid);
-                        postBean.setPid(detailBean.getPostId());
-                        postBean.setFloor(detailBean.getFloor());
-                        postBean.setContent(detailBean.getContents().getContent());
-                        if (detailBean.getFloor() == 1)
-                            postBean.setSubject(mTitle);
+                (dialog, which) -> {
+                    PostBean postBean = new PostBean();
+                    postBean.setFid(mFid);
+                    postBean.setTid(mTid);
+                    postBean.setPid(detailBean.getPostId());
+                    postBean.setFloor(detailBean.getFloor());
+                    postBean.setContent(detailBean.getContents().getContent());
+                    if (detailBean.getFloor() == 1)
+                        postBean.setSubject(mTitle);
 
-                        JobMgr.addJob(new PostJob(mSessionId, PostHelper.MODE_QUICK_DELETE, null, postBean, false));
-                    }
+                    JobMgr.addJob(new PostJob(mSessionId, PostHelper.MODE_QUICK_DELETE, null, postBean, false));
                 });
         popDialog.setIcon(new IconicsDrawable(getActivity(), FontAwesome.Icon.faw_exclamation_circle).sizeDp(24).color(Color.RED));
         popDialog.setNegativeButton("取消", null);
@@ -797,15 +733,15 @@ public class ThreadDetailFragment extends BaseFragment {
         mGoToPage = mCurrentPage;
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.dialog_goto_page, null);
-        TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
-        final TextView tvPage = (TextView) view.findViewById(R.id.tv_page);
-        final ImageButton btnFirstPage = (ImageButton) view.findViewById(R.id.btn_first_page);
-        final ImageButton btnLastPage = (ImageButton) view.findViewById(R.id.btn_last_page);
-        final ImageButton btnNextPage = (ImageButton) view.findViewById(R.id.btn_next_page);
-        final ImageButton btnPreviousPage = (ImageButton) view.findViewById(R.id.btn_previous_page);
-        final SeekBar sbGotoPage = (SeekBar) view.findViewById(R.id.sb_page);
-        Button btnPageBottom = (Button) view.findViewById(R.id.btn_page_bottom);
-        Button btnGoto = (Button) view.findViewById(R.id.btn_goto_page);
+        TextView tvTitle = view.findViewById(R.id.tv_title);
+        final TextView tvPage = view.findViewById(R.id.tv_page);
+        final ImageButton btnFirstPage = view.findViewById(R.id.btn_first_page);
+        final ImageButton btnLastPage = view.findViewById(R.id.btn_last_page);
+        final ImageButton btnNextPage = view.findViewById(R.id.btn_next_page);
+        final ImageButton btnPreviousPage = view.findViewById(R.id.btn_previous_page);
+        final SeekBar sbGotoPage = view.findViewById(R.id.sb_page);
+        Button btnPageBottom = view.findViewById(R.id.btn_page_bottom);
+        Button btnGoto = view.findViewById(R.id.btn_goto_page);
 
         final BottomSheetDialog dialog = new BottomDialog(getActivity());
 
@@ -853,48 +789,36 @@ public class ThreadDetailFragment extends BaseFragment {
             }
         });
 
-        btnFirstPage.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCurrentPage = 1;
+        btnFirstPage.setOnClickListener(view12 -> {
+            mCurrentPage = 1;
+            mGotoFloor = FIRST_FLOOR;
+            showOrLoadPage();
+            dialog.dismiss();
+        });
+
+        btnLastPage.setOnClickListener(view13 -> {
+            mCurrentPage = mMaxPage;
+            mGotoFloor = LAST_FLOOR;
+            showOrLoadPage();
+            dialog.dismiss();
+        });
+
+        btnNextPage.setOnClickListener(view1 -> {
+            if (mCurrentPage < mMaxPage) {
+                mCurrentPage++;
                 mGotoFloor = FIRST_FLOOR;
                 showOrLoadPage();
-                dialog.dismiss();
             }
+            dialog.dismiss();
         });
 
-        btnLastPage.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCurrentPage = mMaxPage;
-                mGotoFloor = LAST_FLOOR;
+        btnPreviousPage.setOnClickListener(view14 -> {
+            if (mCurrentPage > 1) {
+                mCurrentPage--;
+                mGotoFloor = FIRST_FLOOR;
                 showOrLoadPage();
-                dialog.dismiss();
             }
-        });
-
-        btnNextPage.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mCurrentPage < mMaxPage) {
-                    mCurrentPage++;
-                    mGotoFloor = FIRST_FLOOR;
-                    showOrLoadPage();
-                }
-                dialog.dismiss();
-            }
-        });
-
-        btnPreviousPage.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mCurrentPage > 1) {
-                    mCurrentPage--;
-                    mGotoFloor = FIRST_FLOOR;
-                    showOrLoadPage();
-                }
-                dialog.dismiss();
-            }
+            dialog.dismiss();
         });
 
         dialog.setContentView(view);
@@ -966,13 +890,11 @@ public class ThreadDetailFragment extends BaseFragment {
     }
 
     private void showSoftKeyboard() {
-        (new Handler()).postDelayed(new Runnable() {
-            public void run() {
-                mEtReply.requestFocus();
-                mEtReply.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
-                mEtReply.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
-                mEtReply.setSelection(mEtReply.getText().length());
-            }
+        (new Handler()).postDelayed(() -> {
+            mEtReply.requestFocus();
+            mEtReply.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+            mEtReply.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+            mEtReply.setSelection(mEtReply.getText().length());
         }, 100);
     }
 
@@ -980,27 +902,21 @@ public class ThreadDetailFragment extends BaseFragment {
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.dialog_thread_font_size, null);
 
-        final ValueChangerView valueChangerSize = (ValueChangerView) view.findViewById(R.id.value_changer_size);
-        final ValueChangerView valueChangerLs = (ValueChangerView) view.findViewById(R.id.value_changer_ls);
+        final ValueChangerView valueChangerSize = view.findViewById(R.id.value_changer_size);
+        final ValueChangerView valueChangerLs = view.findViewById(R.id.value_changer_ls);
 
         valueChangerSize.setCurrentValue(HiSettingsHelper.getInstance().getPostTextSizeAdj());
-        valueChangerSize.setOnChangeListener(new ValueChangerView.OnChangeListener() {
-            @Override
-            public void onChange(int currentValue) {
-                HiSettingsHelper.getInstance().setPostTextSizeAdj(currentValue);
-                if (mDetailAdapter != null)
-                    mDetailAdapter.notifyDataSetChanged();
-            }
+        valueChangerSize.setOnChangeListener(currentValue -> {
+            HiSettingsHelper.getInstance().setPostTextSizeAdj(currentValue);
+            if (mDetailAdapter != null)
+                mDetailAdapter.notifyDataSetChanged();
         });
 
         valueChangerLs.setCurrentValue(HiSettingsHelper.getInstance().getPostLineSpacing());
-        valueChangerLs.setOnChangeListener(new ValueChangerView.OnChangeListener() {
-            @Override
-            public void onChange(int currentValue) {
-                HiSettingsHelper.getInstance().setPostLineSpacing(currentValue);
-                if (mDetailAdapter != null)
-                    mDetailAdapter.notifyDataSetChanged();
-            }
+        valueChangerLs.setOnChangeListener(currentValue -> {
+            HiSettingsHelper.getInstance().setPostLineSpacing(currentValue);
+            if (mDetailAdapter != null)
+                mDetailAdapter.notifyDataSetChanged();
         });
 
         final BottomSheetDialog dialog = new BottomDialog(getActivity());
@@ -1089,44 +1005,41 @@ public class ThreadDetailFragment extends BaseFragment {
                 mRecyclerView.setFooterState(XFooterView.STATE_READY);
             }
 
-            mRecyclerView.post(new Runnable() {
-                @Override
-                public void run() {
-                    int position = -1;
-                    final boolean toBottom = (mGotoFloor == LAST_FLOOR);
-                    if (mGotoFloor == LAST_FLOOR) {
-                        position = mDetailAdapter.getItemCount() - 1 - mDetailAdapter.getFooterCount();
-                    } else if (mGotoFloor == FIRST_FLOOR) {
-                        position = 0;
-                    } else if (mGotoFloor != -1) {
-                        position = mDetailAdapter.getPositionByFloor(mGotoFloor);
-                    } else if (HiUtils.isValidId(mGotoPostId)) {
-                        position = mDetailAdapter.getPositionByPostId(mGotoPostId);
-                        blinkItemView(mGotoPostId);
-                    }
+            mRecyclerView.post(() -> {
+                int position = -1;
+                final boolean toBottom = (mGotoFloor == LAST_FLOOR);
+                if (mGotoFloor == LAST_FLOOR) {
+                    position = mDetailAdapter.getItemCount() - 1 - mDetailAdapter.getFooterCount();
+                } else if (mGotoFloor == FIRST_FLOOR) {
+                    position = 0;
+                } else if (mGotoFloor != -1) {
+                    position = mDetailAdapter.getPositionByFloor(mGotoFloor);
+                } else if (HiUtils.isValidId(mGotoPostId)) {
+                    position = mDetailAdapter.getPositionByPostId(mGotoPostId);
+                    blinkItemView(mGotoPostId);
+                }
 
-                    if (toBottom) {
-                        mRecyclerView.scrollToBottom();
-                    } else if (position >= 0) {
-                        mRecyclerView.scrollToPosition(position);
-                    }
+                if (toBottom) {
+                    mRecyclerView.scrollToBottom();
+                } else if (position >= 0) {
+                    mRecyclerView.scrollToPosition(position);
+                }
 
-                    mGotoPostId = null;
-                    mGotoFloor = -1;
+                mGotoPostId = null;
+                mGotoFloor = -1;
 
-                    if (mPendingBlinkFloor > 0) {
-                        int pos = mDetailAdapter.getPositionByFloor(mPendingBlinkFloor);
-                        DetailBean detailBean = mDetailAdapter.getItem(pos);
-                        if (detailBean != null)
-                            blinkItemView(detailBean.getPostId());
-                        mPendingBlinkFloor = 0;
-                    }
+                if (mPendingBlinkFloor > 0) {
+                    int pos = mDetailAdapter.getPositionByFloor(mPendingBlinkFloor);
+                    DetailBean detailBean = mDetailAdapter.getItem(pos);
+                    if (detailBean != null)
+                        blinkItemView(detailBean.getPostId());
+                    mPendingBlinkFloor = 0;
+                }
 
-                    if (position < 8) {
-                        prefetchPreviousPage();
-                    } else if (position > mDetailAdapter.getItemCount() - 8) {
-                        prefetchNextPage();
-                    }
+                if (position < 8) {
+                    prefetchPreviousPage();
+                } else if (position > mDetailAdapter.getItemCount() - 8) {
+                    prefetchNextPage();
                 }
             });
 
@@ -1168,7 +1081,7 @@ public class ThreadDetailFragment extends BaseFragment {
             mPendingScrollPostId = null;
             if (pos != -1 && mQuickReply.getVisibility() == View.VISIBLE) {
                 View v = mLayoutManager.getChildAt(0);
-                TextView tv = (TextView) v.findViewById(R.id.floor);
+                TextView tv = v.findViewById(R.id.floor);
                 if (tv == null || Utils.parseInt(tv.getText().toString()) != mQuickReplyToPost.getFloor()) {
                     //minus height of quick reply view
                     int replyTop = newTop - 30;
@@ -1195,7 +1108,6 @@ public class ThreadDetailFragment extends BaseFragment {
         }
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(PostEvent event) {
         if (!mSessionId.equals(event.mSessionId))
@@ -1305,15 +1217,13 @@ public class ThreadDetailFragment extends BaseFragment {
         }
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NetworkReadyEvent event) {
+    public void onEvent() {
         if (!mLoading && mDetailBeans.size() == 0) {
             refresh();
         }
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(ThreadDetailEvent event) {
         if (!mSessionId.equals(event.mSessionId))
@@ -1325,14 +1235,14 @@ public class ThreadDetailFragment extends BaseFragment {
     private class OnItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
 
         @Override
-        public void onItemClick(View view, int position) {
+        public void onItemClick(int position) {
         }
 
         @Override
         public void onLongItemClick(View view, int position) {
 //            DetailBean detailBean = mDetailAdapter.getItem(position);
             DetailBean detailBean = null;
-            TextView floorView = (TextView) view.findViewById(R.id.floor);
+            TextView floorView = view.findViewById(R.id.floor);
             if (floorView != null) {
                 String floor = floorView.getText().toString();
                 if (!TextUtils.isEmpty(floor) && TextUtils.isDigitsOnly(floor)) {
@@ -1348,7 +1258,7 @@ public class ThreadDetailFragment extends BaseFragment {
         }
 
         @Override
-        public void onDoubleTap(View view, int position) {
+        public void onDoubleTap() {
             showGotoPageDialog();
         }
     }
@@ -1382,7 +1292,7 @@ public class ThreadDetailFragment extends BaseFragment {
                         HiUtils.UserWarningUrl.replace("{tid}", mTid).replace("{uid}", view.getTag().toString()),
                         new OkHttpHelper.ResultCallback() {
                             @Override
-                            public void onError(Request request, Exception e) {
+                            public void onError(Exception e) {
                                 UIUtils.toast(OkHttpHelper.getErrorMessage(e).getMessage());
                             }
 
@@ -1413,7 +1323,7 @@ public class ThreadDetailFragment extends BaseFragment {
         int firstVisibleItem, lastVisibleItem, visibleItemCount, totalItemCount;
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
             firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
             lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
             if (dy > 0) {
@@ -1432,7 +1342,7 @@ public class ThreadDetailFragment extends BaseFragment {
         }
 
         @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        public void onScrollStateChanged(@NotNull RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
             if (newState == RecyclerView.SCROLL_STATE_IDLE
                     && HiSettingsHelper.getInstance().isFabAutoHide()

@@ -53,12 +53,11 @@ public class ImageUploadJob extends BaseJob implements UploadImgHelper.UploadImg
         event.mType = ImageUploadEvent.UPLOADING;
         event.mTotal = total;
         event.mCurrent = current;
-        event.mPercentage = percentage;
         EventBus.getDefault().postSticky(event);
     }
 
     @Override
-    public void itemComplete(Uri uri, int total, int current, String currentFileName, String message, String detail, String imgId, Bitmap thumbnail) {
+    public void itemComplete(Uri uri, int total, int current, String message, String detail, String imgId, Bitmap thumbnail) {
         UploadImage image = new UploadImage();
         image.setImgId(imgId);
         image.setThumb(thumbnail);

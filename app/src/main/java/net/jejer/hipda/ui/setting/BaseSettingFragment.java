@@ -17,7 +17,8 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
 import net.jejer.hipda.utils.ColorHelper;
-import net.jejer.hipda.utils.Utils;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,45 +29,42 @@ import java.util.Set;
  */
 public class BaseSettingFragment extends PreferenceFragmentCompat {
 
-    private static final Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
+    private static final Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
 
-            String stringValue = value.toString();
-            if (preference instanceof MultiSelectListPreference) {
-                MultiSelectListPreference listPreference = (MultiSelectListPreference) preference;
-                Set<String> selectedValues = (Set<String>) value;
-                CharSequence[] entries = listPreference.getEntries();
-                CharSequence[] entryValues = listPreference.getEntryValues();
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < entryValues.length; i++) {
-                    String v = entryValues[i].toString();
-                    if (selectedValues.contains(v)) {
-                        if (sb.length() > 0)
-                            sb.append(", ");
-                        int index = listPreference.findIndexOfValue(v);
-                        sb.append(entries[index]);
-                    }
+        String stringValue = value.toString();
+        if (preference instanceof MultiSelectListPreference) {
+            MultiSelectListPreference listPreference = (MultiSelectListPreference) preference;
+            Set<String> selectedValues = (Set<String>) value;
+            CharSequence[] entries = listPreference.getEntries();
+            CharSequence[] entryValues = listPreference.getEntryValues();
+            StringBuilder sb = new StringBuilder();
+            for (CharSequence entryValue : entryValues) {
+                String v = entryValue.toString();
+                if (selectedValues.contains(v)) {
+                    if (sb.length() > 0)
+                        sb.append(", ");
+                    int index = listPreference.findIndexOfValue(v);
+                    sb.append(entries[index]);
                 }
-                preference.setSummary(sb.toString());
-            } else if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
-
-                // Set the summary to reflect the new value.
-                preference
-                        .setSummary(index >= 0 ? listPreference.getEntries()[index]
-                                : null);
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
             }
+            preference.setSummary(sb.toString());
+        } else if (preference instanceof ListPreference) {
+            // For list preferences, look up the correct display value in
+            // the preference's 'entries' list.
+            ListPreference listPreference = (ListPreference) preference;
+            int index = listPreference.findIndexOfValue(stringValue);
 
-            return true;
+            // Set the summary to reflect the new value.
+            preference
+                    .setSummary(index >= 0 ? listPreference.getEntries()[index]
+                            : null);
+        } else {
+            // For all other preferences, set the summary to the value's
+            // simple string representation.
+            preference.setSummary(stringValue);
         }
+
+        return true;
     };
 
     protected static void bindPreferenceSummaryToValue(Preference preference) {
@@ -94,7 +92,7 @@ public class BaseSettingFragment extends PreferenceFragmentCompat {
                     preference,
                     PreferenceManager.getDefaultSharedPreferences(
                             preference.getContext()).getStringSet(preference.getKey(),
-                            new HashSet<String>()));
+                            new HashSet<>()));
         } else {
             sBindPreferenceSummaryToValueListener.onPreferenceChange(
                     preference,
@@ -110,21 +108,11 @@ public class BaseSettingFragment extends PreferenceFragmentCompat {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         if (view != null)
             view.setBackgroundColor(ColorHelper.getListBackgroundColor(getActivity()));
         return view;
-    }
-
-    protected void setActionBarTitle(CharSequence title) {
-        if (getActivity() != null) {
-            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            String t = Utils.nullToText(title);
-            if (actionBar != null && !t.equals(actionBar.getTitle())) {
-                actionBar.setTitle(t);
-            }
-        }
     }
 
     void setActionBarTitle(@StringRes int resId) {

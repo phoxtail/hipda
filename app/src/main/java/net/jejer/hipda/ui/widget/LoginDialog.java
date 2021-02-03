@@ -40,10 +40,10 @@ public class LoginDialog extends Dialog {
                 Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_login, null);
 
-        final EditText etUsername = (EditText) view.findViewById(R.id.login_username);
-        final EditText etPassword = (EditText) view.findViewById(R.id.login_password);
-        final Spinner spSecQuestion = (Spinner) view.findViewById(R.id.login_question);
-        final EditText etSecAnswer = (EditText) view.findViewById(R.id.login_answer);
+        final EditText etUsername = view.findViewById(R.id.login_username);
+        final EditText etPassword = view.findViewById(R.id.login_password);
+        final Spinner spSecQuestion = view.findViewById(R.id.login_question);
+        final EditText etSecAnswer = view.findViewById(R.id.login_answer);
 
         final KeyValueArrayAdapter adapter = new KeyValueArrayAdapter(mCtx, R.layout.spinner_row);
         adapter.setEntryValues(mCtx.getResources().getStringArray(R.array.pref_login_question_list_values));
@@ -60,7 +60,7 @@ public class LoginDialog extends Dialog {
         }
         etSecAnswer.setText(HiSettingsHelper.getInstance().getSecAnswer());
 
-        Button btnLogin = (Button) view.findViewById(R.id.login_btn);
+        Button btnLogin = view.findViewById(R.id.login_btn);
         btnLogin.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {

@@ -9,6 +9,7 @@ import java.util.Collection;
 @SuppressWarnings("SpellCheckingInspection")
 public class DetailBean {
     private final Collection<ContentImg> mImages = new ArrayList<>();
+    private final Contents mContents;
     private String mAuthor;
     private String mUid;
     private String mAvatarUrl;
@@ -16,8 +17,6 @@ public class DetailBean {
     private String mTimePost;
     private int mFloor;
     private String mPostStatus;
-    private final Contents mContents;
-    private int mPage;
     private boolean mWarned;
     private boolean mSelectMode;
     private boolean mHighlightMode;
@@ -96,12 +95,7 @@ public class DetailBean {
         }
     }
 
-    public int getPage() {
-        return mPage;
-    }
-
-    public void setPage(int page) {
-        mPage = page;
+    public void setPage() {
     }
 
     public boolean isWarned() {

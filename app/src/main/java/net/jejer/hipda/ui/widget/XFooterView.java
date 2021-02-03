@@ -42,10 +42,10 @@ public class XFooterView extends RelativeLayout {
                 Utils.dpToPx(XRecyclerView.HEIGHT_IN_DP)));
         addView(mLayout);
 
-        mProgressBar = (ProgressBar) mLayout.findViewById(R.id.footer_progressbar);
+        mProgressBar = mLayout.findViewById(R.id.footer_progressbar);
         mProgressBar.getIndeterminateDrawable()
                 .setColorFilter(Color.LTGRAY, android.graphics.PorterDuff.Mode.SRC_IN);
-        mHintView = (TextView) mLayout.findViewById(R.id.footer_text);
+        mHintView = mLayout.findViewById(R.id.footer_text);
     }
 
     protected int getState() {

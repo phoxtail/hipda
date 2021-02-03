@@ -11,7 +11,7 @@ public abstract class OnViewItemSingleClickListener implements AdapterView.OnIte
     private static final long MIN_CLICK_INTERVAL = 600;
     private long mLastClickTime;
 
-    public abstract void onItemSingleClick(AdapterView<?> adapterView, View view, int i, long l);
+    public abstract void onItemSingleClick(View view, int i);
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -20,7 +20,7 @@ public abstract class OnViewItemSingleClickListener implements AdapterView.OnIte
         mLastClickTime = currentClickTime;
         if (elapsedTime <= MIN_CLICK_INTERVAL)
             return;
-        onItemSingleClick(adapterView, view, i, l);
+        onItemSingleClick(view, i);
     }
 
 }

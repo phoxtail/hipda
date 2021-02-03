@@ -38,7 +38,7 @@ public class SimpleListAdapter extends BaseRvAdapter<SimpleListItemBean> {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup parent) {
         return new ViewHolderImpl(mInflater.inflate(R.layout.item_simple_list, parent, false));
     }
 
@@ -98,12 +98,12 @@ public class SimpleListAdapter extends BaseRvAdapter<SimpleListItemBean> {
     }
 
     private static class ViewHolderImpl extends RecyclerView.ViewHolder {
-        TextView tv_title;
-        TextView tv_forum;
-        TextView tv_info;
-        TextView tv_author;
-        TextView tv_time;
-        ImageView iv_avatar;
+        final TextView tv_title;
+        final TextView tv_forum;
+        final TextView tv_info;
+        final TextView tv_author;
+        final TextView tv_time;
+        final ImageView iv_avatar;
 
         ViewHolderImpl(View itemView) {
             super(itemView);

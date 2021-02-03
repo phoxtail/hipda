@@ -44,8 +44,8 @@ public class ContentLoadingView extends RelativeLayout {
 
     private void init() {
         inflate(getContext(), R.layout.vw_content_loading, this);
-        mProgressBar = (ContentLoadingProgressBar) findViewById(R.id.content_progressbar);
-        mContentInfo = (TextView) findViewById(R.id.content_info);
+        mProgressBar = findViewById(R.id.content_progressbar);
+        mContentInfo = findViewById(R.id.content_info);
         mContentInfo.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View view) {

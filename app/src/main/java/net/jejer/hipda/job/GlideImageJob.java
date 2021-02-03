@@ -69,7 +69,7 @@ public class GlideImageJob extends BaseJob {
                                 imageInfo.setStatus(ImageInfo.FAIL);
                                 String message = "url : " + mUrl + "\n\nmessage : " + (e != null ? e.getMessage() : "NULL");
                                 imageInfo.setMessage(message);
-                                EventBus.getDefault().post(new GlideImageEvent(mUrl, -1, ImageInfo.FAIL, message));
+                                EventBus.getDefault().post(new GlideImageEvent(mUrl, -1, ImageInfo.FAIL));
                             }
                             return false;
                         }
@@ -87,7 +87,7 @@ public class GlideImageJob extends BaseJob {
             if (mNetworkFetch) {
                 Logger.e(e);
                 imageInfo.setStatus(ImageInfo.FAIL);
-                String message = "";
+                String message;
                 if (HiSettingsHelper.getInstance().isErrorReportMode()) {
                     message = "url : " + mUrl + "\n\nmessage : ";
                     if (e instanceof ExecutionException && e.getCause() != null) {
@@ -96,7 +96,7 @@ public class GlideImageJob extends BaseJob {
                         message += e.getMessage();
                     }
                 }
-                EventBus.getDefault().post(new GlideImageEvent(mUrl, -1, ImageInfo.FAIL, message));
+                EventBus.getDefault().post(new GlideImageEvent(mUrl, -1, ImageInfo.FAIL));
             }
         }
     }

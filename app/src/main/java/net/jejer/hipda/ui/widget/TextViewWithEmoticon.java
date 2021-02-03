@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 
 import net.jejer.hipda.bean.DetailBean;
 import net.jejer.hipda.cache.SmallImages;
@@ -105,7 +106,8 @@ public class TextViewWithEmoticon extends AppCompatTextView {
         }
         if (mTrim)
             t = t.replace("<br>", "").trim();
-        SpannableStringBuilder b = (SpannableStringBuilder) Html.fromHtml(t, imageGetter, new HiHtmlTagHandler());
+
+        SpannableStringBuilder b = (SpannableStringBuilder) HtmlCompat.fromHtml(t, HtmlCompat.FROM_HTML_MODE_LEGACY, imageGetter, new HiHtmlTagHandler());
         if (mTrim && b.length() > TRIM_LENGTH) {
             b = new SpannableStringBuilder(b.subSequence(0, TRIM_LENGTH));
             b.append(" ....");

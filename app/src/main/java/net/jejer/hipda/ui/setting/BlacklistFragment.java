@@ -1,7 +1,6 @@
 package net.jejer.hipda.ui.setting;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -34,15 +33,13 @@ import net.jejer.hipda.ui.widget.SimpleDivider;
 import net.jejer.hipda.utils.ColorHelper;
 import net.jejer.hipda.utils.HiParser;
 import net.jejer.hipda.utils.UIUtils;
-import net.jejer.hipda.utils.Utils;
 
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Request;
 
 /**
  * Created by GreenSkinMonster on 2017-07-15.
@@ -64,7 +61,7 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
     private HiProgressDialog mProgressDialog;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_blacklist, container, false);
         mInflater = inflater;
 
@@ -80,17 +77,17 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
             }
         };
 
-        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mSwipeLayout = view.findViewById(R.id.swipe_container);
         mSwipeLayout.setOnRefreshListener(this);
         mSwipeLayout.setColorSchemeColors(ColorHelper.getSwipeColor(getActivity()));
         mSwipeLayout.setProgressBackgroundColorSchemeColor(ColorHelper.getSwipeBackgroundColor(getActivity()));
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new SimpleDivider(getActivity()));
 
-        mLoadingView = (ContentLoadingView) view.findViewById(R.id.content_loading);
+        mLoadingView = view.findViewById(R.id.content_loading);
 
         recyclerView.setAdapter(mAdapter);
 
@@ -107,7 +104,7 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
         mRemoving.clear();
         BlacklistHelper.getBlacklists(new OkHttpHelper.ResultCallback() {
             @Override
-            public void onError(Request request, Exception e) {
+            public void onError(Exception e) {
                 UIUtils.toast("获取黑名单发生错误 : " + OkHttpHelper.getErrorMessage(e).getMessage());
                 mSwipeLayout.setRefreshing(false);
                 mLoadingView.setState(mBlacklists.size() > 0 ? ContentLoadingView.CONTENT : ContentLoadingView.NO_DATA);
@@ -128,20 +125,10 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
 
                         if (!mDialogShown && HiSettingsHelper.getInstance().getOldBlacklists().size() > 0) {
                             mDialogShown = true;
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    showUploadBlacklistDialog(getActivity());
-                                }
-                            }, 300);
+                            new Handler().postDelayed(() -> showUploadBlacklistDialog(getActivity()), 300);
                         }
 
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                UIUtils.toast("黑名单数据已同步");
-                            }
-                        }, 200);
+                        new Handler().postDelayed(() -> UIUtils.toast("黑名单数据已同步"), 200);
                     } else {
                         UIUtils.toast(errorMsg);
                     }
@@ -157,7 +144,7 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
         mRemoving.add(username);
         BlacklistHelper.delBlacklist(mFormHash, username, new OkHttpHelper.ResultCallback() {
             @Override
-            public void onError(Request request, Exception e) {
+            public void onError(Exception e) {
                 UIUtils.toast(OkHttpHelper.getErrorMessage(e).getMessage());
             }
 
@@ -211,25 +198,10 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
         }
         final String detail = sb.toString();
         AlertDialog.Builder builder = UIUtils.getMessageDialogBuilder(context, "上传老版本黑名单数据", detail);
-        builder.setPositiveButton("上传", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                uploadOldBlacklists();
-            }
-        });
+        builder.setPositiveButton("上传", (dialog, which) -> uploadOldBlacklists());
         builder.setNeutralButton(context.getResources().getString(R.string.action_copy),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        UIUtils.copyToClipboard(detail);
-                    }
-                });
-        builder.setNegativeButton("清空旧数据", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                HiSettingsHelper.getInstance().setOldBlacklists(new ArrayList<String>());
-            }
-        });
+                (dialogInterface, i) -> UIUtils.copyToClipboard(detail));
+        builder.setNegativeButton("清空旧数据", (dialog, which) -> HiSettingsHelper.getInstance().setOldBlacklists(new ArrayList<>()));
         AlertDialog dialog = builder.create();
         dialog.show();
     }
@@ -304,25 +276,26 @@ public class BlacklistFragment extends BaseFragment implements SwipeRefreshLayou
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tv_username;
-        ImageButton ib_remove;
+        final TextView tv_username;
+        final ImageButton ib_remove;
 
         ViewHolder(View itemView) {
             super(itemView);
-            tv_username = (TextView) itemView.findViewById(R.id.tv_username);
-            ib_remove = (ImageButton) itemView.findViewById(R.id.ib_remove);
+            tv_username = itemView.findViewById(R.id.tv_username);
+            ib_remove = itemView.findViewById(R.id.ib_remove);
         }
     }
 
-    private class RvAdapter extends RecyclerView.Adapter {
+    private class RvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+        @NotNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
             return new ViewHolder(mInflater.inflate(R.layout.item_blacklist, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NotNull RecyclerView.ViewHolder holder, int position) {
             ViewHolder viewHolder = (ViewHolder) holder;
             String username = mBlacklists.get(position);
 

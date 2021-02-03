@@ -99,29 +99,23 @@ public class XRecyclerView extends RecyclerView {
     }
 
     public void setHeaderState(final int state) {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                mHeaderView.setState(state);
-                if (state == XHeaderView.STATE_HIDDEN) {
-                    mAdapter.removeHeaderView();
-                } else {
-                    mAdapter.setHeaderView(mHeaderView);
-                }
+        post(() -> {
+            mHeaderView.setState(state);
+            if (state == XHeaderView.STATE_HIDDEN) {
+                mAdapter.removeHeaderView();
+            } else {
+                mAdapter.setHeaderView(mHeaderView);
             }
         });
     }
 
     public void setFooterState(final int state) {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                mFooterView.setState(state);
-                if (state == XFooterView.STATE_HIDDEN) {
-                    mAdapter.removeFooterView();
-                } else {
-                    mAdapter.setFooterView(mFooterView);
-                }
+        post(() -> {
+            mFooterView.setState(state);
+            if (state == XFooterView.STATE_HIDDEN) {
+                mAdapter.removeFooterView();
+            } else {
+                mAdapter.setFooterView(mFooterView);
             }
         });
     }
@@ -228,7 +222,7 @@ public class XRecyclerView extends RecyclerView {
         }
         try {
             return super.onTouchEvent(ev);
-        } catch (IndexOutOfBoundsException | IllegalArgumentException ingored) {
+        } catch (IndexOutOfBoundsException | IllegalArgumentException ignored) {
             // avoid random  error
         }
         return true;
@@ -295,10 +289,6 @@ public class XRecyclerView extends RecyclerView {
 
     public void scrollToBottom() {
         mLayoutManager.scrollToPositionWithOffset(mLayoutManager.getItemCount() - 1, 0);
-    }
-
-    public void smoothScrollToBottom() {
-        smoothScrollToPosition(mLayoutManager.getItemCount() - 1);
     }
 
     public boolean isNearBottom() {

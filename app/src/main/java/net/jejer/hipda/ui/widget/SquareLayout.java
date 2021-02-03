@@ -21,7 +21,6 @@ public class SquareLayout extends RelativeLayout {
         super(context);
     }
 
-    @SuppressWarnings("unused")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // For simple implementation, or internal size is always 0.
@@ -33,7 +32,6 @@ public class SquareLayout extends RelativeLayout {
 
         // Children are just made to fill our space.
         int childWidthSize = getMeasuredWidth();
-        int childHeightSize = getMeasuredHeight();
         heightMeasureSpec = widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(childWidthSize, View.MeasureSpec.EXACTLY);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
